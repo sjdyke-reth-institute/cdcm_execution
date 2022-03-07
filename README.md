@@ -1,4 +1,4 @@
-# CDCM_reconfig
+# CDCM Code Reconfiguration
 
 Here is the example of the system. Data classes in Python are to be used:  
 
