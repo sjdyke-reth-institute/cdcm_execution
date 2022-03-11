@@ -2,11 +2,14 @@
 Defies a Parameter class.
 
 Author:
-	Dr. Ilias Bilionis
+	Ilias Bilionis
 	Roman Ibrahimov
 
 Date:
 	3/10/2022
+
+TODO:
+	Figure out how to enforce SI units.
 """
 
 
@@ -44,7 +47,7 @@ class Parameter(object):
 			(isinstance(value, np.ndarray) and value.dtype == float)
 		ureg.check(units)
 		assert isinstance(name, str)
-		assert isinstance(description, str)
+		assert description is None or isinstance(description, str)
 		# Assign values
 		self._value = value
 		self._units = units 
@@ -73,6 +76,3 @@ class Parameter(object):
 			', name="' + self.name + '"' + \
 			', description="' + self.description + '")'
 
-if __name__ == "__main__":
-	param = Parameter(3.1, "unit", "name", "des")
-	print(param)
