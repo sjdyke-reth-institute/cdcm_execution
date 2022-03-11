@@ -40,25 +40,41 @@ class System(ABC):
 						  parameter names and values that are Parameter objects.
 						  parameters of a system.
 		- description: 	  
-		- parents: 		  ???
+		- parents: 		  A dictionary with keys that are strings corresponding
+						  to the state variable names and values that are the
+						  System from which this variable must be taken.
 
 	TODO: Complete docstring.
-	TODO: Think about the parents.
 	"""
 
 	def __int__(self, name, state={}, parameters={}, parents={}, description=None):
 		# TODO: Add sanity cecks for name, description
 		assert isinstance(state, dict)
+		# Sanity check for state variables
 		for s in state.values():
 			assert isinstance(p, StateVariable)
+		# Sanity check for parameters
 		assert isinstance(parameters, dict)
 		for p in parameters.values():
 			assert isinstance(p, Parameter)
+		# Sanity check for parents
+		assert isinstance(parents, dict)
+		for k, v in parents.items():
+			assert isinstance(k, str)
+			assert isinstance(v, System)
+			assert v.has_state(k)
+		# Initialize variables
 		self._name = _name 
 		self._description = description
 		self._current_state = state
 		self._next_state = deepcopy(state)
 		self._parameter = parameters
+
+	def has_state(self, state_name):
+		"""
+		Return True if the system has a state called `state_name`.
+		"""
+		return state_name in self._current_state.keys()
 
 	@property
 	def name(self):
