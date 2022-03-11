@@ -1,5 +1,5 @@
 """
-Defies a Parameter class.
+Defies a Quantify class.
 
 Author:
 	Ilias Bilionis
@@ -13,7 +13,7 @@ TODO:
 """
 
 
-__all__ = ['Parameter']
+__all__ = ['Quantity']
 
 
 import numpy as np
@@ -23,21 +23,21 @@ import pint
 ureg = pint.UnitRegistry()
 
 
-class Parameter(object):
+class Quantity(object):
 
 	"""
-	Defines a CDCM parameter. The parameter knows its units.
+	Defines a CDCM quantity. The quantity knows its units.
 	It has a decscription that explains what it is.
 	It has a name. And it has a value.
 
 	Arguments:
 
-		value:      The value of the parameter. Must be an int, a double or a 
+		value:      The value of the quantity. Must be an int, a double or a 
 				    numpy array of ints or floating point numbers.
 		units:      Must be a string or a pint object that describes an SI
 				    physical unit.
-		name:       A string. The name of the parameter. Please be expressive.
-		desciption: A desciption of the parameter. Please be expressive.
+		name:       A string. The name of the quantity. Please be expressive.
+		desciption: A desciption of the quantity. Please be expressive.
 
 	"""
 
@@ -71,7 +71,7 @@ class Parameter(object):
 		return self._description
 	
 	def __str__(self):
-		return 'Parameter(value=' + str(self.value) + \
+		return 'Quantity(value=' + str(self.value) + \
 			', units="' + self.units + '"' + \
 			', name="' + self.name + '"' + \
 			', description="' + self.description + '")'
