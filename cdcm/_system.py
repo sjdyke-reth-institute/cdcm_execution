@@ -16,7 +16,8 @@ __all__ = ['System']
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from ._quantity import Parameter, StateVariable
+from ._quantity import Parameter, StateVariable, PhysicalStateVariable, \
+					   HealthStateVariable
 
 
 class System(ABC):
@@ -68,13 +69,46 @@ class System(ABC):
 		self._description = description
 		self._current_state = state
 		self._next_state = deepcopy(state)
-		self._parameter = parameters
+		self._parameters = parameters
+		self._parents = parents
+		self._physical_state = self._get_state_of_type(PhysicalStateVariable)
+		self._health_state = self._get_state_of_type(HealthStateVariable)
 
 	def has_state(self, state_name):
 		"""
 		Return True if the system has a state called `state_name`.
 		"""
 		return state_name in self._current_state.keys()
+
+	def has_paremeter(self, param_name):
+		"""
+		Return True if the system has a parameter called `param_name`.
+		"""
+		return param_name in self._parameters.keys()
+
+	def get_state(self, state_name):
+		"""
+		Get the state called `state_name`.
+		"""
+		assert self.has_state(state_name)
+		return self._current_state[state_name]
+
+	def get_parameter(self, param_name):
+		"""
+		Get the parameter called `param_name`.
+		"""
+		assert self.has_parameter(param_name)
+		return self._parameters[param_name]
+
+	def _get_state_of_type(self, Type):
+		"""
+		Return a dictionary with all state components of type `Type`.
+		"""
+		res = {}
+		for n, s in self.state.items():
+			if isinstance(s, Type):
+				res[n] = s
+		return s
 
 	@property
 	def name(self):
@@ -87,6 +121,18 @@ class System(ABC):
 	@property
 	def parameters(self):
 		return self._parameters
+
+	@property
+	def state(self):
+		return self._current_state
+	
+	@property
+	def physical_state(self):
+		return self._physical_state
+	
+	@property
+	def health_state(self):
+		return self._health_state
 	
 	@abstractmethod
 	def step(self, dt):
