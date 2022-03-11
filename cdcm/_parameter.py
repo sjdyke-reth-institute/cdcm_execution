@@ -2,12 +2,8 @@
 Defies a Parameter class.
 
 Author:
-	Ilias Bilionis
-	Roman
-
-
-ROMAN read PEP 8 https://peps.python.org/pep-0008/
-
+	Dr. Ilias Bilionis
+	Roman Ibrahimov
 
 Date:
 	3/10/2022
@@ -76,3 +72,7 @@ class Parameter(object):
 			', units="' + self.units + '"' + \
 			', name="' + self.name + '"' + \
 			', description="' + self.description + '")'
+
+if __name__ == "__main__":
+	param = Parameter(3.1, "unit", "name", "des")
+	print(param)
