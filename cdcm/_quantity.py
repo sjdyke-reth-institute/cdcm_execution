@@ -75,7 +75,6 @@ class Quantity(object):
 	def type(self):
 		return type(self).__name__
 	
-	
 	def __str__(self):
 		# TODO: Fix this so that it prints the name of the clas
 		return self.type + '(value=' + str(self.value) + \
