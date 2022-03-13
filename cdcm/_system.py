@@ -49,9 +49,11 @@ class System(ABC):
 	"""
 
 	def __int__(self, name, state={}, parameters={}, parents={}, description=None):
-		# TODO: Add sanity cecks for name, description
-		assert isinstance(state, dict)
+		# Sanity checks
+		assert isinstance(name, str)
+		assert isinstance(description, str)
 		# Sanity check for state variables
+		assert isinstance(state, dict)
 		for s in state.values():
 			assert isinstance(p, StateVariable)
 		# Sanity check for parameters

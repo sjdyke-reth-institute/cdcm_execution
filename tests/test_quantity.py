@@ -40,3 +40,12 @@ class TestQuantities():
         # No description
         p = Quantity(2, "miles", "random_name")
 
+
+if __name__ == '__main__':
+    p = PhysicalStateVariable(10.0, "meters", "length")
+    print(str(p))
+    print(p.__repr__())
+    p = PhysicalStateVariable(10.0, "meters", "length", 
+        description="Some very very very very long description.")
+    print(str(p))
+    print(p.__repr__())

@@ -19,6 +19,7 @@ __all__ = ['Quantity', 'Parameter',
 
 import numpy as np
 import pint
+from ._utils import trim_str
 
 
 ureg = pint.UnitRegistry()
@@ -83,17 +84,26 @@ class Quantity(object):
 		"""
 		Return a string representation of the Quantity.
 		"""
-		return str(self._value) + " " + self._units
+		if isinstance(self._value, float):
+			res = f"{self._value: {1}.{5}}"
+		else:
+			res = str(self._value)
+		res += f" {self._units} ({self.type})"
+		return res
 		
 	def __repr__(self):
 		"""
 		Return an unambiguous text describing the object.
 		"""
 		# TODO: Roman fix this.
-		return self.type + '(value=' + str(self.value) + \
-			', units="' + self.units + '"' + \
-			', name="' + self.name + '"' + \
-			', description="' + self.description + '")'
+		res = f'{self.type}(value={self.value}, units="{self.units}", ' + \
+			  f'name="{self.name}", description='
+		if self.description is None:
+			res += "None"
+		else:
+			res += f'"{trim_str(self.description)}"'
+		res += ")"
+		return res
 
 
 class Parameter(Quantity):
@@ -131,9 +141,3 @@ class HealthStateVariable(StateVariable):
 
 	pass
 
-
-if __name__ == '__main__':
-	p = PhysicalStateVariable(10.0, "meters", "length")
-	print(type(p).__name__)
-	print(p.type)
-	print(str(p))
