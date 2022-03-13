@@ -38,21 +38,25 @@ class Quantity(object):
 		units:      Must be a string or a pint object that describes an SI
 				    physical unit.
 		name:       A string. The name of the quantity. Please be expressive.
+		track:		A boolean. If True the quantity will be tracked during
+					simulatiojns. If False it will not be tracked.
 		desciption: A desciption of the quantity. Please be expressive.
 
 	"""
 
-	def __init__(self, value, units, name, description=None):
+	def __init__(self, value, units, name, track=True, description=None):
 		# Sanity checks
 		assert isinstance(value, int) or isinstance(value, float) or \
 			(isinstance(value, np.ndarray) and value.dtype == float)
 		ureg.check(units)
 		assert isinstance(name, str)
+		assert isinstance(track, bool)
 		assert description is None or isinstance(description, str)
 		# Assign values
 		self._value = value
 		self._units = units 
 		self._name = name
+		self._track = track
 		self._description = description
 
 	@property
@@ -76,7 +80,16 @@ class Quantity(object):
 		return type(self).__name__
 	
 	def __str__(self):
-		# TODO: Fix this so that it prints the name of the clas
+		"""
+		Return a string representation of the Quantity.
+		"""
+		return str(self._value) + " " + self._units
+		
+	def __repr__(self):
+		"""
+		Return an unambiguous text describing the object.
+		"""
+		# TODO: Roman fix this.
 		return self.type + '(value=' + str(self.value) + \
 			', units="' + self.units + '"' + \
 			', name="' + self.name + '"' + \
