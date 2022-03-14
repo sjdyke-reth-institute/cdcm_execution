@@ -49,7 +49,7 @@ class System(ABC):
 	def __init__(self, name="System", state={}, parameters={}, parents={}, description=None):
 		# Sanity checks
 		assert isinstance(name, str)
-		assert isinstance(description, str)
+		assert description is None or isinstance(description, str)
 		# Sanity check for state variables
 		assert isinstance(state, dict)
 		for s in state.values():
@@ -131,6 +131,11 @@ class System(ABC):
 	def parents(self):
 		return self._parents
 	
+	def get_parent_state(self, name):
+		"""
+		Get the current version of a parent state.
+		"""
+		return self.parents[name].state[name]
 	
 	@abstractmethod
 	def _calculate_next_state(self, dt):
@@ -176,4 +181,4 @@ class System(ABC):
 		"""Return a complete string representation of the class.
 		"""
 		# TODO: Write me
-		pass 
+		return self.__str__()
