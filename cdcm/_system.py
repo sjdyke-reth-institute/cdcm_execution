@@ -71,8 +71,6 @@ class System(ABC):
 		self._next_state = deepcopy(state)
 		self._parameters = parameters
 		self._parents = parents
-		self._physical_state = self._get_state_of_type(PhysicalStateVariable)
-		self._health_state = self._get_state_of_type(HealthStateVariable)
 
 	def has_state(self, state_name):
 		"""Return True if the system has a state called `state_name`.
@@ -123,11 +121,11 @@ class System(ABC):
 	
 	@property
 	def physical_state(self):
-		return self._physical_state
+		return self._get_state_of_type(PhysicalStateVariable)
 	
 	@property
 	def health_state(self):
-		return self._health_state
+		return self._get_state_of_type(HealthStateVariable)
 
 	@property
 	def parents(self):
