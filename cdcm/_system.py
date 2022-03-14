@@ -46,7 +46,7 @@ class System(ABC):
 	description  --	A long description of the system.
 	"""
 
-	def __int__(self, name="System", state={}, parameters={}, parents={}, description=None):
+	def __init__(self, name="System", state={}, parameters={}, parents={}, description=None):
 		# Sanity checks
 		assert isinstance(name, str)
 		assert isinstance(description, str)
