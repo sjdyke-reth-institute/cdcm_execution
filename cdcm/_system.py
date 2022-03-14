@@ -162,6 +162,25 @@ class System(ABC):
 		"""
 		self._current_state, self._next_state = self._next_state, self._current_state
 
+	@property
+	def can_transition(self):
+		"""
+		Return True if the system can transition independently.
+		"""
+		return bool(self.parents)
+
+	def step(dt):
+		"""Make the system step forward in time.
+
+		Note that this only works if `self.can_transition` is True.
+		If not, then it will raise an error.
+		"""
+		if self.can_transition:
+			self._calculate_next_state(self, dt)
+			self._transition()
+		else:
+			raise RuntimeError("The system has parents and it cannot transition.")
+
 	def __str__(self):
 		"""Return a readable string representation of the class.
 
