@@ -21,8 +21,7 @@ from ._quantity import Parameter, StateVariable, PhysicalStateVariable, \
 
 
 class System(ABC):
-	"""
-	Describes an abstract System.
+	"""Describes an abstract System.
 
 	A system has the following characteristics:
 		- It has a name.
@@ -33,20 +32,21 @@ class System(ABC):
 
 	All specific CDCM systems must inherit from this class.
 
-	Arguments:
-		- name:
-		- state:		  A dictionary with keys that are strings corresponding to
-						  the state variable names and values that are StateVariable.
-		- parameters:     A dictionary with keys that are strings corresponding to
-						  parameter names and values that are Parameter objects.
-						  parameters of a system.
-		- description: 	  
-		- parents: 		  A dictionary with keys that are strings corresponding
-						  to the state variable names and values that are the
-						  System from which this variable must be taken.
+	Keyword Arguments:
+	name         -- A name for the system.
+	state		 -- A dictionary with keys that are strings corresponding to
+					the state variable names and values that are 
+					`StateVariable`.
+	parameters   -- A dictionary with keys that are strings corresponding to
+				    parameter names and values that are Parameter objects.
+					parameters of a system.
+	parents      -- A dictionary with keys that are strings corresponding
+					to the state variable names and values that are the
+					`System` from which this variable must be taken.
+	description  --	A long description of the system.
 	"""
 
-	def __int__(self, name, state={}, parameters={}, parents={}, description=None):
+	def __int__(self, name="System", state={}, parameters={}, parents={}, description=None):
 		# Sanity checks
 		assert isinstance(name, str)
 		assert isinstance(description, str)
@@ -75,34 +75,29 @@ class System(ABC):
 		self._health_state = self._get_state_of_type(HealthStateVariable)
 
 	def has_state(self, state_name):
-		"""
-		Return True if the system has a state called `state_name`.
+		"""Return True if the system has a state called `state_name`.
 		"""
 		return state_name in self._current_state.keys()
 
 	def has_paremeter(self, param_name):
-		"""
-		Return True if the system has a parameter called `param_name`.
+		"""Return True if the system has a parameter called `param_name`.
 		"""
 		return param_name in self._parameters.keys()
 
 	def get_state(self, state_name):
-		"""
-		Get the state called `state_name`.
+		"""Get the state called `state_name`.
 		"""
 		assert self.has_state(state_name)
 		return self._current_state[state_name]
 
 	def get_parameter(self, param_name):
-		"""
-		Get the parameter called `param_name`.
+		"""Get the parameter called `param_name`.
 		"""
 		assert self.has_parameter(param_name)
 		return self._parameters[param_name]
 
 	def _get_state_of_type(self, Type):
-		"""
-		Return a dictionary with all state components of type `Type`.
+		"""Return a dictionary with all state components of type `Type`.
 		"""
 		res = {}
 		for n, s in self.state.items():
@@ -135,20 +130,38 @@ class System(ABC):
 		return self._health_state
 	
 	@abstractmethod
-	def step(self, dt):
+	def _calculate_next_state(self, dt):
+		"""Calculate the next sate of the system using the current one.
+
+		Arguments:
+		dt -- the time step to use when calculating the next state.
+
+		The function assumes that `self._current_state` already contains
+		the current state of the system and that access to all input
+		variables is available through `self.parents`.
+
+		This function should not return anything. It should just calculate
+		the next state and store the result in `self._next_state`.
+		"""
 		pass
 
 	def _transition(self):
-		"""
-		This function must be called after the step() function has been called
-		for all Systems.
+		"""This function transitions to the next state.
 
-		Absolutely essential to ensure deterministic behavior.
+		The function simply swaps the `self._current_state` with 
+		`self._next_state`. It is essential for ensuring deterministic
+		behavior.
 		"""
 		self._current_state, self._next_state = self._next_state, self._current_state
 
+	def __str__(self):
+		"""Return a readable string representation of the class.
+		"""
+		# TODO: Write me
+		pass 
 
-# TMP TESTING - TO BE DELETED
-if __name__ == "__main__":
-	# TMP 
-	pass
+	def __repr__(self):
+		"""Return a complete string representation of the class.
+		"""
+		# TODO: Write me
+		pass 
