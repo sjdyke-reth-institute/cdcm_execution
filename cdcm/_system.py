@@ -16,8 +16,8 @@ __all__ = ['System']
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from ._quantity import Parameter, StateVariable, PhysicalStateVariable, \
-					   HealthStateVariable
+from . import Parameter, StateVariable, PhysicalStateVariable, \
+			  HealthStateVariable
 
 
 class System(ABC):
