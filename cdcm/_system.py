@@ -44,8 +44,6 @@ class System(ABC):
 		- parents: 		  A dictionary with keys that are strings corresponding
 						  to the state variable names and values that are the
 						  System from which this variable must be taken.
-
-	TODO: Complete docstring.
 	"""
 
 	def __int__(self, name, state={}, parameters={}, parents={}, description=None):
@@ -67,7 +65,7 @@ class System(ABC):
 			assert isinstance(v, System)
 			assert v.has_state(k)
 		# Initialize variables
-		self._name = _name 
+		self._name = name
 		self._description = description
 		self._current_state = state
 		self._next_state = deepcopy(state)

@@ -19,7 +19,7 @@ __all__ = ['Quantity', 'Parameter',
 
 import numpy as np
 import pint
-from ._utils import trim_str
+# from ._utils import trim_str
 
 
 ureg = pint.UnitRegistry()
