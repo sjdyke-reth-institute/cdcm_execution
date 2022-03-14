@@ -103,7 +103,7 @@ class System(ABC):
 		for n, s in self.state.items():
 			if isinstance(s, Type):
 				res[n] = s
-		return s
+		return res
 
 	@property
 	def name(self):
