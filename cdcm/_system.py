@@ -128,6 +128,11 @@ class System(ABC):
 	@property
 	def health_state(self):
 		return self._health_state
+
+	@property
+	def parents(self):
+		return self._parents
+	
 	
 	@abstractmethod
 	def _calculate_next_state(self, dt):
@@ -156,9 +161,18 @@ class System(ABC):
 
 	def __str__(self):
 		"""Return a readable string representation of the class.
+
+		TODO: Make this pretty.
+		TODO: Add verbosity control.
 		"""
-		# TODO: Write me
-		pass 
+		res = f"""System name:    {self.name}
+		Physical state: {self.physical_state}
+		Health state:   {self.health_state}
+		Parameters:     {self.parameters}
+		Parents:		{self.parents}
+		Description:	{self.description}
+		"""
+		return res
 
 	def __repr__(self):
 		"""Return a complete string representation of the class.
