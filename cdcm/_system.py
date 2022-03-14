@@ -53,7 +53,7 @@ class System(ABC):
 		# Sanity check for state variables
 		assert isinstance(state, dict)
 		for s in state.values():
-			assert isinstance(p, StateVariable)
+			assert isinstance(s, StateVariable)
 		# Sanity check for parameters
 		assert isinstance(parameters, dict)
 		for p in parameters.values():
