@@ -95,7 +95,6 @@ class Quantity(object):
 		"""
 		Return an unambiguous text describing the object.
 		"""
-		# TODO: Roman fix this.
 		res = f'{self.type}(value={self.value}, units="{self.units}", ' + \
 			  f'name="{self.name}", description='
 		if self.description is None:
