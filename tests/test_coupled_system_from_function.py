@@ -29,9 +29,10 @@ if __name__ == "__main__":
         parameters={"r1": Parameter(1.2, "meters / second", "rate of change")},
         transition_func=trans_func_1)
     sys2 = SystemFromFunction(
-        state={"x2": PhysicalStateVariable(0.1, "meters", "x2")},
-        parameters={"r2": Parameter(0.2, "meters / second", "rate of change"),
+        state={"x2": PhysicalStateVariable(0.3, "meters", "x2")},
+        parameters={"r2": Parameter(1.2, "meters / second", "rate of change"),
                     "c": Parameter(0.1, "1 / second", "coupling coeff")},
+        parents={'x1': sys1},
         transition_func=trans_func_2)
     sys = SystemOfSystems(sub_systems=[sys1, sys2])
     dt = 0.1
