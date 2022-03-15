@@ -67,13 +67,4 @@ class SystemOfSystems(System):
     def _transition(self):
         for s in self.sub_systems:
             s._transition()
-
-    @property
-    def can_transition(self):
-        """
-        Return True if the system can transition independently.
-
-        TODO: Write this.
-        """
-        raise NotImplementedError("TODO: Implement the `can_transition` for SystemOfSystems`.")
     
