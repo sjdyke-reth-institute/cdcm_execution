@@ -51,6 +51,8 @@ class SystemOfSystems(System):
         """Check if the system can transition.
 
         It can transition only if `self.parents` is a subset of `self.sub_systems`.
+
+        TODO: Make this work when we have nested systems.
         """
         can_transition = True
         for p, s in self.parents.items():
