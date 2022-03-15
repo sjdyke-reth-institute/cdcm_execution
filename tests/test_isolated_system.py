@@ -42,3 +42,12 @@ if __name__ == "__main__":
         system._calculate_next_state(dt)
         system._transition()
         print(f"x: {system.state['x'].value:{1}.{3}}")
+
+    # Because the system can transition independently
+    # (it doesn't have any parents)
+    print(f'can transition: {system.can_transition}')
+    # we can also do this
+    system.state['x'].value = 0.1
+    for i in range(10):
+        system.step(dt)
+        print(f"x: {system.state['x'].value:{1}.{3}}")

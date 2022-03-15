@@ -169,14 +169,14 @@ class System(ABC):
         """
         return self._can_transition
 
-    def step(dt):
+    def step(self, dt):
         """Make the system step forward in time.
 
         Note that this only works if `self.can_transition` is True.
         If not, then it will raise an error.
         """
         if self.can_transition:
-            self._calculate_next_state(self, dt)
+            self._calculate_next_state(dt)
             self._transition()
         else:
             raise RuntimeError("The system has parents and it cannot transition.")

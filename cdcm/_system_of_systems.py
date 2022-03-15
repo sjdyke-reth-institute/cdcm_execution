@@ -41,6 +41,13 @@ class SystemOfSystems(System):
             parameters.update(s.parameters)
         self._sub_systems = sub_systems
         super().__init__(name=name, parents=parents, description=description)
+        # Check if the system can transition.
+        # It can transition only if `self.parents` is a subset of `self.sub_systems`.
+        can_transition = True
+        for p, s in self.parents.items():
+            if not s in self.sub_systems:
+                can_transition = False
+        self._can_transition = can_transition
 
     @property
     def sub_systems(self):
