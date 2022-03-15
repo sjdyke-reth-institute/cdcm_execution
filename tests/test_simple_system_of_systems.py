@@ -62,7 +62,7 @@ if __name__ == "__main__":
     sys1 = Sys1()
     sys2 = Sys2(sys1)
     # Put them in a system of system container
-    sys = SystemOfSystems(name="comabined_system", sub_systems=[sys1, sys2])
+    sys = SystemOfSystems(name="combined_system", sub_systems=[sys1, sys2])
     # Run the system a bit into the future manually.
     dt = 0.1
     for i in range(10):
