@@ -130,6 +130,10 @@ class System(ABC):
     @property
     def parents(self):
         return self._parents
+
+    @property
+    def time(self):
+        return self._time
     
     def get_parent_state(self, name):
         """
