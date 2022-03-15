@@ -83,18 +83,9 @@ class SystemOfSystems(System):
     def can_transition(self):
         """Check if the system can transition.
 
-        It can transition only if `self.parents` is a subset of 
-        `self.fundamental_subsystems`.
+        TODO: THIS IS NOT CORRECT>
         """
-        fundamental_subsystems = self.fundamental_subsystems
-        can_transition = True
-        for p, s in self.parents.items():
-            if not s in fundamental_subsystems:
-                print(f"{s} not in fundamental_subsystems")
-                can_transition = False
-        return can_transition
-
-
+        raise NotImplementedError("Haven't implemented can_transition yet.")
 
     def _calculate_next_state(self, dt):
         for s in self.sub_systems:
