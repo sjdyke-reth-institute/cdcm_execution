@@ -33,40 +33,68 @@ class SystemOfSystems(System):
         assert isinstance(sub_systems, Iterable)
         for s in sub_systems:
             assert isinstance(s, System)
-        # Gather the parents and parameters
-        parents = {}
-        parameters = {}
-        for s in sub_systems:
-            parents.update(s.parents)
-            parameters.update(s.parameters)
         self._sub_systems = sub_systems
-        super().__init__(name=name, parents=parents, parameters=parameters, 
-                         description=description)
+        super().__init__(name=name, description=description)
 
     @property
     def sub_systems(self):
         return self._sub_systems
 
+    def _gahter(self, attribute):
+        """Gather an attribute from all subsystems.
+
+        It is assuming that the attribute is a `dict`.
+        """
+        res = {}
+        for s in self.sub_systems:
+            res.update(getattr(s, attribute))
+        return res
+
+    @property
+    def state(self):
+        return self._gahter("state")
+
+    @property
+    def parameters(self):
+        return self._gahter("parameters")
+
+    @property
+    def parents(self):
+        return self._gahter("parents")
+
+    @property
+    def fundamental_subsystems(self):
+        """Get the fundamental subsystems.
+
+        The fundamental subsystems are `Systems` that are not decomposable
+        into simpler systems.
+        """
+        res = []
+        for s in self.sub_systems:
+            if not isinstance(s, SystemOfSystems):
+                res.append(s)
+            elif isinstance(s, System):
+                res += s.fundamental_subsystems
+            else:
+                raise RuntimeError(f"{s} is not a System.")
+        return res
+
     @property
     def can_transition(self):
         """Check if the system can transition.
 
-        It can transition only if `self.parents` is a subset of `self.sub_systems`.
-
-        TODO: Make this work when we have nested systems.
+        It can transition only if `self.parents` is a subset of 
+        `self.fundamental_subsystems`.
         """
+        fundamental_subsystems = self.fundamental_subsystems
         can_transition = True
         for p, s in self.parents.items():
-            if not s in self.sub_systems:
+            if not s in fundamental_subsystems:
+                print(f"{s} not in fundamental_subsystems")
                 can_transition = False
         return can_transition
 
-    @property
-    def state(self):
-        state = {}
-        for s in self._sub_systems:
-            state.update(s.state)
-        return state
+
 
     def _calculate_next_state(self, dt):
         for s in self.sub_systems:
