@@ -40,7 +40,8 @@ class SystemOfSystems(System):
             parents.update(s.parents)
             parameters.update(s.parameters)
         self._sub_systems = sub_systems
-        super().__init__(name=name, parents=parents, description=description)
+        super().__init__(name=name, parents=parents, parameters=parameters, 
+                         description=description)
 
     @property
     def sub_systems(self):
@@ -74,4 +75,10 @@ class SystemOfSystems(System):
     def _transition(self):
         for s in self.sub_systems:
             s._transition()
+
+    def __str__(self):
+        """Return string representation of combined system."""
+        res = super().__str__()
+        res += f"\nSubsystems:     {list([s.name for s in self.sub_systems])}"
+        return res
     

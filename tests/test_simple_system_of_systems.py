@@ -15,7 +15,7 @@ from cdcm import *
 class Sys1(System):
 
     def __init__(self):
-        name = "System 1"
+        name = "system_1"
         state = {"x1": PhysicalStateVariable(0.1, "meters", "x", track=True, 
                                             description="The x variable."),
                  "h": HealthStateVariable(0, None, "x", track=True,
@@ -35,7 +35,7 @@ class Sys1(System):
 class Sys2(System):
 
     def __init__(self, sys_1):
-        name = "System 2"
+        name = "system_2"
         state = {"x2": PhysicalStateVariable(0.3, "meters", "x2", track=True, 
                                              description="The x2 variable.")}
         parameters = {"rate_of_change_2": Parameter(1.2, "meters / second",
@@ -63,6 +63,7 @@ if __name__ == "__main__":
     sys2 = Sys2(sys1)
     # Put them in a system of system container
     sys = SystemOfSystems(name="combined_system", sub_systems=[sys1, sys2])
+    print(sys)
     # Run the system a bit into the future manually.
     dt = 0.1
     for i in range(10):

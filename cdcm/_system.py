@@ -204,12 +204,10 @@ class System(ABC):
         TODO: Add verbosity control.
         """
         res = f"""System name:    {self.name}
-        Physical state: {self.physical_state}
-        Health state:   {self.health_state}
-        Parameters:     {self.parameters}
-        Parents:        {self.parents}
-        Description:    {self.description}
-        """
+Physical state: {list(self.physical_state.keys())}
+Health state:   {list(self.health_state.keys())}
+Parameters:     {list(self.parameters.keys())}
+Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
         return res
 
     def __repr__(self):
