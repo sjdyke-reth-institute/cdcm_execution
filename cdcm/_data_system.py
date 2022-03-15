@@ -36,37 +36,39 @@ class DataSystem(System):
     TODO: Make a version of this that tracks time.
     """
 
-    def __init__(self, name="DataSystem", states={}, datasets={}, description=None):
-        super().__init__(name=name, states=states, description=description)
+    def __init__(self, name="DataSystem", state={}, dataset={}, description=None):
+        super().__init__(name=name, state=state, description=description)
         # Sanity checks
-        assert isinstance(datasets, dict)
-        for s in states.keys():
-            assert s in datasets.keys(), "All states must be represented in the datasets."
-        assert len(s) == len(datasets), "There are elements in datasets without states."
-        for d in datasets.values():
+        assert isinstance(dataset, dict)
+        for s in state.keys():
+            assert s in dataset.keys(), "All states must be represented in the dataset."
+        assert len(state) == len(dataset), "There are elements in dataset without a" + \
+                                           " corresponding element in state."
+        for d in dataset.values():
             assert isinstance(d, Iterable)
-        for s, var in states.items():
-            assert isinstance(var.value, type(datasets[s][0])), \
-                              f"Variable {var} is not the same type as its dataset."
-            if isinstance(var.value, np.ndarray):
-                assert var.value.shape == datasets[s][0].shape
-        self._datasets = datasets
+        # TODO: The following sanity check is too restrictive. Think about it.
+        for s, var in state.items():
+           assert isinstance(var.value, type(dataset[s][0])), \
+                             f"Variable {var} is not the same type as its dataset."
+           if isinstance(var.value, np.ndarray):
+               assert var.value.shape == dataset[s][0].shape
+        self._dataset = dataset
         # Initialize  
         min_dataset_size = 1e9
-        for d in datasets.values():
+        for d in dataset.values():
             assert isinstance(d, Iterable)
             if min_dataset_size > len(d):
                 min_dataset_size = len(d)
         self._max_num_steps = min_dataset_size
         self._steps_so_far = 0
         # Initialize the states
-        self._set_states(0)
+        self._set_state(0)
 
-    def _set_states(self, idx):
+    def _set_state(self, idx):
         """Set the states to idx. Checks if idx is smaller than `self.max_num_steps`."""
         assert idx < self.max_num_steps
-        for s, var in states.items():
-            var.value = datasets[s][idx]      
+        for s, var in self.state.items():
+            var.value = self.dataset[s][idx]      
 
     @property
     def max_num_steps(self):
@@ -79,11 +81,11 @@ class DataSystem(System):
         return self._steps_so_far
 
     @property
-    def datasets(self):
-        return self._datasets
+    def dataset(self):
+        return self._dataset
     
     def _calculate_next_state(self, dt):
         """Simply moves to the next element of the datasets."""
         next_step = self.steps_so_far + 1
-        self._set_states(next_step)
+        self._set_state(next_step)
         self._steps_so_far += 1

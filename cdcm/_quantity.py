@@ -44,12 +44,12 @@ class Quantity(object):
 
     """
 
-    def __init__(self, value, units, name, track=True, description=None):
+    def __init__(self, value, units=None, name=None, track=True, description=None):
         # Sanity checks
         assert isinstance(value, int) or isinstance(value, float) or \
             (isinstance(value, np.ndarray) and value.dtype == float)
         ureg.check(units)
-        assert isinstance(name, str)
+        assert name is None or isinstance(name, str)
         assert isinstance(track, bool)
         assert description is None or isinstance(description, str)
         # Assign values
