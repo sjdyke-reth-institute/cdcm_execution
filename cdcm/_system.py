@@ -70,7 +70,6 @@ class System(ABC):
         self._next_state = deepcopy(state)
         self._parameters = parameters
         self._parents = parents
-        self._can_transition = not bool(parents)
 
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`.
@@ -171,19 +170,31 @@ class System(ABC):
         """
         Return True if the system can transition independently.
         """
-        return self._can_transition
+        return not bool(self.parents)
 
     def step(self, dt):
         """Make the system step forward in time.
 
         Note that this only works if `self.can_transition` is True.
         If not, then it will raise an error.
+
+        To avoid bugs, `self.can_transition` is calculated every time
+        it is needed. This is in case the parents change.
+        So, doing step may take a while.
+        Use `unsafe_step()` if you are sure the system can transition.
         """
         if self.can_transition:
-            self._calculate_next_state(dt)
-            self._transition()
+            self.unsafe_step(dt)
         else:
             raise RuntimeError("The system has parents and it cannot transition.")
+
+    def unsafe_step(self, dt):
+        """Step without checking if the system can transition.
+
+        Be careful. This may lead to bugs.
+        """
+        self._calculate_next_state(dt)
+        self._transition()
 
     def __str__(self):
         """Return a readable string representation of the class.
