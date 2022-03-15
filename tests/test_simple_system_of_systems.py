@@ -1,11 +1,10 @@
-"""
-Tests the functionality of the SystemOfSystems class for a simple isolated system.
+"""Tests the functionality of the SystemOfSystems class for a simple isolated system.
 
 Author:
-	Ilias Bilionis
+    Ilias Bilionis
 
 Date:
-	3/14/2022
+    3/14/2022
 
 """
 
@@ -15,58 +14,58 @@ from cdcm import *
 
 class Sys1(System):
 
-	def __init__(self):
-		name = "System 1"
-		state = {"x": PhysicalStateVariable(0.1, "meters", "x", track=True, 
-											description="The x variable."),
-				 "h": HealthStateVariable(0, None, "x", track=True,
-				 						  description="The h variable.")}
-		parameters = {"rate_of_change": Parameter(1.2, "meters / second",
-												 "rate_of_change",
-					  							 description="The rate of change.")}
-		super().__init__(name=name, state=state, parameters=parameters,
-						 description="A simple system.")
+    def __init__(self):
+        name = "System 1"
+        state = {"x": PhysicalStateVariable(0.1, "meters", "x", track=True, 
+                                            description="The x variable."),
+                 "h": HealthStateVariable(0, None, "x", track=True,
+                                          description="The h variable.")}
+        parameters = {"rate_of_change": Parameter(1.2, "meters / second",
+                                                 "rate_of_change",
+                                                 description="The rate of change.")}
+        super().__init__(name=name, state=state, parameters=parameters,
+                         description="A simple system.")
 
-	def _calculate_next_state(self, dt):
-		x = self.state['x'].value
-		r = self.parameters['rate_of_change'].value
-		self._next_state['x'].value = x + r * dt
+    def _calculate_next_state(self, dt):
+        x = self.state['x'].value
+        r = self.parameters['rate_of_change'].value
+        self._next_state['x'].value = x + r * dt
 
 
 class Sys2(System):
 
-	def __init__(self, sys_1):
-		name = "System 2"
-		state = {"x2": PhysicalStateVariable(0.3, "meters", "x2", track=True, 
-											 description="The x2 variable.")}
-		parameters = {"rate_of_change_2": Parameter(1.2, "meters / second",
-												 "rate_of_change_2",
-					  							 description="The rate of change 2."),
-					  "coupling_coeff": Parameter(0.1, "1 / second", "coupling_coeff",
-					  							  description="Coupling coeff.")}
-		parents = {'x': sys_1}
-		super().__init__(name=name, state=state, parameters=parameters, parents=parents,
-						 description="Another simple system.")
+    def __init__(self, sys_1):
+        name = "System 2"
+        state = {"x2": PhysicalStateVariable(0.3, "meters", "x2", track=True, 
+                                             description="The x2 variable.")}
+        parameters = {"rate_of_change_2": Parameter(1.2, "meters / second",
+                                                 "rate_of_change_2",
+                                                 description="The rate of change 2."),
+                      "coupling_coeff": Parameter(0.1, "1 / second", "coupling_coeff",
+                                                  description="Coupling coeff.")}
+        parents = {'x': sys_1}
+        super().__init__(name=name, state=state, parameters=parameters, parents=parents,
+                         description="Another simple system.")
 
-	def _calculate_next_state(self, dt):
-		# Get the parent variable
-		x = self.get_parent_state('x').value
-		# Get the variables form here
-		x2 = self.state['x2'].value
-		r2 = self.parameters['rate_of_change_2'].value
-		c = self.parameters['coupling_coeff'].value
-		self._next_state['x2'].value = x2 + r2 * dt + c * x * dt
+    def _calculate_next_state(self, dt):
+        # Get the parent variable
+        x = self.get_parent_state('x').value
+        # Get the variables form here
+        x2 = self.state['x2'].value
+        r2 = self.parameters['rate_of_change_2'].value
+        c = self.parameters['coupling_coeff'].value
+        self._next_state['x2'].value = x2 + r2 * dt + c * x * dt
 
 
 if __name__ == "__main__":
-	# Create the systems
-	sys1 = Sys1()
-	sys2 = Sys2(sys1)
-	# Put them in a system of system container
-	sys = SystemOfSystems(name="comabined_system", sub_systems=[sys1, sys2])
-	# Run the system a bit into the future manually.
-	dt = 0.1
-	for i in range(10):
-		sys._calculate_next_state(dt)
-		sys._transition()
-		print(f"x: {sys.state['x'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
+    # Create the systems
+    sys1 = Sys1()
+    sys2 = Sys2(sys1)
+    # Put them in a system of system container
+    sys = SystemOfSystems(name="comabined_system", sub_systems=[sys1, sys2])
+    # Run the system a bit into the future manually.
+    dt = 0.1
+    for i in range(10):
+        sys._calculate_next_state(dt)
+        sys._transition()
+        print(f"x: {sys.state['x'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")

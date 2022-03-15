@@ -1,11 +1,10 @@
-"""
-A system put together from a simple function.
+"""A system put together from a simple function.
 
 Author:
-	Ilias Bilionis
+    Ilias Bilionis
 
 Date:
-	3/14/2022
+    3/14/2022
 
 TODO: Write me.
 

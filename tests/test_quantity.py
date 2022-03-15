@@ -1,11 +1,10 @@
-"""
-Tests quantities using pytest.
+"""Tests quantities using pytest.
 
 Author:
-	Roman Ibrahimov
+    Roman Ibrahimov
 
 Date:
-	3/11/2022
+    3/11/2022
 """
 
 

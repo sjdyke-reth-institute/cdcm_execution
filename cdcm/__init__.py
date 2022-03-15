@@ -1,12 +1,11 @@
-"""
-CDCM - Blah Blah
+"""CDCM - Blah Blah
 
 Author:
-	Ilias Bilinis
-	Roman
+    Ilias Bilinis
+    Roman
 
 Date:
-	3/10/2022
+    3/10/2022
 
 """
 
