@@ -62,7 +62,8 @@ class System(ABC):
         for k, v in parents.items():
             assert isinstance(k, str)
             assert isinstance(v, System)
-            assert v.has_state(k)
+            assert v.has_state(k), \
+            f'Parent {v.name} does not have a state named {k}'
         # Initialize variables
         self._name = name
         self._description = description
@@ -74,24 +75,24 @@ class System(ABC):
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`.
         """
-        return state_name in self._current_state.keys()
+        return state_name in self.state.keys()
 
     def has_paremeter(self, param_name):
         """Return True if the system has a parameter called `param_name`.
         """
-        return param_name in self._parameters.keys()
+        return param_name in self.parameters.keys()
 
     def get_state(self, state_name):
         """Get the state called `state_name`.
         """
         assert self.has_state(state_name)
-        return self._current_state[state_name]
+        return self.state[state_name]
 
     def get_parameter(self, param_name):
         """Get the parameter called `param_name`.
         """
         assert self.has_parameter(param_name)
-        return self._parameters[param_name]
+        return self.parameters[param_name]
 
     def _get_state_of_type(self, Type):
         """Return a dictionary with all state components of type `Type`.
