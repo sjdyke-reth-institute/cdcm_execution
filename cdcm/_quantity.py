@@ -47,7 +47,7 @@ class Quantity(object):
     def __init__(self, value, units=None, name=None, track=True, description=None):
         # Sanity checks
         assert isinstance(value, int) or isinstance(value, float) or \
-            (isinstance(value, np.ndarray) and value.dtype == float)
+            (isinstance(value, np.ndarray) and ((value.dtype == float) or (value.dtype == int)))
         ureg.check(units)
         assert name is None or isinstance(name, str)
         assert isinstance(track, bool)
