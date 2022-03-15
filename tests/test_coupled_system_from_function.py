@@ -11,13 +11,13 @@ Date:
 from cdcm import *
 
 
-def trans_func_1(dt, x1=0.1, r1=1.1):
+def trans_func_1(dt, *, x1, r1):
     """A simple transition function for an isolated system."""
     new_x1 = x1 + r1 * dt
     new_state = {'x1': new_x1}
     return new_state
 
-def trans_func_2(dt, x2=0.1, x1=0.3, r2=0.2, c=0.1):
+def trans_func_2(dt, *, x2, x1, r2, c):
     """Another simple transition function."""
     new_x2 = x2 + r2 * dt + c * x1 * dt
     return {'x2': new_x2}

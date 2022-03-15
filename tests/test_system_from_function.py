@@ -11,11 +11,11 @@ Date:
 from cdcm import *
 
 
-def transition_func(dt, x=0.1, r=1.1):
+def transition_func(dt, *, x, r):
     """A simple transition function for an isolated system.
 
-    Note that the default parameters are ignored when this
-    function is actually used by `SystemFromFunction`.
+    Please do use * in the definition.
+    It ensures that the user specifies all the arguments correclty.
     """
     new_x = x + r * dt
     new_state = {'x': new_x}

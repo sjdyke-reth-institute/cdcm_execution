@@ -28,9 +28,9 @@ class SystemFromFunction(System):
                        from the current state. The transition function must be
                        as follows:
                        ```
-                       def transition_func(dt, state1=sval1, ...,
-                                           parent_var1=pval1, ..., 
-                                           parameter_1=param_val1, ...):
+                       def transition_func(dt, *, state1, ...
+                                           parent_var1, ..., 
+                                           parameter_1, ...):
                            # Do the calculations
                            # Make a return a new_state dictionary for the form:
                            new_state = {'state_var1': value1,
@@ -38,6 +38,8 @@ class SystemFromFunction(System):
                                         ...}
                            return new_state
                        ```
+                       Notice the "*" in the function definition. It is essential.
+                       Do not skip it!
     description     -- A description for the object.
     """
 
