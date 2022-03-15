@@ -1,4 +1,4 @@
-"""A system made out of data.
+"""A system that is made out of data.
 
 Author:
     Ilias Bilionis
@@ -9,3 +9,81 @@ Date:
 TODO: Write me.
 
 """
+
+
+__all__ = ['DataSystem']
+
+
+from collections import Iterable
+import numpy as np
+from . import System
+
+
+class DataSystem(System):
+    """A `System` that simply reads data.
+
+    Keyword Arguments:
+    name        -- A name for the system.
+    states      -- The dictionary of system states. See `System`.
+    datasets    -- A dictionary the same keys as `states` and values that are 
+                   `Iterable` objects containing data. 
+    description -- A description for the object.
+
+    Note that this class completely ignores dt.
+    So the user must be very careful to make sure that the data fed to this
+    class follow the right timestep.
+
+    TODO: Make a version of this that tracks time.
+    """
+
+    def __init__(self, name="DataSystem", states={}, datasets={}, description=None):
+        super().__init__(name=name, states=states, description=description)
+        # Sanity checks
+        assert isinstance(datasets, dict)
+        for s in states.keys():
+            assert s in datasets.keys(), "All states must be represented in the datasets."
+        assert len(s) == len(datasets), "There are elements in datasets without states."
+        for d in datasets.values():
+            assert isinstance(d, Iterable)
+        for s, var in states.items():
+            assert isinstance(var.value, type(datasets[s][0])), \
+                              f"Variable {var} is not the same type as its dataset."
+            if isinstance(var.value, np.ndarray):
+                assert var.value.shape == datasets[s][0].shape
+        self._datasets = datasets
+        # Initialize  
+        min_dataset_size = 1e9
+        for d in datasets.values():
+            assert isinstance(d, Iterable)
+            if min_dataset_size > len(d):
+                min_dataset_size = len(d)
+        self._max_num_steps = min_dataset_size
+        self._steps_so_far = 0
+        # Initialize the states
+        self._set_states(0)
+
+    def _set_states(self, idx):
+        """Set the states to idx. Checks if idx is smaller than `self.max_num_steps`."""
+        assert idx < self.max_num_steps
+        for s, var in states.items():
+            var.value = datasets[s][idx]      
+
+    @property
+    def max_num_steps(self):
+        """The maximum number of steps that the System can transition."""
+        return self._max_num_steps
+
+    @property
+    def steps_so_far(self):
+        """The number of steps taken so far."""
+        return self._steps_so_far
+
+    @property
+    def datasets(self):
+        return self._datasets
+    
+    def _calculate_next_state(self, dt):
+        """Simply moves to the next element of the datasets."""
+        next_step = self.steps_so_far + 1
+        self._set_states(next_step)
+        self._steps_so_far += 1
