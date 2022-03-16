@@ -46,13 +46,25 @@ class Quantity(object):
 
     def __init__(self, value, units=None, name=None, track=True, description=None):
         # Sanity checks
-        assert isinstance(value, int) or isinstance(value, float) or \
-            (isinstance(value, np.ndarray) and ((value.dtype == float) or (value.dtype == int)))
+        if isinstance(value, int):
+            dtype = int
+            shape = ()
+        elif isinstance(value, float):
+            dtype = float
+            shape = ()
+        elif isinstance(value, np.ndarray):
+            dtype = value.dtype
+            shape = value.shape
+        else:
+            raise RuntimeError(
+                    f"I cannot handle the type of the quantity {value}")
         ureg.check(units)
         assert name is None or isinstance(name, str)
         assert isinstance(track, bool)
         assert description is None or isinstance(description, str)
         # Assign values
+        self._dtype = dtype
+        self._shape = shape
         self._value = value
         self._units = units 
         self._name = name
@@ -69,6 +81,15 @@ class Quantity(object):
         self._value = new_value
 
     @property
+    def dtype(self):
+        return self._dtype
+    
+    @property
+    def shape(self):
+        return self._shape
+    
+
+    @property
     def units(self):
         return self._units
 
@@ -83,6 +104,11 @@ class Quantity(object):
     @property
     def type(self):
         return type(self).__name__
+
+    @property
+    def track(self):
+        return self._track
+    
     
     def __str__(self):
         """

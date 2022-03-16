@@ -1,10 +1,10 @@
-"""Tests the functionality of the SystemOfSystems class for a simple isolated system.
+"""Tests the functionality of the SimulationSaver on SystemOfSystems.
 
 Author:
     Ilias Bilionis
 
 Date:
-    3/14/2022
+    3/15/2022
 
 """
 
@@ -16,8 +16,8 @@ class Sys1(System):
 
     def __init__(self):
         name = "system_1"
-        state = {"x1": PhysicalStateVariable(0.1, "meters", "x", track=True, 
-                                            description="The x variable."),
+        state = {"x1": PhysicalStateVariable(0.1, "meters", "x1", track=True, 
+                                            description="The x1 variable."),
                  "h": HealthStateVariable(0, None, "x", track=True,
                                           description="The h variable.")}
         parameters = {"rate_of_change": Parameter(1.2, "meters / second",
@@ -70,11 +70,10 @@ if __name__ == "__main__":
         sys._calculate_next_state(dt)
         sys._transition()
         print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
-    # This system of system is closed:
-    print(f'can transition: {sys.can_transition}')
+    # This system of system is closed.
     # So, we can also do this:
     sys1.state['x1'].value = 0.1
     sys2.state['x2'].value = 0.3
     for i in range(10):
-        sys.step(dt)
+        sys.unsafe_step(dt)
         print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
