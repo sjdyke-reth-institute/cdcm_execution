@@ -13,6 +13,7 @@ from cdcm import *
 
 
 class TestIsolatedSystem(System):
+    __test__ = False
 
     def __init__(self):
         name = "Isolated System"
