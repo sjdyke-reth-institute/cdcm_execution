@@ -70,11 +70,10 @@ if __name__ == "__main__":
         sys._calculate_next_state(dt)
         sys._transition()
         print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
-    # This system of system is closed:
-    print(f'can transition: {sys.can_transition}')
+    # This system of system is closed.
     # So, we can also do this:
     sys1.state['x1'].value = 0.1
     sys2.state['x2'].value = 0.3
     for i in range(10):
-        sys.step(dt)
+        sys.unsafe_step(dt)
         print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
