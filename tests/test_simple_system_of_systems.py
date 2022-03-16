@@ -1,10 +1,10 @@
-"""Tests the functionality of the SystemOfSystems class for a simple isolated system.
+"""Tests the functionality of the SimulationSaver on SystemOfSystems.
 
 Author:
     Ilias Bilionis
 
 Date:
-    3/14/2022
+    3/15/2022
 
 """
 
@@ -16,8 +16,8 @@ class Sys1(System):
 
     def __init__(self):
         name = "system_1"
-        state = {"x1": PhysicalStateVariable(0.1, "meters", "x", track=True, 
-                                            description="The x variable."),
+        state = {"x1": PhysicalStateVariable(0.1, "meters", "x1", track=True, 
+                                            description="The x1 variable."),
                  "h": HealthStateVariable(0, None, "x", track=True,
                                           description="The h variable.")}
         parameters = {"rate_of_change": Parameter(1.2, "meters / second",
