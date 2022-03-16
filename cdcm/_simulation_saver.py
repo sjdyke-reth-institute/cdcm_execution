@@ -26,9 +26,9 @@ def assert_make_h5_subgroup(group, sub_group, **kwargs):
     # Create the group
     g = group.create_group(sub_group)
     # Add some metadata to group
-    g.attr["name"] = g.name
-    g.attr["description"] = g.description
-    g.attr["type"] = str(type(g))
+    #g.attrs["name"] = g.name
+    #g.attrs["description"] = g.description
+    #g.attrs["type"] = str(type(g))
     return g
 
 
@@ -41,10 +41,11 @@ def assert_make_h5_dataset(group, quantity, **kwargs):
     dst = group.create_dataset(quantity.name, shape=maxshape,
                                dtype=quantity.dtype)
     # Add some metadata to the dataset
-    dst.attr["name"] = quantity.name
-    dst.attr["units"] = quantity.units
-    dst.attr["description"] = quantity.description
-    dst.attr["type"] = str(type(quantity))
+    if not quantity.units is None:
+        dst.attrs["units"] = quantity.units
+    if not quantity.description is None:
+        dst.attrs["description"] = quantity.description
+    dst.attrs["type"] = str(type(quantity))
     return dst
 
 
@@ -66,6 +67,8 @@ def assert_make_h5(group, system, attr_to_save, **kwargs):
     else:
         for s in system.sub_systems:
             sg = assert_make_h5_subgroup(group, s.name, **kwargs)
+            if sg.description is not None:
+                sg.attrs["description"]
             assert_make_h5(sg, s, attr_to_save, **kwargs)
 
 
