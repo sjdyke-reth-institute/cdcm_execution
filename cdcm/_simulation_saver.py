@@ -113,6 +113,10 @@ class SimulationSaver(object):
         return self._group
     
     def _save(self, count, group, system):
+        """Save the current state of the system to the file.
+
+        This a recursive function. The data are saved at index `count`.
+        """
         if not isinstance(system, SystemOfSystems):
             for attr in self._attr_to_save:
                 for v in getattr(system, attr).values():
