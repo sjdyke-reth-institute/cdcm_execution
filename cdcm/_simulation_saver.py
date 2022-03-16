@@ -14,7 +14,22 @@ __all__ = ["SimulationSaver"]
 
 import h5py
 import os
-from . import System, SystemOfSystems
+from . import System, SystemOfSystems, PhysicalStateVariable, \
+    HealthStateVariable, Parameter
+
+
+def assert_make_h5_subgroup(group, sub_group):
+    """Make a subgroup of a group only if it does not exist.""" 
+    assert sub_group not in group,
+        f"{group} already contains a subgroup called '{sub_group}'"
+    return group.create_group(sub_group)
+
+
+def assert_make_h5_dataset(group, quantity):
+    """Makes a dataset to store a quantity."""
+    assert quantity.name not in group,
+        f"{group} already contains a dataset called '{quantity.name}'"
+    dataset = group.create_dataset(quantity.name, shape=shape, dtype=dtype)
 
 
 class SimulationSaver(object):
@@ -49,6 +64,22 @@ class SimulationSaver(object):
         self._file_handler = file_handler
         self._group = group
         assert isinstance(system, System)
+
+    def _make_subgroups(self, group, system):
+        """Makes subgroups starting from group.
+
+        Do not directly call this function.
+
+        Arguments:
+        group  -- A HDF5 group on which to write.
+        system -- The system for which to make datasets.
+        """
+        if not isinstance(system, SystemOfSystems):
+            phys_g = assert_make_h5_subgroup(group, "physical_states")
+            for ps in system.physical_state:
+                assert_make_h5_dataset(phys_g, ps)
+            health_g = assert_make_h5_subgroup(group, "health_states")
+            param_g = assert_make_h5_subgroup(group, "parameters")
 
     @property
     def file_handler(self):
