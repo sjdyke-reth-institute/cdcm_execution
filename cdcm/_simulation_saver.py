@@ -14,22 +14,46 @@ __all__ = ["SimulationSaver"]
 
 import h5py
 import os
+from collections import Iterable
 from . import System, SystemOfSystems, PhysicalStateVariable, \
     HealthStateVariable, Parameter
 
 
-def assert_make_h5_subgroup(group, sub_group):
+def assert_make_h5_subgroup(group, sub_group, **kwargs):
     """Make a subgroup of a group only if it does not exist.""" 
-    assert sub_group not in group,
+    assert sub_group not in group, \
         f"{group} already contains a subgroup called '{sub_group}'"
     return group.create_group(sub_group)
 
 
-def assert_make_h5_dataset(group, quantity):
+def assert_make_h5_dataset(group, quantity, **kwargs):
     """Makes a dataset to store a quantity."""
-    assert quantity.name not in group,
+    assert quantity.name not in group, \
         f"{group} already contains a dataset called '{quantity.name}'"
-    dataset = group.create_dataset(quantity.name, shape=shape, dtype=dtype)
+    maxshape = (kwargs["max_steps"],) + quantity.shape
+    return group.create_dataset(quantity.name, shape=maxshape,
+                                dtype=quantity.dtype)
+
+
+def assert_make_h5_attribute(group, system, attribute, **kwargs):
+    """Makes subgroups and datasets of a specific attribute pertaining of
+       system.
+    """
+    sub_group = assert_make_h5_subgroup(group, attribute, **kwargs)
+    for v in getattr(system, attribute).values():
+        if v.track:
+            assert_make_h5_dataset(sub_group, v, **kwargs)
+
+
+def assert_make_h5(group, system, attr_to_save, **kwargs):
+    """Make all the subgroups and datasets of the h5 file."""
+    if not isinstance(system, SystemOfSystems):
+        for attr in attr_to_save:
+            assert_make_h5_attribute(group, system, attr, **kwargs)
+    else:
+        for s in system.sub_systems:
+            sg = assert_make_h5_subgroup(group, s.name, **kwargs)
+            assert_make_h5(group, s, attr_to_save, **kwargs)
 
 
 class SimulationSaver(object):
@@ -47,39 +71,36 @@ class SimulationSaver(object):
                        However, it cannot contain attributes and datasets that
                        are to be tracked by system.
     system          -- The system to keep track of.
+    max_steps       -- The maximum number of simulation steps. Default is 1000.
+    attr_to_save    -- The attributes of the system that you want to save.
+                       The default is all `physical_states`, all `health_states`
+                       and all `parameters` with `track=True`.
     """
 
-    def __init__(self, file_or_group, system):
+    def __init__(self, file_or_group, system, max_steps=1000,
+                 attr_to_save=["physical_state", "health_state", "parameters"]):
         if isinstance(file_or_group, str):
             file = os.path.abspath(file_or_group)
             assert not os.path.exists(file), \
                     f"File '{file}' already exists!"
-            file_handler = h5py.File(file)
+            file_handler = h5py.File(file, "w")
             group = file_handler["/"]
         else:
             group = file_or_group
             assert isinstance(group, h5py.Group), \
                 f"{group} is not an h5py.Group of an already openned file!"
             file_handler = None
+        assert isinstance(system, System)
+        assert isinstance(attr_to_save, Iterable)
+        for attr in attr_to_save:
+            assert hasattr(system, attr), \
+                f"{system} does not have an attribute called '{attr}'"
+        self._attr_to_save = attr_to_save
         self._file_handler = file_handler
         self._group = group
-        assert isinstance(system, System)
-
-    def _make_subgroups(self, group, system):
-        """Makes subgroups starting from group.
-
-        Do not directly call this function.
-
-        Arguments:
-        group  -- A HDF5 group on which to write.
-        system -- The system for which to make datasets.
-        """
-        if not isinstance(system, SystemOfSystems):
-            phys_g = assert_make_h5_subgroup(group, "physical_states")
-            for ps in system.physical_state:
-                assert_make_h5_dataset(phys_g, ps)
-            health_g = assert_make_h5_subgroup(group, "health_states")
-            param_g = assert_make_h5_subgroup(group, "parameters")
+        assert_make_h5(group, system, attr_to_save, max_steps=max_steps)
+        # Counts saving steps
+        self._count = 0
 
     @property
     def file_handler(self):
@@ -91,4 +112,18 @@ class SimulationSaver(object):
         """Get the HDF5 group on which we are writing the data."""
         return self._group
     
-    
+    def _save(self, count, group, system):
+        if not isinstance(system, SystemOfSystems):
+            for attr in self._attr_to_save:
+                for v in getattr(system, attr).values():
+                    d = group[attr + "/" + v.name]
+                    d[count] = v.value
+        else:
+            for s in system.sub_systems:
+                g = group[s.name]
+                self._save(count, g, s)
+
+    def save(self, system):
+        """Save the current state of the system to the file."""
+        self._save(self._count, self.group, system)
+        self._count += 1

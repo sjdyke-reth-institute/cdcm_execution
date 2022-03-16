@@ -104,6 +104,11 @@ class Quantity(object):
     @property
     def type(self):
         return type(self).__name__
+
+    @property
+    def track(self):
+        return self._track
+    
     
     def __str__(self):
         """
