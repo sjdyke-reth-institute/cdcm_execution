@@ -23,7 +23,13 @@ def assert_make_h5_subgroup(group, sub_group, **kwargs):
     """Make a subgroup of a group only if it does not exist.""" 
     assert sub_group not in group, \
         f"{group} already contains a subgroup called '{sub_group}'"
-    return group.create_group(sub_group)
+    # Create the group
+    g = group.create_group(sub_group)
+    # Add some metadata to group
+    #g.attrs["name"] = g.name
+    #g.attrs["description"] = g.description
+    #g.attrs["type"] = str(type(g))
+    return g
 
 
 def assert_make_h5_dataset(group, quantity, **kwargs):
@@ -31,8 +37,16 @@ def assert_make_h5_dataset(group, quantity, **kwargs):
     assert quantity.name not in group, \
         f"{group} already contains a dataset called '{quantity.name}'"
     maxshape = (kwargs["max_steps"],) + quantity.shape
-    return group.create_dataset(quantity.name, shape=maxshape,
-                                dtype=quantity.dtype)
+    # Create the dataset
+    dst = group.create_dataset(quantity.name, shape=maxshape,
+                               dtype=quantity.dtype)
+    # Add some metadata to the dataset
+    if not quantity.units is None:
+        dst.attrs["units"] = quantity.units
+    if not quantity.description is None:
+        dst.attrs["description"] = quantity.description
+    dst.attrs["type"] = str(type(quantity))
+    return dst
 
 
 def assert_make_h5_attribute(group, system, attribute, **kwargs):
@@ -53,6 +67,8 @@ def assert_make_h5(group, system, attr_to_save, **kwargs):
     else:
         for s in system.sub_systems:
             sg = assert_make_h5_subgroup(group, s.name, **kwargs)
+            if sg.description is not None:
+                sg.attrs["description"]
             assert_make_h5(sg, s, attr_to_save, **kwargs)
 
 
