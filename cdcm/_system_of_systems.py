@@ -13,7 +13,7 @@ __all__ = ["SystemOfSystems"]
 
 
 
-from collections import Iterable
+from collections.abc import Iterable
 
 
 from . import System

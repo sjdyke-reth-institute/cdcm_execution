@@ -14,7 +14,7 @@ TODO: Write me.
 __all__ = ['DataSystem']
 
 
-from collections import Iterable
+from collections.abc import Iterable
 import numpy as np
 from . import System
 

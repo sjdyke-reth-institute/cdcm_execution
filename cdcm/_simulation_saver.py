@@ -14,7 +14,7 @@ __all__ = ["SimulationSaver"]
 
 import h5py
 import os
-from collections import Iterable
+from collections.abc import Iterable
 from . import System, SystemOfSystems, PhysicalStateVariable, \
     HealthStateVariable, Parameter
 
