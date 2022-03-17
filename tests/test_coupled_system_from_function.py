@@ -27,8 +27,12 @@ if __name__ == "__main__":
     sys1 = SystemFromFunction(
         name="system_1",
         state=PhysicalStateVariable(0.1, "meters", "x1"),
-        parameters=Parameter(1.2, "meters / second", "r1",
-                       description="The rate of change."),
+        parameters=Parameter(
+                        1.2,
+                        "meters / second",
+                        "r1",
+                        description="The rate of change."
+                   ),
         transition_func=trans_func_1
     )
     sys2 = SystemFromFunction(

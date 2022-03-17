@@ -20,9 +20,14 @@ class TestIsolatedSystem(System):
         state = [PhysicalStateVariable(0.1, "meters", "x", track=True,
             description="The x variable."),
         HealthStateVariable(0, None, "h", track=True,
-            description="The h variable.")]
-        parameters = Parameter(1.2, "meters / second",
-            "rate_of_change", description="The rate of change.")
+            description="The h variable.")
+        ]
+        parameters = Parameter(
+            1.2, 
+            "meters / second",
+            "rate_of_change", 
+            description="The rate of change."
+        )
         super().__init__(name=name, state=state, parameters=parameters,
                          description="A simple isolated system.")
 

@@ -23,7 +23,7 @@ if __name__ == "__main__":
 						 	units="kN", 
 						 	name="omega", 
 						 	description="A random force"
-						 	),
+						 ),
 						 dataset={'omega': y},
 						 description="Just a system with a random state.")
 	print(str(rnd_sys))

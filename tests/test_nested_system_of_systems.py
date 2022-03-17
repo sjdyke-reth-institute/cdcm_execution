@@ -39,34 +39,47 @@ def trans_func_4(dt, *, x4, x2, r4, c24):
 if __name__ == "__main__":
     sys1 = SystemFromFunction(
     	name="system_1",
-        state={"x1": PhysicalStateVariable(0.1, "meters", "x1")},
-        parameters={"r1": Parameter(1.2, "meters / second", "rate of change")},
-        transition_func=trans_func_1)
+        state=PhysicalStateVariable(0.1, "meters", "x1"),
+        parameters=Parameter(1.2, "meters / second", "r1"),
+        transition_func=trans_func_1
+    )
     sys2 = SystemFromFunction(
     	name="system_2",
-        state={"x2": PhysicalStateVariable(0.1, "meters", "x2")},
-        parameters={"r2": Parameter(0.2, "meters / second", "rate of change"),
-                    "c": Parameter(0.1, "1 / second", "coupling coeff")},
+        state=PhysicalStateVariable(0.1, "meters", "x2"),
+        parameters=[
+            Parameter(0.2, "meters / second", "r2"),
+            Parameter(0.1, "1 / second", "c")
+        ],
         parents={'x1': sys1},
-        transition_func=trans_func_2)
-    sos1 = SystemOfSystems(name="combined_system_1", 
-        sub_systems={"system_1": sys1, "systm_2": sys2})
+        transition_func=trans_func_2
+    )
+    sos1 = SystemOfSystems(
+        name="combined_system_1", 
+        sub_systems=[sys1, sys2])
     sys3 = SystemFromFunction(
     	name="system_3",
-        state={"x3": PhysicalStateVariable(0.1, "meters", "x3")},
-        parameters={"r3": Parameter(1.2, "meters / second", "rate of change")},
-        transition_func=trans_func_3)
+        state=PhysicalStateVariable(0.1, "meters", "x3"),
+        parameters=Parameter(1.2, "meters / second", "r3"),
+        transition_func=trans_func_3
+    )
     sys4 = SystemFromFunction(
     	name="system_4",
-        state={"x4": PhysicalStateVariable(0.1, "meters", "x4")},
-        parameters={"r4": Parameter(0.2, "meters / second", "rate of change"),
-                    "c24": Parameter(0.1, "1 / second", "coupling coeff")},
+        state=PhysicalStateVariable(0.1, "meters", "x4"),
+        parameters=[
+            Parameter(0.2, "meters / second", "r4"),
+            Parameter(0.1, "1 / second", "c24")
+        ],
         parents={'x2': sos1},
-        transition_func=trans_func_4)
-    sos2 = SystemOfSystems(name="combined_system_2", 
-        sub_systems={"system_3": sys3, "system_4": sys4})
-    sys = SystemOfSystems(sub_systems={"combined_system_1": sos1,
-                                       "combined_system_2": sos2})
+        transition_func=trans_func_4
+    )
+    sos2 = SystemOfSystems(
+        name="combined_system_2", 
+        sub_systems=[sys3, sys4]
+    )
+    sys = SystemOfSystems(
+        name="super_system",
+        sub_systems=[sos1, sos2]
+    )
     print(sys)
     dt = 0.1
     for i in range(10):

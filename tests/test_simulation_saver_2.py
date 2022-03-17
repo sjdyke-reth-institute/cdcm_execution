@@ -16,13 +16,26 @@ class Sys1(System):
 
     def __init__(self):
         name = "system_1"
-        state = {"x1": PhysicalStateVariable(0.1, "meters", "x", track=True, 
-                                            description="The x variable."),
-                 "h": HealthStateVariable(0, None, "x", track=True,
-                                          description="The h variable.")}
-        parameters = {"rate_of_change": Parameter(1.2, "meters / second",
-                                                 "rate_of_change",
-                                                 description="The rate of change.")}
+        state = [PhysicalStateVariable(
+                    value=0.1,
+                    units="meters",
+                    name="x",
+                    track=True, 
+                    description="The x variable."
+                 ),
+                 HealthStateVariable(
+                    value=0,
+                    units="", 
+                    name="h",
+                    track=True,
+                    description="The h variable.")
+                ]
+        parameters = Parameter(
+                        value=1.2,
+                        units="meters / second",
+                        name="rate_of_change",
+                        description="The rate of change."
+                     )
         super().__init__(name=name, state=state, parameters=parameters,
                          description="A simple system.")
 
@@ -36,13 +49,26 @@ class Sys2(System):
 
     def __init__(self, sys_1):
         name = "system_2"
-        state = {"x2": PhysicalStateVariable(0.3, "meters", "x2", track=True, 
-                                             description="The x2 variable.")}
-        parameters = {"rate_of_change_2": Parameter(1.2, "meters / second",
-                                                 "rate_of_change_2",
-                                                 description="The rate of change 2."),
-                      "coupling_coeff": Parameter(0.1, "1 / second", "coupling_coeff",
-                                                  description="Coupling coeff.")}
+        state = PhysicalStateVariable(
+                    value=0.3, 
+                    units="meters",
+                    name="x2",
+                    track=True, 
+                    description="The x2 variable."
+                )
+        parameters = [Parameter(
+                        value=1.2,
+                        units="meters / second",
+                        name="rate_of_change_2",
+                        description="The rate of change 2."
+                      ),
+                      Parameter(
+                        value=0.1, 
+                        units="1 / second", 
+                        name="coupling_coeff",
+                        description="Coupling coeff."
+                      )
+                     ]
         parents = {'x1': sys_1}
         super().__init__(name=name, state=state, parameters=parameters, parents=parents,
                          description="Another simple system.")
@@ -62,8 +88,10 @@ if __name__ == "__main__":
     sys1 = Sys1()
     sys2 = Sys2(sys1)
     # Put them in a system of system container
-    sys = SystemOfSystems(name="combined_system", 
-            sub_systems={"system_1": sys1, "system_2": sys2})
+    sys = SystemOfSystems(
+            name="combined_system", 
+            sub_systems=[sys1, sys2]
+          )
     print(sys)
     saver = SimulationSaver("test_2.h5", sys)
     # Run the system a bit into the future manually.
