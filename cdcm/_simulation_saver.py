@@ -67,8 +67,8 @@ def assert_make_h5(group, system, attr_to_save, **kwargs):
     else:
         for s in system.sub_systems:
             sg = assert_make_h5_subgroup(group, s.name, **kwargs)
-            if sg.description is not None:
-                sg.attrs["description"]
+            if s.description is not None:
+                sg.attrs["description"] = s.description
             assert_make_h5(sg, s, attr_to_save, **kwargs)
 
 
