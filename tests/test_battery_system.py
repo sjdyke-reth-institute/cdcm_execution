@@ -16,7 +16,7 @@ def clip(value, min_value, max_value):
     """Clip the value between the bounds"""
     return min(max(value, min_value), max_value)
 
-class SimpleBatterySystem(System):
+class LinearElectricBattery(System):
 
     def __init__(self):
         name = "battery"
@@ -54,6 +54,7 @@ class SimpleBatterySystem(System):
         if h == 1:
             d = self.parameters['d'].value
             new_x = clip(x - d * dt, x_min, x_max)
+            # Seems logical
             self._next_state['x'].value = new_x
             self._next_state['h'].value = 0 if new_x <= x_unhealthy else 1
         elif h == 0:
@@ -69,10 +70,11 @@ class SimpleBatterySystem(System):
 
 if __name__ == "__main__":
     # A battery system
-    sys = SimpleBatterySystem()
+    battery = LinearElectricBattery()
     
     # Run it for a while
     dt = 0.1
+    rprint(f"x1: {battery.state['x'].value:.2f}, h: {battery.state['h'].value:{1}}")
     for i in range(30):
-        sys.step(dt)
-        rprint(f"x1: {sys.state['x'].value:{0}.{3}}, h: {sys.state['h'].value:{1}}")
+        battery.step(dt)
+        rprint(f"x1: {battery.state['x'].value:.2f}, h: {battery.state['h'].value:{1}}")
