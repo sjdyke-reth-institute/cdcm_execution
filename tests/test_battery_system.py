@@ -16,10 +16,15 @@ def clip(value, min_value, max_value):
     """Clip the value between the bounds"""
     return min(max(value, min_value), max_value)
 
-class LinearElectricBattery(System):
+class BatterySystem(System):
+    """A battery model with linear discharge and charging characteristics
+    
+    TODO
+    - Move the control of battery out of this class
+    """
 
     def __init__(self):
-        name = "battery"
+        name = "Battery"
         state = {
             "x": PhysicalStateVariable(100., "ampere_hour", "x", track=True,
                                         description="battery capacity"),
@@ -67,11 +72,20 @@ class LinearElectricBattery(System):
             raise RuntimeError("Unrecognized health state...")
     
 
+class BatterySystemSwitch(SystemFromFunction):
+    """A switch to turn battery from discharging to charging"""
+    def __init__(self):
+        name = "BatterySwitch"
+        state = {
+            "x" : PhysicalStateVariable()
+        }
+        pass
         
 
 if __name__ == "__main__":
     # A battery system
-    battery = LinearElectricBattery()
+    battery = BatterySystem()
+    charge_switch = BatterySystemSwitch()
     rprint(battery)
     # Run it for a while
     dt = 0.1
