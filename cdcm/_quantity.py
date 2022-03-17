@@ -8,7 +8,11 @@ Date:
     3/10/2022
 
 TODO:
-    Figure out how to enforce SI units.
+    - Figure out how to enforce SI units.
+    - Passing user-defined units should be a feature, 
+      as default `pint.UnitRegistry()` supports limited 
+      denominations.
+
 """
 
 
