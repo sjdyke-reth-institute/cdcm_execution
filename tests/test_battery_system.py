@@ -16,7 +16,7 @@ def clip(value, min_value, max_value):
     """Clip the value between the bounds"""
     return min(max(value, min_value), max_value)
 
-class BatterySystem(System):
+class SimpleBatterySystem(System):
 
     def __init__(self):
         name = "battery"
@@ -53,13 +53,14 @@ class BatterySystem(System):
         
         if h == 1:
             d = self.parameters['d'].value
-            self._next_state['x'].value = clip(x - d * dt, x_min, x_max)
-            rprint(self._next_state['x'].value)
-            self._next_state['h'].value = 0 if x <= x_unhealthy else 1
+            new_x = clip(x - d * dt, x_min, x_max)
+            self._next_state['x'].value = new_x
+            self._next_state['h'].value = 0 if new_x <= x_unhealthy else 1
         elif h == 0:
             c = self.parameters['c'].value
-            self._next_state['x'].value = clip(x + c * dt, x_min, x_max)
-            self._next_state['h'].value = 1 if abs(x-x_max) < nugget else 0
+            new_x = clip(x + c * dt, x_min, x_max)
+            self._next_state['x'].value = new_x
+            self._next_state['h'].value = 1 if abs(new_x - x_max) < nugget else 0
         else:
             raise RuntimeError("Unrecognized health state...")
     
@@ -68,11 +69,10 @@ class BatterySystem(System):
 
 if __name__ == "__main__":
     # A battery system
-    sys = BatterySystem()
+    sys = SimpleBatterySystem()
     
     # Run it for a while
     dt = 0.1
-    for i in range(20):
+    for i in range(30):
         sys.step(dt)
         rprint(f"x1: {sys.state['x'].value:{0}.{3}}, h: {sys.state['h'].value:{1}}")
-    pass
