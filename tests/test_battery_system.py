@@ -26,10 +26,12 @@ class BatterySystem(System):
     def __init__(self):
         name = "Battery"
         state = {
-            "x": PhysicalStateVariable(100., "ampere_hour", "x", track=True,
+            "x_battery": PhysicalStateVariable(100., "ampere_hour", "x", track=True,
                                         description="battery capacity"),
-            "h": HealthStateVariable(1, None, "h", True,
-                                        description="health state of battery")
+            "h_battery": HealthStateVariable(1, None, "h", True,
+                                        description="health state of battery"),
+            "c_battery": PhysicalStateVariable(-1., "ampere", "current",
+                                       description="Discharge or charge current")
         }
         parameters = {
             "c" : Parameter(2., "ampere", "charge_current",
@@ -48,48 +50,70 @@ class BatterySystem(System):
         super().__init__(name=name, state=state, parameters=parameters,
                          description="Simple Battery System")
     
-    def _calculate_next_state(self, dt):
-        h = self.state["h"].value
-        x = self.state["x"].value
-        x_min = self.parameters['x_min'].value
-        x_max = self.parameters['x_max'].value
-        x_good = self.parameters['x_good'].value
-        nugget = self.parameters['nugget'].value
+    # def _calculate_next_state(self, dt):
+    #     h = self.state["h"].value
+    #     x = self.state["x"].value
+    #     x_min = self.parameters['x_min'].value
+    #     x_max = self.parameters['x_max'].value
+    #     x_good = self.parameters['x_good'].value
+    #     nugget = self.parameters['nugget'].value
         
-        if h == 1:
-            # Battery is healthy
-            d = self.parameters['d'].value
-            new_x = clip(x - d * dt, x_min, x_max)
-            self._next_state['x'].value = new_x
-            self._next_state['h'].value = 0 if new_x <= x_good else 1
-        elif h == 0:
-            # Battery is unhealthy
-            c = self.parameters['c'].value
-            new_x = clip(x + c * dt, x_min, x_max)
-            self._next_state['x'].value = new_x
-            self._next_state['h'].value = 1 if abs(new_x - x_max) < nugget else 0
-        else:
-            raise RuntimeError("Unrecognized health state...")
+    #     if h == 1:
+    #         # Battery is healthy
+    #         d = self.parameters['d'].value
+    #         new_x = clip(x - d * dt, x_min, x_max)
+    #         self._next_state['x'].value = new_x
+    #         self._next_state['h'].value = 0 if new_x <= x_good else 1
+    #     elif h == 0:
+    #         # Battery is unhealthy
+    #         c = self.parameters['c'].value
+    #         new_x = clip(x + c * dt, x_min, x_max)
+    #         self._next_state['x'].value = new_x
+    #         self._next_state['h'].value = 1 if abs(new_x - x_max) < nugget else 0
+    #     else:
+    #         raise RuntimeError("Unrecognized health state...")
+    def _calculate_next_state(self, dt):
+        x = self.state["x_battery"].value
+        h = self.state["h_battery"].value
+        c = self.state["c_battery"].value
+        
+        x_new = x + c * dt
+
+        self._next_state["x_battery"].value = x_new
+        self._next_state["h_battery"].value = h
+        self._next_state["c_battery"].value = c
     
 
-class BatterySystemSwitch(SystemFromFunction):
+class BatterySystemController(System):
     """A switch to turn battery from discharging to charging"""
-    def __init__(self):
+    def __init__(self, battery):
         name = "BatterySwitch"
         state = {
-            "x" : PhysicalStateVariable()
+            "x" : PhysicalStateVariable(-1., "ampere"),
+            
         }
+        parameters = {
+            "x_max" : Parameter(100.),
+        }
+        parents = {
+            "h" : battery
+        }
+        pass
+
+    def _calculate_next_state(self, dt):
         pass
         
 
 if __name__ == "__main__":
     # A battery system
     battery = BatterySystem()
-    charge_switch = BatterySystemSwitch()
     rprint(battery)
     # Run it for a while
     dt = 0.1
-    rprint(f"x1: {battery.state['x'].value:.2f}, h: {battery.state['h'].value:{1}}")
-    for i in range(30):
+    rprint(f"x1: {battery.state['x_battery'].value:.2f}, h: {battery.state['h_battery'].value:{1}}")
+    for i in range(10):
         battery.step(dt)
-        rprint(f"x1: {battery.state['x'].value:.2f}, h: {battery.state['h'].value:{1}}")
+        rprint(f"x1: {battery.state['x_battery'].value:.2f}, h: {battery.state['h_battery'].value:{1}}")
+
+    # define a controller for the battery
+    controller = BatterySystemController(battery)
