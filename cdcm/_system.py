@@ -37,18 +37,17 @@ def _assert_and_make_dict(obj, NamedType):
     if isinstance(obj, Sequence):
         new_obj = {}
         for o in obj:
-            assert (isinstance(o, NamedType), 
-                f"{o} is not of type {NamedType}")
-            assert (hasattr(o, "name"),
-                f"{o} does not have an attribute called 'name'")
+            assert isinstance(o, NamedType), \
+                f"{o} is not of type {NamedType}"
+            assert hasattr(o, "name"), \
+                f"{o} does not have an attribute called 'name'"
             new_obj.update({o.name: o})
         return new_obj
-    assert (isinstance(obj, dict),
-        f"{obj} is not must either be a NamedType, a Sequence[NamedType]" +
-        " or a Dictionary[String, NamedType].")
+    assert isinstance(obj, dict), \
+        (f"{obj} is not must either be a NamedType, a Sequence[NamedType]" +
+         " or a Dictionary[String, NamedType].")
     for o in obj.values():
-        assert (isinstance(o, NamedType), 
-            f"{o} is not of type {NamedType}")
+        assert isinstance(o, NamedType), f"{o} is not of type {NamedType}"
     return obj
 
 
@@ -249,3 +248,7 @@ Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
         """
         # TODO: Write me
         return self.__str__()
+
+    def to_yaml(self):
+        """Turn the object to a dictionary of dictionaries."""
+        pass
