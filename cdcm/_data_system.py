@@ -40,14 +40,14 @@ class DataSystem(System):
         super().__init__(name=name, state=state, description=description)
         # Sanity checks
         assert isinstance(dataset, dict)
-        for s in state.keys():
+        for s in self.state.keys():
             assert s in dataset.keys(), "All states must be represented in the dataset."
-        assert len(state) == len(dataset), "There are elements in dataset without a" + \
+        assert len(self.state) == len(dataset), "There are elements in dataset without a" + \
                                            " corresponding element in state."
         for d in dataset.values():
             assert isinstance(d, Iterable)
         # TODO: The following sanity check is too restrictive. Think about it.
-        for s, var in state.items():
+        for s, var in self.state.items():
            assert isinstance(var.value, type(dataset[s][0])), \
                              f"Variable {var} is not the same type as its dataset."
            if isinstance(var.value, np.ndarray):

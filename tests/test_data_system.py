@@ -18,7 +18,12 @@ if __name__ == "__main__":
 	print(type(y[0]))
 	# And here is the system
 	rnd_sys = DataSystem(name="rnd_system",
-						 state={'omega': PhysicalStateVariable(np.float64(0.0), "kN", name="omega", description="A random force")},
+						 state=PhysicalStateVariable(
+						 	np.float64(0.0), 
+						 	units="kN", 
+						 	name="omega", 
+						 	description="A random force"
+						 	),
 						 dataset={'omega': y},
 						 description="Just a system with a random state.")
 	print(str(rnd_sys))
