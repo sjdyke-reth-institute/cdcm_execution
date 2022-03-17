@@ -62,7 +62,8 @@ if __name__ == "__main__":
     sys1 = Sys1()
     sys2 = Sys2(sys1)
     # Put them in a system of system container
-    sys = SystemOfSystems(name="combined_system", sub_systems=[sys1, sys2])
+    sys = SystemOfSystems(name="combined_system", 
+            sub_systems={"system_1": sys1, "system_2": sys2})
     print(sys)
     saver = SimulationSaver("test_2.h5", sys)
     # Run the system a bit into the future manually.

@@ -43,7 +43,8 @@ if __name__ == "__main__":
     # and then connect them
     sys1.parents["x2"] = sys2
     # now everything is okay
-    sys = SystemOfSystems(name="combined_system", sub_systems=[sys1, sys2])
+    sys = SystemOfSystems(name="combined_system", 
+            sub_systems={"system_1": sys1, "system_2": sys2})
     print(sys)
     # Run it for a while
     dt = 0.1

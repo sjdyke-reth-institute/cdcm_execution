@@ -12,10 +12,6 @@ Date:
 __all__ = ["SystemOfSystems"]
 
 
-
-from collections.abc import Iterable
-
-
 from . import System
 
 
@@ -24,15 +20,18 @@ class SystemOfSystems(System):
 
     Keyword Arguments
     name        -- A name for the system.
-    systems     -- A list of systems.
+    systems     -- A dictionary of systems. The keys must be strings. The values
+                   must be `System`.
     description -- A description for the system.
     """
 
-    def __init__(self, name="SystemOfSystems", sub_systems=[], description=None):
+    def __init__(self, name="SystemOfSystems", sub_systems={}, 
+                 description=None):
         # Sanity check
-        assert isinstance(sub_systems, Iterable)
-        for s in sub_systems:
-            assert isinstance(s, System)
+        assert isinstance(sub_systems, dict)
+        for sub_system_name, sub_system in sub_systems.items():
+            assert isinstance(sub_system_name, str)
+            assert isinstance(sub_system, System)
         self._sub_systems = sub_systems
         super().__init__(name=name, description=description)
 
@@ -46,7 +45,7 @@ class SystemOfSystems(System):
         It is assuming that the attribute is a `dict`.
         """
         res = {}
-        for s in self.sub_systems:
+        for s in self.sub_systems.values():
             res.update(getattr(s, attribute))
         return res
 
@@ -88,16 +87,16 @@ class SystemOfSystems(System):
         raise NotImplementedError("Haven't implemented can_transition yet.")
 
     def _calculate_next_state(self, dt):
-        for s in self.sub_systems:
+        for s in self.sub_systems.values():
             s._calculate_next_state(dt)
 
     def _transition(self):
-        for s in self.sub_systems:
+        for s in self.sub_systems.values():
             s._transition()
 
     def __str__(self):
         """Return string representation of combined system."""
         res = super().__str__()
-        res += f"\nSubsystems:     {list([s.name for s in self.sub_systems])}"
+        res += f"\nSubsystems:     {list([n for n in self.sub_systems])}"
         return res
     

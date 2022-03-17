@@ -25,10 +25,6 @@ def assert_make_h5_subgroup(group, sub_group, **kwargs):
         f"{group} already contains a subgroup called '{sub_group}'"
     # Create the group
     g = group.create_group(sub_group)
-    # Add some metadata to group
-    #g.attrs["name"] = g.name
-    #g.attrs["description"] = g.description
-    #g.attrs["type"] = str(type(g))
     return g
 
 
@@ -65,7 +61,7 @@ def assert_make_h5(group, system, attr_to_save, **kwargs):
         for attr in attr_to_save:
             assert_make_h5_attribute(group, system, attr, **kwargs)
     else:
-        for s in system.sub_systems:
+        for s in system.sub_systems.values():
             sg = assert_make_h5_subgroup(group, s.name, **kwargs)
             if s.description is not None:
                 sg.attrs["description"] = s.description
@@ -139,7 +135,7 @@ class SimulationSaver(object):
                     d = group[attr + "/" + v.name]
                     d[count] = v.value
         else:
-            for s in system.sub_systems:
+            for s in system.sub_systems.values():
                 g = group[s.name]
                 self._save(count, g, s)
 

@@ -34,8 +34,8 @@ if __name__ == "__main__":
                     "c": Parameter(0.1, "1 / second", "coupling coeff")},
         parents={'x1': sys1},
         transition_func=trans_func_2)
-    sys = SystemOfSystems(sub_systems=[sys1, sys2])
+    sys = SystemOfSystems(sub_systems={"system_1": sys1, "system_2": sys2})
     dt = 0.1
     for i in range(10):
-        sys.step(dt)
+        sys.unsafe_step(dt)
         print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
