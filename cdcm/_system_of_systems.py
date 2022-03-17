@@ -25,7 +25,7 @@ class SystemOfSystems(System):
     description -- A description for the system.
     """
 
-    def __init__(self, name="SystemOfSystems", sub_systems={}, 
+    def __init__(self, name="system_of_systems", sub_systems={}, 
                  description=None):
         # Sanity check
         sub_systems = _assert_and_make_dict(sub_systems, System)

@@ -80,7 +80,7 @@ class System(ABC):
     description  -- A long description of the system.
     """
 
-    def __init__(self, name="System", state={}, parameters={}, parents={}, description=None):
+    def __init__(self, name="system", state={}, parameters={}, parents={}, description=None):
         # Sanity checks
         assert isinstance(name, str)
         assert description is None or isinstance(description, str)
