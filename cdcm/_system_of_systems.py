@@ -12,7 +12,7 @@ Date:
 __all__ = ["SystemOfSystems"]
 
 
-from . import System
+from . import System, _assert_and_make_dict
 
 
 class SystemOfSystems(System):
@@ -21,17 +21,14 @@ class SystemOfSystems(System):
     Keyword Arguments
     name        -- A name for the system.
     systems     -- A dictionary of systems. The keys must be strings. The values
-                   must be `System`.
+                   must be `System`. Alternatively, a list of systems.
     description -- A description for the system.
     """
 
     def __init__(self, name="SystemOfSystems", sub_systems={}, 
                  description=None):
         # Sanity check
-        assert isinstance(sub_systems, dict)
-        for sub_system_name, sub_system in sub_systems.items():
-            assert isinstance(sub_system_name, str)
-            assert isinstance(sub_system, System)
+        sub_systems = _assert_and_make_dict(sub_systems, System)
         self._sub_systems = sub_systems
         super().__init__(name=name, description=description)
 

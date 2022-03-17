@@ -10,7 +10,7 @@ Date:
 """
 
 
-__all__ = ['System']
+__all__ = ['System', "_assert_and_make_dict"]
 
 
 from abc import ABC, abstractmethod
