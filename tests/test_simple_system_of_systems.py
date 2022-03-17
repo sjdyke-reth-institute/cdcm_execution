@@ -16,12 +16,13 @@ class Sys1(System):
 
     def __init__(self):
         name = "system_1"
-        state = {"x1": PhysicalStateVariable(0.1, "meters", "x1", track=True, 
+        state = {"x1": PhysicalStateVariable(value=0.1, units="meters", 
+                                             name="x1", track=True, 
                                             description="The x1 variable."),
-                 "h": HealthStateVariable(0, None, "x", track=True,
+                 "h": HealthStateVariable(value=0, units=None, name="x", track=True,
                                           description="The h variable.")}
-        parameters = {"rate_of_change": Parameter(1.2, "meters / second",
-                                                 "rate_of_change",
+        parameters = {"rate_of_change": Parameter(value=1.2, units="meters / second",
+                                                 name="rate_of_change",
                                                  description="The rate of change.")}
         super().__init__(name=name, state=state, parameters=parameters,
                          description="A simple system.")

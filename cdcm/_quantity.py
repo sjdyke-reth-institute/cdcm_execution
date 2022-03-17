@@ -48,7 +48,7 @@ class Quantity(object):
 
     """
 
-    def __init__(self, *, value, units=None, name=None, track=True, description=None):
+    def __init__(self, value, units=None, name=None, track=True, description=None):
         # Sanity checks
         if isinstance(value, int):
             dtype = int
