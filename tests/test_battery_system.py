@@ -35,8 +35,8 @@ class LinearElectricBattery(System):
                                description="Minimum battery capacity."),
             "x_max": Parameter(100., "ampere_hour", "x_max",
                                description="Minimum battery capacity."),
-            "x_unhealthy": Parameter(99., "ampere_hour", "x_unhealthy",
-                                     description="Threshold for unhealthy behavior."),
+            "x_good": Parameter(99., "ampere_hour", "x_good",
+                                     description="Threshold for healthy behavior."),
             "nugget": Parameter(1e-3, [], "nugget", 
                                 description="Floating point error tolerance")
         }
@@ -48,16 +48,17 @@ class LinearElectricBattery(System):
         x = self.state["x"].value
         x_min = self.parameters['x_min'].value
         x_max = self.parameters['x_max'].value
-        x_unhealthy = self.parameters['x_unhealthy'].value
+        x_good = self.parameters['x_good'].value
         nugget = self.parameters['nugget'].value
         
         if h == 1:
+            # Battery is healthy
             d = self.parameters['d'].value
             new_x = clip(x - d * dt, x_min, x_max)
-            # Seems logical
             self._next_state['x'].value = new_x
-            self._next_state['h'].value = 0 if new_x <= x_unhealthy else 1
+            self._next_state['h'].value = 0 if new_x <= x_good else 1
         elif h == 0:
+            # Battery is unhealthy
             c = self.parameters['c'].value
             new_x = clip(x + c * dt, x_min, x_max)
             self._next_state['x'].value = new_x
@@ -71,7 +72,7 @@ class LinearElectricBattery(System):
 if __name__ == "__main__":
     # A battery system
     battery = LinearElectricBattery()
-    
+    rprint(battery)
     # Run it for a while
     dt = 0.1
     rprint(f"x1: {battery.state['x'].value:.2f}, h: {battery.state['h'].value:{1}}")
