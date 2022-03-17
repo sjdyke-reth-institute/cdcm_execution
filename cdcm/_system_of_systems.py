@@ -13,7 +13,7 @@ __all__ = ["SystemOfSystems"]
 
 
 
-from collections import Iterable
+from collections.abc import Iterable
 
 
 from . import System
@@ -40,7 +40,7 @@ class SystemOfSystems(System):
     def sub_systems(self):
         return self._sub_systems
 
-    def _gahter(self, attribute):
+    def _gather(self, attribute):
         """Gather an attribute from all subsystems.
 
         It is assuming that the attribute is a `dict`.
@@ -52,15 +52,15 @@ class SystemOfSystems(System):
 
     @property
     def state(self):
-        return self._gahter("state")
+        return self._gather("state")
 
     @property
     def parameters(self):
-        return self._gahter("parameters")
+        return self._gather("parameters")
 
     @property
     def parents(self):
-        return self._gahter("parents")
+        return self._gather("parents")
 
     @property
     def fundamental_subsystems(self):
