@@ -14,9 +14,42 @@ __all__ = ['System']
 
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from copy import deepcopy
 from . import Parameter, StateVariable, PhysicalStateVariable, \
               HealthStateVariable
+
+
+def _assert_and_make_dict(obj, NamedType):
+    """Check if the `obj` is a dict and turn it into a dict if it is not.
+
+    Arguments
+    obj       -- Either an object of type `NamedType` or a Sequence of type 
+                `NamedType` or a `dict` with keys that are strings and values 
+                 that are of type `NamedType`.
+    NamedType -- A type instances of which have an attribute called "name".
+
+    Returns the a dictionary with keys that are strings made out of the name
+    of the objects and values that are the objects.
+    """
+    if isinstance(obj, NamedType):
+        obj = [obj]
+    if isinstance(obj, Sequence):
+        new_obj = {}
+        for o in obj:
+            assert (isinstance(o, NamedType), 
+                f"{o} is not of type {NamedType}")
+            assert (hasattr(o, "name"),
+                f"{o} does not have an attribute called 'name'")
+            new_obj.update({o.name: o})
+        return new_obj
+    assert (isinstance(obj, dict),
+        f"{obj} is not must either be a NamedType, a Sequence[NamedType]" +
+        " or a Dictionary[String, NamedType].")
+    for o in obj.values():
+        assert (isinstance(o, NamedType), 
+            f"{o} is not of type {NamedType}")
+    return obj
 
 
 class System(ABC):
@@ -35,13 +68,15 @@ class System(ABC):
     name         -- A name for the system.
     state        -- A dictionary with keys that are strings corresponding to
                     the state variable names and values that are 
-                    `StateVariable`.
+                    `StateVariable`. Alternatively, use a list. The class will
+                    turn it into a dictionary using the name of the states.
     parameters   -- A dictionary with keys that are strings corresponding to
                     parameter names and values that are Parameter objects.
-                    parameters of a system.
+                    parameters of a system. A list is also possible.
     parents      -- A dictionary with keys that are strings corresponding
                     to the state variable names and values that are the
-                    `System` from which this variable must be taken.
+                    `System` from which this variable must be taken. A list is
+                    also possible.
     description  -- A long description of the system.
     """
 
@@ -50,9 +85,8 @@ class System(ABC):
         assert isinstance(name, str)
         assert description is None or isinstance(description, str)
         # Sanity check for state variables
-        assert isinstance(state, dict)
-        for s in state.values():
-            assert isinstance(s, StateVariable)
+        state = _assert_and_make_dict(state, StateVariable)
+        parameters = _assert_and_make_dict(parameters, Parameter)
         # Sanity check for parameters
         assert isinstance(parameters, dict)
         for p in parameters.values():

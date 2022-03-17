@@ -48,7 +48,7 @@ class Quantity(object):
 
     """
 
-    def __init__(self, value, units=None, name=None, track=True, description=None):
+    def __init__(self, value, units="", name="quantity", track=True, description=None):
         # Sanity checks
         if isinstance(value, int):
             dtype = int
@@ -63,7 +63,7 @@ class Quantity(object):
             raise RuntimeError(
                     f"I cannot handle the type of the quantity {value}")
         ureg.check(units)
-        assert name is None or isinstance(name, str)
+        assert isinstance(name, str)
         assert isinstance(track, bool)
         assert description is None or isinstance(description, str)
         # Assign values
