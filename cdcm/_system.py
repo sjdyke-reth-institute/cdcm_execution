@@ -126,7 +126,7 @@ class System(NamedType):
         """
         return state_name in self.state.keys()
 
-    def has_paremeter(self, param_name):
+    def has_parameter(self, param_name):
         """Return True if the system has a parameter called `param_name`.
         """
         return param_name in self.parameters.keys()

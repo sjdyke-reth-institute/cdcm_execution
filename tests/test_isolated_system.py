@@ -2,6 +2,7 @@
 
 Author:
     Ilias Bilionis
+    Murali Krishnan R
 
 Date:
     3/14/2022
@@ -9,11 +10,13 @@ Date:
 """
 
 
-from cdcm import *
+from cdcm import (System,
+                  Parameter,
+                  PhysicalStateVariable,
+                  HealthStateVariable)
 
 
-class TestIsolatedSystem(System):
-    __test__ = False
+class IsolatedSystem(System):
 
     def __init__(self):
         name = "Isolated System"
@@ -38,7 +41,7 @@ class TestIsolatedSystem(System):
 
 
 if __name__ == "__main__":
-    system = TestIsolatedSystem()
+    system = IsolatedSystem()
     print(system.state)
     print(str(system))
     # Run the system a bit into the future manually.
