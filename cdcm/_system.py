@@ -10,13 +10,13 @@ Date:
 """
 
 
-__all__ = ['System', "_assert_and_make_dict"]
+__all__ = ['System', "_assert_and_make_dict", "_dict_to_yaml"]
 
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
-from . import Parameter, StateVariable, PhysicalStateVariable, \
+from . import NamedType, Parameter, StateVariable, PhysicalStateVariable, \
               HealthStateVariable
 
 
@@ -51,7 +51,15 @@ def _assert_and_make_dict(obj, NamedType):
     return obj
 
 
-class System(ABC):
+def _dict_to_yaml(data):
+    """Turns a dictionary of object to a dictionary of dictionaries."""
+    res = {}
+    for k, v in data.items():
+        res[k] = v
+    return v
+
+
+class System(NamedType):
     """Describes an abstract System.
 
     A system has the following characteristics:
@@ -79,10 +87,15 @@ class System(ABC):
     description  -- A long description of the system.
     """
 
-    def __init__(self, name="system", state={}, parameters={}, parents={}, description=None):
-        # Sanity checks
-        assert isinstance(name, str)
-        assert description is None or isinstance(description, str)
+    def __init__(
+            self, 
+            name="system", 
+            state={}, 
+            parameters={}, 
+            parents={},
+            description=""
+        ):
+        super().__init__(name=name, description=description)
         # Sanity check for state variables
         state = _assert_and_make_dict(state, StateVariable)
         parameters = _assert_and_make_dict(parameters, Parameter)
@@ -251,4 +264,21 @@ Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
 
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
-        pass
+        res = super().to_yaml()
+        res["physical_state"] = _dict_to_yaml(self.physical_state)
+        res["health_state"] = _dict_to_yaml(self.health_state)
+        res["parameters"] = _dict_to_yaml(self.parameters)
+        parents_dict = {}
+        for k, v in self.parents.items():
+            parents_dict[k] = v.name
+        res["parents"] = parents_dict
+        return res
+
+    def from_yaml(self, data):
+        """TODO Write me."""
+        self._initilize(
+                data["value"],
+                data["units"],
+                data["track"]
+        )
+        super().from_yaml(data)
