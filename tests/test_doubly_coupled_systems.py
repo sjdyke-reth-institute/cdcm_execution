@@ -18,6 +18,7 @@ def trans_func_1(dt, *, x1, x2, r1, c1):
     new_state = {'x1': new_x1}
     return new_state
 
+
 def trans_func_2(dt, *, x2, x1, r2, c2):
     """Another simple transition function."""
     new_x2 = x2 + r2 * dt + c2 * x1 * dt
@@ -30,8 +31,7 @@ if __name__ == "__main__":
         name="system_1",
         state=PhysicalStateVariable(0.1, "meters", "x1"),
         parameters=[Parameter(1.2, "meters / second", "r1"),
-                    Parameter(0.1, "1 / second", "c1")
-                   ],
+                    Parameter(0.1, "1 / second", "c1")],
         transition_func=trans_func_1
     )
     # So, I have to make the parent:
@@ -39,20 +39,20 @@ if __name__ == "__main__":
         name="system_2",
         state=PhysicalStateVariable(0.1, "meters", "x2"),
         parameters=[Parameter(0.2, "meters / second", "r2"),
-                    Parameter(0.1, "1 / second", "c2")
-                   ],
+                    Parameter(0.1, "1 / second", "c2")],
         parents={'x1': sys1},
         transition_func=trans_func_2)
     # and then connect them
     sys1.parents["x2"] = sys2
     # now everything is okay
     sys = SystemOfSystems(
-        name="combined_system", 
-        sub_systems=[sys1,sys2]
+        name="combined_system",
+        sub_systems=[sys1, sys2]
     )
     print(sys)
     # Run it for a while
     dt = 0.1
     for i in range(10):
         sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
+        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
+              + f"x2: {sys.state['x2'].value:{1}.{3}}")
