@@ -24,18 +24,18 @@ def transition_func(dt, *, x, r):
 
 if __name__ == "__main__":
     sys = SystemFromFunction(
-            state=PhysicalStateVariable(
-                    value=0.1,
-                    units="meters", 
-                    name="x"
-                  ),
-            parameters=Parameter(
-                        value=1.2,
-                        units="meters / second", 
-                        name="r"
-                       ),
-            transition_func=transition_func
-          )
+        state=PhysicalStateVariable(
+            value=0.1,
+            units="meters",
+            name="x"
+        ),
+        parameters=Parameter(
+            value=1.2,
+            units="meters / second",
+            name="r"
+        ),
+        transition_func=transition_func
+    )
     print(sys)
     dt = 0.1
     for i in range(10):

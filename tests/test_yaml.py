@@ -55,7 +55,7 @@ if __name__ == "__main__":
         transition_func=trans_func_2
     )
     sos1 = SystemOfSystems(
-        name="combined_system_1", 
+        name="combined_system_1",
         sub_systems=[sys1, sys2])
     sys3 = SystemFromFunction(
         name="system_3",
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         transition_func=trans_func_4
     )
     sos2 = SystemOfSystems(
-        name="combined_system_2", 
+        name="combined_system_2",
         sub_systems=[sys3, sys4]
     )
     sys = SystemOfSystems(
