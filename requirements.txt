@@ -3,3 +3,4 @@ sphinx
 pint
 h5py
 rich
+pyyaml
