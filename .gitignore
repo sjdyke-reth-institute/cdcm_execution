@@ -12,3 +12,6 @@
 # save formats
 *.h5
 *.hdf5
+
+# mypy
+.mypy_cache/

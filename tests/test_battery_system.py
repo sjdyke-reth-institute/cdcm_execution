@@ -8,14 +8,12 @@ Date:
 """
 
 from rich import print as rprint
-
-from cdcm import System, SystemOfSystems
-from cdcm import PhysicalStateVariable, Parameter, HealthStateVariable
-
-
-def clip(value, min_value=0., max_value=100.):
-    """Clip the value between the bounds"""
-    return min(max(value, min_value), max_value)
+from cdcm import (System,
+                  SystemOfSystems,
+                  PhysicalStateVariable,
+                  Parameter,
+                  HealthStateVariable,
+                  clip)
 
 
 class BatterySystem(System):
