@@ -12,7 +12,6 @@ Date:
 __all__ = ["TEXT_TRIMMING_SIZE", "trim_str"]
 
 
-
 # Default text rimming size
 # TODO: Make the parameter adjustable from configuration file.
 TEXT_TRIMMING_SIZE = 20
@@ -27,6 +26,6 @@ def trim_str(text, size=TEXT_TRIMMING_SIZE):
     Otherwise, it returns `text[:size]`.
     """
     if len(text) < size:
-        return text 
+        return text
     else:
         return text[:size] + " ..."
