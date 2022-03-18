@@ -15,12 +15,11 @@ __all__ = ["SimulationSaver"]
 import h5py
 import os
 from collections.abc import Iterable
-from . import System, SystemOfSystems, PhysicalStateVariable, \
-    HealthStateVariable, Parameter
+from . import System, SystemOfSystems
 
 
 def assert_make_h5_subgroup(group, sub_group, **kwargs):
-    """Make a subgroup of a group only if it does not exist.""" 
+    """Make a subgroup of a group only if it does not exist."""
     assert sub_group not in group, \
         f"{group} already contains a subgroup called '{sub_group}'"
     # Create the group
@@ -37,9 +36,9 @@ def assert_make_h5_dataset(group, quantity, **kwargs):
     dst = group.create_dataset(quantity.name, shape=maxshape,
                                dtype=quantity.dtype)
     # Add some metadata to the dataset
-    if not quantity.units is None:
+    if quantity.units is not None:
         dst.attrs["units"] = quantity.units
-    if not quantity.description is None:
+    if quantity.description is not None:
         dst.attrs["description"] = quantity.description
     dst.attrs["type"] = str(type(quantity))
     return dst
@@ -72,8 +71,8 @@ class SimulationSaver(object):
     """A class that offers data saving functionality for a single simulation.
 
     Arguments:
-    file_or_group   -- The file or group to use. If this is a string, we are 
-                       assuming that it is referring to a file to be created. 
+    file_or_group   -- The file or group to use. If this is a string, we are
+                       assuming that it is referring to a file to be created.
                        If the file exists already an exception will be thrown.
                        If the file does not exist already, it will be created
                        and the data will be written in the root ("/") group.
@@ -85,16 +84,17 @@ class SimulationSaver(object):
     system          -- The system to keep track of.
     max_steps       -- The maximum number of simulation steps. Default is 1000.
     attr_to_save    -- The attributes of the system that you want to save.
-                       The default is all `physical_states`, all `health_states`
-                       and all `parameters` with `track=True`.
+                       The default is all `physical_states`, all
+                       `health_states` and all `parameters` with `track=True`.
     """
 
     def __init__(self, file_or_group, system, max_steps=1000,
-                 attr_to_save=["physical_state", "health_state", "parameters"]):
+                 attr_to_save=["physical_state",
+                               "health_state",
+                               "parameters"]):
         if isinstance(file_or_group, str):
             file = os.path.abspath(file_or_group)
-            assert not os.path.exists(file), \
-                    f"File '{file}' already exists!"
+            assert not os.path.exists(file), f"File '{file}' already exists!"
             file_handler = h5py.File(file, "w")
             group = file_handler["/"]
         else:
@@ -123,7 +123,7 @@ class SimulationSaver(object):
     def group(self):
         """Get the HDF5 group on which we are writing the data."""
         return self._group
-    
+
     def _save(self, count, group, system):
         """Save the current state of the system to the file.
 
