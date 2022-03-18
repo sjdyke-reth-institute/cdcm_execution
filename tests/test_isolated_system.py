@@ -17,19 +17,28 @@ class TestIsolatedSystem(System):
 
     def __init__(self):
         name = "Isolated System"
-        state = [PhysicalStateVariable(0.1, "meters", "x", track=True,
-            description="The x variable."),
-        HealthStateVariable(0, None, "h", track=True,
-            description="The h variable.")
+        state = [
+            PhysicalStateVariable(value=0.1,
+                                  units="meters",
+                                  name="x",
+                                  track=True,
+                                  description="The x variable."),
+            HealthStateVariable(value=0,
+                                units="",
+                                name="h",
+                                track=True,
+                                description="The h variable.")
         ]
-        parameters = Parameter(
-            1.2, 
-            "meters / second",
-            "rate_of_change", 
-            description="The rate of change."
+        parameters = Parameter(value=1.2,
+                               units="meters / second",
+                               name="rate_of_change",
+                               description="The rate of change.")
+        super().__init__(
+            name=name,
+            state=state,
+            parameters=parameters,
+            description="A simple isolated system."
         )
-        super().__init__(name=name, state=state, parameters=parameters,
-                         description="A simple isolated system.")
 
     def _calculate_next_state(self, dt):
         x = self.state['x'].value
