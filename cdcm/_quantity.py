@@ -9,14 +9,14 @@ Date:
 
 TODO:
     - Figure out how to enforce SI units.
-    - Passing user-defined units should be a feature, 
-      as default `pint.UnitRegistry()` supports limited 
+    - Passing user-defined units should be a feature,
+      as default `pint.UnitRegistry()` supports limited
       denominations.
 
 """
 
 
-__all__ = ['Quantity', 'Parameter', 
+__all__ = ['Quantity', 'Parameter',
            'StateVariable', 'PhysicalStateVariable', 'HealthStateVariable']
 
 
@@ -38,7 +38,7 @@ class Quantity(NamedType):
 
     Arguments:
 
-        value:      The value of the quantity. Must be an int, a double or a 
+        value:      The value of the quantity. Must be an int, a double or a
                     numpy array of ints or floating point numbers.
         units:      Must be a string or a pint object that describes an SI
                     physical unit.
@@ -67,15 +67,15 @@ class Quantity(NamedType):
             dtype = value.dtype
             shape = value.shape
         else:
-            raise RuntimeError(
-                    f"I cannot handle the type of the quantity {value}")
+            raise RuntimeError(f"I cannot handle the type of the"
+                               + " quantity {value}")
         ureg.check(units)
         assert isinstance(track, bool)
         # Assign values
         self._dtype = dtype
         self._shape = shape
         self._value = value
-        self._units = units 
+        self._units = units
         self._track = track
 
     @property
@@ -90,11 +90,10 @@ class Quantity(NamedType):
     @property
     def dtype(self):
         return self._dtype
-    
+
     @property
     def shape(self):
         return self._shape
-    
 
     @property
     def units(self):
@@ -103,7 +102,7 @@ class Quantity(NamedType):
     @property
     def name(self):
         return self._name
-    
+
     @property
     def description(self):
         return self._description
@@ -115,8 +114,7 @@ class Quantity(NamedType):
     @property
     def track(self):
         return self._track
-    
-    
+
     def __str__(self):
         """
         Return a string representation of the Quantity.
@@ -127,7 +125,7 @@ class Quantity(NamedType):
             res = str(self._value)
         res += f" {self._units} ({self.type})"
         return res
-        
+
     def __repr__(self):
         """
         Return an unambiguous text describing the object.
@@ -156,11 +154,9 @@ class Quantity(NamedType):
     def from_yaml(self, data):
         """TODO Write me."""
         super().from_yaml(data)
-        self._initilize(
-                data["value"],
-                data["units"],
-                data["track"]
-        )
+        self._initilize(data["value"],
+                        data["units"],
+                        data["track"])
 
 
 class Parameter(Quantity):
@@ -169,7 +165,7 @@ class Parameter(Quantity):
     A class representing a parameter of a system.
     """
 
-    pass 
+    pass
 
 
 class StateVariable(Quantity):
@@ -187,7 +183,7 @@ class PhysicalStateVariable(StateVariable):
     A class representing a physical system state variable.
     """
 
-    pass 
+    pass
 
 
 class HealthStateVariable(StateVariable):
@@ -197,4 +193,3 @@ class HealthStateVariable(StateVariable):
     """
 
     pass
-
