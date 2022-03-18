@@ -24,9 +24,9 @@ class Clock(System):
     """
 
     def __init__(self, init_time=0.0, units="seconds"):
-        state = {"t":
-            PhysicalStateVariable(init_time, units=units,
-                description="A simulation clock.")}
+        state = PhysicalStateVariable(value=init_time,
+                                      units=units,
+                                      description="A simulation clock.")
         super().__init__(name="clock", state=state)
 
     def _calculate_next_state(self, dt):
