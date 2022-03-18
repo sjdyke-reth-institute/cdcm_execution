@@ -22,13 +22,14 @@ __all__ = ['Quantity', 'Parameter',
 
 import numpy as np
 import pint
-from . import trim_str
+from collections.abc import Sequence
+from . import NamedType, trim_str
 
 
 ureg = pint.UnitRegistry()
 
 
-class Quantity(object):
+class Quantity(NamedType):
 
     """
     Defines a CDCM quantity. The quantity knows its units.
@@ -48,32 +49,34 @@ class Quantity(object):
 
     """
 
-    def __init__(self, value, units=None, name=None, track=True, description=None):
-        # Sanity checks
+    def __init__(self, value, units="", name="quantity", track=True,
+                 description=""):
+        self._initilize(value, units, track)
+        super().__init__(name=name, description=description)
+
+    def _initilize(self, value, units, track):
+        """Do some sanity checks and set the value."""
         if isinstance(value, int):
             dtype = int
             shape = ()
         elif isinstance(value, float):
             dtype = float
             shape = ()
-        elif isinstance(value, np.ndarray):
+        elif isinstance(value, Sequence):
+            value = np.array(value)
             dtype = value.dtype
             shape = value.shape
         else:
             raise RuntimeError(
                     f"I cannot handle the type of the quantity {value}")
         ureg.check(units)
-        assert name is None or isinstance(name, str)
         assert isinstance(track, bool)
-        assert description is None or isinstance(description, str)
         # Assign values
         self._dtype = dtype
         self._shape = shape
         self._value = value
         self._units = units 
-        self._name = name
         self._track = track
-        self._description = description
 
     @property
     def value(self):
@@ -137,6 +140,27 @@ class Quantity(object):
             res += f'"{trim_str(self.description)}"'
         res += ")"
         return res
+
+    def to_yaml(self):
+        """Turn the object to a dictionary of dictionaries."""
+        res = super().to_yaml()
+        dres = res[self.name]
+        if isinstance(self.value, np.ndarray):
+            dres["value"] = str(self.value)
+        else:
+            dres["value"] = self.value
+        dres["units"] = self.units
+        dres["track"] = self.track
+        return res
+
+    def from_yaml(self, data):
+        """TODO Write me."""
+        super().from_yaml(data)
+        self._initilize(
+                data["value"],
+                data["units"],
+                data["track"]
+        )
 
 
 class Parameter(Quantity):

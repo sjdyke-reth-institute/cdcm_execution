@@ -10,16 +10,56 @@ Date:
 """
 
 
-__all__ = ['System']
+__all__ = ['System', "_assert_and_make_dict", "_dict_to_yaml"]
 
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from copy import deepcopy
-from . import Parameter, StateVariable, PhysicalStateVariable, \
+from . import NamedType, Parameter, StateVariable, PhysicalStateVariable, \
               HealthStateVariable
 
 
-class System(ABC):
+def _assert_and_make_dict(obj, NamedType):
+    """Check if the `obj` is a dict and turn it into a dict if it is not.
+
+    Arguments
+    obj       -- Either an object of type `NamedType` or a Sequence of type 
+                `NamedType` or a `dict` with keys that are strings and values 
+                 that are of type `NamedType`.
+    NamedType -- A type instances of which have an attribute called "name".
+
+    Returns the a dictionary with keys that are strings made out of the name
+    of the objects and values that are the objects.
+    """
+    if isinstance(obj, NamedType):
+        obj = [obj]
+    if isinstance(obj, Sequence):
+        new_obj = {}
+        for o in obj:
+            assert isinstance(o, NamedType), \
+                f"{o} is not of type {NamedType}"
+            assert hasattr(o, "name"), \
+                f"{o} does not have an attribute called 'name'"
+            new_obj.update({o.name: o})
+        return new_obj
+    assert isinstance(obj, dict), \
+        (f"{obj} is not must either be a NamedType, a Sequence[NamedType]" +
+         " or a Dictionary[String, NamedType].")
+    for o in obj.values():
+        assert isinstance(o, NamedType), f"{o} is not of type {NamedType}"
+    return obj
+
+
+def _dict_to_yaml(data):
+    """Turns a dictionary of object to a dictionary of dictionaries."""
+    res = {}
+    for k, v in data.items():
+        res.update(v.to_yaml())
+    return res
+
+
+class System(NamedType):
     """Describes an abstract System.
 
     A system has the following characteristics:
@@ -35,24 +75,30 @@ class System(ABC):
     name         -- A name for the system.
     state        -- A dictionary with keys that are strings corresponding to
                     the state variable names and values that are 
-                    `StateVariable`.
+                    `StateVariable`. Alternatively, use a list. The class will
+                    turn it into a dictionary using the name of the states.
     parameters   -- A dictionary with keys that are strings corresponding to
                     parameter names and values that are Parameter objects.
-                    parameters of a system.
+                    parameters of a system. A list is also possible.
     parents      -- A dictionary with keys that are strings corresponding
                     to the state variable names and values that are the
-                    `System` from which this variable must be taken.
+                    `System` from which this variable must be taken. A list is
+                    also possible.
     description  -- A long description of the system.
     """
 
-    def __init__(self, name="System", state={}, parameters={}, parents={}, description=None):
-        # Sanity checks
-        assert isinstance(name, str)
-        assert description is None or isinstance(description, str)
+    def __init__(
+            self, 
+            name="system", 
+            state={}, 
+            parameters={}, 
+            parents={},
+            description=""
+        ):
+        super().__init__(name=name, description=description)
         # Sanity check for state variables
-        assert isinstance(state, dict)
-        for s in state.values():
-            assert isinstance(s, StateVariable)
+        state = _assert_and_make_dict(state, StateVariable)
+        parameters = _assert_and_make_dict(parameters, Parameter)
         # Sanity check for parameters
         assert isinstance(parameters, dict)
         for p in parameters.values():
@@ -215,3 +261,21 @@ Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
         """
         # TODO: Write me
         return self.__str__()
+
+    def to_yaml(self):
+        """Turn the object to a dictionary of dictionaries."""
+        res = super().to_yaml()
+        dres = res[self.name]
+        dres["physical_state"] = _dict_to_yaml(self.physical_state)
+        dres["health_state"] = _dict_to_yaml(self.health_state)
+        dres["parameters"] = _dict_to_yaml(self.parameters)
+        parents_dict = {}
+        for k, v in self.parents.items():
+            parents_dict[k] = v.name
+        dres["parents"] = parents_dict
+        return res
+
+    def from_yaml(self, data):
+        """TODO Write me."""
+        raise NotImplementedError()
+        super().from_yaml(data)

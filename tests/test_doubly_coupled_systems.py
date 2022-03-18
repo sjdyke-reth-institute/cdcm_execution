@@ -28,22 +28,28 @@ if __name__ == "__main__":
     # Notice that I do not have the parent of sys1 ready when I am making it:
     sys1 = SystemFromFunction(
         name="system_1",
-        state={"x1": PhysicalStateVariable(0.1, "meters", "x1")},
-        parameters={"r1": Parameter(1.2, "meters / second", "rate of change"),
-                    "c1": Parameter(0.1, "1 / second", "coupling coef 1")},
-        transition_func=trans_func_1)
+        state=PhysicalStateVariable(0.1, "meters", "x1"),
+        parameters=[Parameter(1.2, "meters / second", "r1"),
+                    Parameter(0.1, "1 / second", "c1")
+                   ],
+        transition_func=trans_func_1
+    )
     # So, I have to make the parent:
     sys2 = SystemFromFunction(
         name="system_2",
-        state={"x2": PhysicalStateVariable(0.1, "meters", "x2")},
-        parameters={"r2": Parameter(0.2, "meters / second", "rate of change"),
-                    "c2": Parameter(0.1, "1 / second", "coupling coeff")},
+        state=PhysicalStateVariable(0.1, "meters", "x2"),
+        parameters=[Parameter(0.2, "meters / second", "r2"),
+                    Parameter(0.1, "1 / second", "c2")
+                   ],
         parents={'x1': sys1},
         transition_func=trans_func_2)
     # and then connect them
     sys1.parents["x2"] = sys2
     # now everything is okay
-    sys = SystemOfSystems(name="combined_system", sub_systems=[sys1, sys2])
+    sys = SystemOfSystems(
+        name="combined_system", 
+        sub_systems=[sys1,sys2]
+    )
     print(sys)
     # Run it for a while
     dt = 0.1

@@ -43,12 +43,27 @@ class SystemFromFunction(System):
     description     -- A description for the object.
     """
 
-    def __init__(self, name="SystemFromFunction", state={}, parameters={}, parents={}, transition_func=None,
-                 description=None, test_func=False, default_dt=1e-3):
-        super().__init__(name=name, state=state, parameters=parameters, parents=parents, 
-                         description=description)
+    def __init__(
+            self, 
+            name="system_from_function", 
+            state={}, 
+            parameters={}, 
+            parents={}, 
+            transition_func=None, 
+            test_func=False,
+            description="",
+            default_dt=1e-3
+        ):
+        super().__init__(
+                    name=name, 
+                    state=state, 
+                    parameters=parameters, 
+                    parents=parents, 
+                    description=description
+                )
         assert callable(transition_func)
         self._transition_func = transition_func
+
 
     def _calculate_next_state(self, dt):
         inputs = {}

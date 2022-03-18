@@ -117,10 +117,6 @@ class TestQuantities():
 
 
 if __name__ == '__main__':
-    p = PhysicalStateVariable(10.0, "meters", "length",True,"description")
-    print(str(p))
-    print(p.__repr__())
-    p = PhysicalStateVariable(10.0, "meters", "length",True,
-        description="Some very very very very long description.")
-    print(str(p))
-    print(p.__repr__())
+    p = PhysicalStateVariable(value=10.0, units="meters", name="length", 
+                              track=True, description="description")
+    print(p)

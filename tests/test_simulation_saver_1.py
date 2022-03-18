@@ -24,10 +24,12 @@ def transition_func(dt, *, x, r):
 
 
 if __name__ == "__main__":
-    sys = SystemFromFunction(name="system",
-        state={"x": PhysicalStateVariable(0.1, "meters", "x")},
-        parameters={"r": Parameter(1.2, "meters / second", "rate_of_change")},
-        transition_func=transition_func)
+    sys = SystemFromFunction(
+            name="system",
+            state=PhysicalStateVariable(0.1, "meters", "x"),
+            parameters=Parameter(1.2, "meters / second", "r"),
+            transition_func=transition_func
+          )
     print(sys)
     saver = SimulationSaver("test.h5", sys)
     dt = 0.1

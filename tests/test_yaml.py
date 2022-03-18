@@ -1,15 +1,15 @@
-"""Test a nested system of systems.
+"""Test the yaml functionality.
 
 Author:
-	Ilias Bilionis
+    Ilias Bilionis
 
 Date:
-	3/15/2022
-
+    3/17/2022
 """
 
 
 from cdcm import *
+import yaml
 
 
 def trans_func_1(dt, *, x1, r1):
@@ -37,14 +37,15 @@ def trans_func_4(dt, *, x4, x2, r4, c24):
 
 
 if __name__ == "__main__":
+    # Make a big system
     sys1 = SystemFromFunction(
-    	name="system_1",
+        name="system_1",
         state=PhysicalStateVariable(0.1, "meters", "x1"),
         parameters=Parameter(1.2, "meters / second", "r1"),
         transition_func=trans_func_1
     )
     sys2 = SystemFromFunction(
-    	name="system_2",
+        name="system_2",
         state=PhysicalStateVariable(0.1, "meters", "x2"),
         parameters=[
             Parameter(0.2, "meters / second", "r2"),
@@ -57,13 +58,13 @@ if __name__ == "__main__":
         name="combined_system_1", 
         sub_systems=[sys1, sys2])
     sys3 = SystemFromFunction(
-    	name="system_3",
+        name="system_3",
         state=PhysicalStateVariable(0.1, "meters", "x3"),
         parameters=Parameter(1.2, "meters / second", "r3"),
         transition_func=trans_func_3
     )
     sys4 = SystemFromFunction(
-    	name="system_4",
+        name="system_4",
         state=PhysicalStateVariable(0.1, "meters", "x4"),
         parameters=[
             Parameter(0.2, "meters / second", "r4"),
@@ -80,8 +81,5 @@ if __name__ == "__main__":
         name="super_system",
         sub_systems=[sos1, sos2]
     )
-    print(sys)
-    dt = 0.1
-    for i in range(10):
-        sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
+    # Now turn it to yaml
+    print(yaml.dump(sys.to_yaml(), sort_keys=False))

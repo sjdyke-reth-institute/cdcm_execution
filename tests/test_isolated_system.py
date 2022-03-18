@@ -17,13 +17,17 @@ class TestIsolatedSystem(System):
 
     def __init__(self):
         name = "Isolated System"
-        state = {"x": PhysicalStateVariable(0.1, "meters", "x", track=True, 
-                                            description="The x variable."),
-                 "h": HealthStateVariable(0, None, "x", track=True,
-                                          description="The h variable.")}
-        parameters = {"rate_of_change": Parameter(1.2, "meters / second",
-                                                  "rate_of_change",
-                                                  description="The rate of change.")}
+        state = [PhysicalStateVariable(0.1, "meters", "x", track=True,
+            description="The x variable."),
+        HealthStateVariable(0, None, "h", track=True,
+            description="The h variable.")
+        ]
+        parameters = Parameter(
+            1.2, 
+            "meters / second",
+            "rate_of_change", 
+            description="The rate of change."
+        )
         super().__init__(name=name, state=state, parameters=parameters,
                          description="A simple isolated system.")
 
