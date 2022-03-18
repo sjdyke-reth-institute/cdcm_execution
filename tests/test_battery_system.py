@@ -7,19 +7,20 @@ Date:
     3/16/2022
 """
 
-from ast import Param
 from rich import print as rprint
 
 from cdcm import System, SystemOfSystems
 from cdcm import PhysicalStateVariable, Parameter, HealthStateVariable
 
+
 def clip(value, min_value=0., max_value=100.):
     """Clip the value between the bounds"""
     return min(max(value, min_value), max_value)
 
+
 class BatterySystem(System):
     """A battery model with linear discharge and charging characteristics
-    
+
     TODO
     - Move the control of battery out of this class
     """

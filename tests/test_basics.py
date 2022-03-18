@@ -18,5 +18,8 @@ if __name__ == "__main__":
     print(x.to_yaml())
     print(yaml.dump(x.to_yaml(), sort_keys=False))
 
-    q = Parameter(value=[0.5, 0.3], name="q", units="meters", description="some desc")
+    q = Parameter(value=[0.5, 0.3],
+                  name="q",
+                  units="meters",
+                  description="some desc")
     print(yaml.dump(q.to_yaml(), sort_keys=False))
