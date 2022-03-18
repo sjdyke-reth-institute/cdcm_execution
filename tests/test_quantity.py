@@ -8,10 +8,8 @@ Date:
 """
 
 
-import pytest
 import numpy as np
 from cdcm import *
-import pint
 
 
 class TestQuantities():
