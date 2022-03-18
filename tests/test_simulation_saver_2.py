@@ -16,28 +16,33 @@ class Sys1(System):
 
     def __init__(self):
         name = "system_1"
-        state = [PhysicalStateVariable(
-                    value=0.1,
-                    units="meters",
-                    name="x",
-                    track=True, 
-                    description="The x variable."
-                 ),
-                 HealthStateVariable(
-                    value=0,
-                    units="", 
-                    name="h",
-                    track=True,
-                    description="The h variable.")
-                ]
+        state = [
+            PhysicalStateVariable(
+                value=0.1,
+                units="meters",
+                name="x",
+                track=True,
+                description="The x variable."
+            ),
+            HealthStateVariable(
+                value=0,
+                units="",
+                name="h",
+                track=True,
+                description="The h variable.")
+        ]
         parameters = Parameter(
-                        value=1.2,
-                        units="meters / second",
-                        name="rate_of_change",
-                        description="The rate of change."
-                     )
-        super().__init__(name=name, state=state, parameters=parameters,
-                         description="A simple system.")
+            value=1.2,
+            units="meters / second",
+            name="rate_of_change",
+            description="The rate of change."
+        )
+        super().__init__(
+            name=name,
+            state=state,
+            parameters=parameters,
+            description="A simple system."
+        )
 
     def _calculate_next_state(self, dt):
         x = self.state['x1'].value
@@ -50,28 +55,34 @@ class Sys2(System):
     def __init__(self, sys_1):
         name = "system_2"
         state = PhysicalStateVariable(
-                    value=0.3, 
-                    units="meters",
-                    name="x2",
-                    track=True, 
-                    description="The x2 variable."
-                )
-        parameters = [Parameter(
-                        value=1.2,
-                        units="meters / second",
-                        name="rate_of_change_2",
-                        description="The rate of change 2."
-                      ),
-                      Parameter(
-                        value=0.1, 
-                        units="1 / second", 
-                        name="coupling_coeff",
-                        description="Coupling coeff."
-                      )
-                     ]
+            value=0.3,
+            units="meters",
+            name="x2",
+            track=True,
+            description="The x2 variable."
+        )
+        parameters = [
+            Parameter(
+                value=1.2,
+                units="meters / second",
+                name="rate_of_change_2",
+                description="The rate of change 2."
+            ),
+            Parameter(
+                value=0.1,
+                units="1 / second",
+                name="coupling_coeff",
+                description="Coupling coeff."
+            )
+        ]
         parents = {'x1': sys_1}
-        super().__init__(name=name, state=state, parameters=parameters, parents=parents,
-                         description="Another simple system.")
+        super().__init__(
+            name=name,
+            state=state,
+            parameters=parameters,
+            parents=parents,
+            description="Another simple system."
+        )
 
     def _calculate_next_state(self, dt):
         # Get the parent variable
@@ -89,14 +100,15 @@ if __name__ == "__main__":
     sys2 = Sys2(sys1)
     # Put them in a system of system container
     sys = SystemOfSystems(
-            name="combined_system", 
-            sub_systems=[sys1, sys2]
-          )
+        name="combined_system",
+        sub_systems=[sys1, sys2]
+    )
     print(sys)
     saver = SimulationSaver("test_2.h5", sys)
     # Run the system a bit into the future manually.
     dt = 0.1
     for i in range(10):
         sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}}, x2: {sys.state['x2'].value:{1}.{3}}")
+        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
+              + f"x2: {sys.state['x2'].value:{1}.{3}}")
         saver.save(sys)
