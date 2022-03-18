@@ -20,16 +20,15 @@ class SystemOfSystems(System):
 
     Keyword Arguments
     name        -- A name for the system.
-    systems     -- A dictionary of systems. The keys must be strings. The values
-                   must be `System`. Alternatively, a list of systems.
+    systems     -- A dictionary of systems. The keys must be strings. The
+                   values must be `System`. Alternatively, a list of systems.
     description -- A description for the system.
     """
 
-    def __init__(
-            self, 
-            name="system_of_systems", 
-            sub_systems={},
-            description=""):
+    def __init__(self,
+                 name="system_of_systems",
+                 sub_systems={},
+                 description=""):
         # Sanity check
         sub_systems = _assert_and_make_dict(sub_systems, System)
         self._sub_systems = sub_systems
@@ -99,7 +98,7 @@ class SystemOfSystems(System):
         res = super().__str__()
         res += f"\nSubsystems:     {list([n for n in self.sub_systems])}"
         return res
-    
+
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
         res = NamedType.to_yaml(self)
