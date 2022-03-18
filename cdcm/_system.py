@@ -13,19 +13,22 @@ Date:
 __all__ = ['System', "_assert_and_make_dict", "_dict_to_yaml"]
 
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
-from . import NamedType, Parameter, StateVariable, PhysicalStateVariable, \
-              HealthStateVariable
+from . import (NamedType,
+               Parameter,
+               StateVariable,
+               PhysicalStateVariable,
+               HealthStateVariable)
 
 
 def _assert_and_make_dict(obj, NamedType):
     """Check if the `obj` is a dict and turn it into a dict if it is not.
 
     Arguments
-    obj       -- Either an object of type `NamedType` or a Sequence of type 
-                `NamedType` or a `dict` with keys that are strings and values 
+    obj       -- Either an object of type `NamedType` or a Sequence of type
+                `NamedType` or a `dict` with keys that are strings and values
                  that are of type `NamedType`.
     NamedType -- A type instances of which have an attribute called "name".
 
@@ -44,8 +47,8 @@ def _assert_and_make_dict(obj, NamedType):
             new_obj.update({o.name: o})
         return new_obj
     assert isinstance(obj, dict), \
-        (f"{obj} is not must either be a NamedType, a Sequence[NamedType]" +
-         " or a Dictionary[String, NamedType].")
+        (f"{obj} is not must either be a NamedType, a Sequence[NamedType]"
+         + " or a Dictionary[String, NamedType].")
     for o in obj.values():
         assert isinstance(o, NamedType), f"{o} is not of type {NamedType}"
     return obj
@@ -66,7 +69,8 @@ class System(NamedType):
         - It has a name.
         - It has a description of what it does.
         - It knows its current_state.
-        - It knows which variables from other systems may affect its transition.
+        - It knows which variables from other systems may affect its
+          transition.
         - It knows how to transition its state to the next timestep.
 
     All specific CDCM systems must inherit from this class.
@@ -74,7 +78,7 @@ class System(NamedType):
     Keyword Arguments:
     name         -- A name for the system.
     state        -- A dictionary with keys that are strings corresponding to
-                    the state variable names and values that are 
+                    the state variable names and values that are
                     `StateVariable`. Alternatively, use a list. The class will
                     turn it into a dictionary using the name of the states.
     parameters   -- A dictionary with keys that are strings corresponding to
@@ -88,13 +92,12 @@ class System(NamedType):
     """
 
     def __init__(
-            self, 
-            name="system", 
-            state={}, 
-            parameters={}, 
+            self,
+            name="system",
+            state={},
+            parameters={},
             parents={},
-            description=""
-        ):
+            description=""):
         super().__init__(name=name, description=description)
         # Sanity check for state variables
         state = _assert_and_make_dict(state, StateVariable)
@@ -109,7 +112,7 @@ class System(NamedType):
             assert isinstance(k, str)
             assert isinstance(v, System)
             assert v.has_state(k), \
-            f'Parent {v.name} does not have a state named {k}'
+                f'Parent {v.name} does not have a state named {k}'
         # Initialize variables
         self._name = name
         self._description = description
@@ -152,11 +155,11 @@ class System(NamedType):
     @property
     def name(self):
         return self._name
-    
+
     @property
     def description(self):
         return self._description
-    
+
     @property
     def parameters(self):
         return self._parameters
@@ -164,11 +167,11 @@ class System(NamedType):
     @property
     def state(self):
         return self._current_state
-    
+
     @property
     def physical_state(self):
         return self._get_state_of_type(PhysicalStateVariable)
-    
+
     @property
     def health_state(self):
         return self._get_state_of_type(HealthStateVariable)
@@ -180,13 +183,13 @@ class System(NamedType):
     @property
     def time(self):
         return self._time
-    
+
     def get_parent_state(self, name):
         """
         Get the current version of a parent state.
         """
         return self.parents[name].state[name]
-    
+
     @abstractmethod
     def _calculate_next_state(self, dt):
         """Calculate the next sate of the system using the current one.
@@ -206,11 +209,12 @@ class System(NamedType):
     def _transition(self):
         """This function transitions to the next state.
 
-        The function simply swaps the `self._current_state` with 
+        The function simply swaps the `self._current_state` with
         `self._next_state`. It is essential for ensuring deterministic
         behavior.
         """
-        self._current_state, self._next_state = self._next_state, self._current_state
+        self._current_state, self._next_state = (self._next_state,
+                                                 self._current_state)
 
     @property
     def can_transition(self):
@@ -233,7 +237,8 @@ class System(NamedType):
         if self.can_transition:
             self.unsafe_step(dt)
         else:
-            raise RuntimeError("The system has parents and it cannot transition.")
+            raise RuntimeError("The system has parents and"
+                               + " it cannot transition.")
 
     def unsafe_step(self, dt):
         """Step without checking if the system can transition.

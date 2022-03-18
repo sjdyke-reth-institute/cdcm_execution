@@ -13,7 +13,6 @@ __all__ = ["NamedType"]
 
 
 from abc import ABC
-from collections import OrderedDict
 
 
 class NamedType(ABC):
@@ -50,11 +49,8 @@ class NamedType(ABC):
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
         return {
-            self.name: {
-                        "description": self.description,
-                        "type": self.__class__.__name__
-                       }
-               }
+            self.name: {"description": self.description,
+                        "type": self.__class__.__name__}}
 
     def from_yaml(self, data):
         """Set the parameters of the object from a dictionary."""
@@ -63,4 +59,3 @@ class NamedType(ABC):
                                 + " object.")
         self._name = data.keys()[0]
         self._description = data.values()["description"]
-    
