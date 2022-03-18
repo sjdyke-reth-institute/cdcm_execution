@@ -55,8 +55,8 @@ def _dict_to_yaml(data):
     """Turns a dictionary of object to a dictionary of dictionaries."""
     res = {}
     for k, v in data.items():
-        res[k] = v
-    return v
+        res.update(v.to_yaml())
+    return res
 
 
 class System(NamedType):
@@ -265,20 +265,17 @@ Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
         res = super().to_yaml()
-        res["physical_state"] = _dict_to_yaml(self.physical_state)
-        res["health_state"] = _dict_to_yaml(self.health_state)
-        res["parameters"] = _dict_to_yaml(self.parameters)
+        dres = res[self.name]
+        dres["physical_state"] = _dict_to_yaml(self.physical_state)
+        dres["health_state"] = _dict_to_yaml(self.health_state)
+        dres["parameters"] = _dict_to_yaml(self.parameters)
         parents_dict = {}
         for k, v in self.parents.items():
             parents_dict[k] = v.name
-        res["parents"] = parents_dict
+        dres["parents"] = parents_dict
         return res
 
     def from_yaml(self, data):
         """TODO Write me."""
-        self._initilize(
-                data["value"],
-                data["units"],
-                data["track"]
-        )
+        raise NotImplementedError()
         super().from_yaml(data)

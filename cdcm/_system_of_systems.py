@@ -12,7 +12,7 @@ Date:
 __all__ = ["SystemOfSystems"]
 
 
-from . import System, _assert_and_make_dict
+from . import System, _assert_and_make_dict, _dict_to_yaml, NamedType
 
 
 class SystemOfSystems(System):
@@ -100,3 +100,9 @@ class SystemOfSystems(System):
         res += f"\nSubsystems:     {list([n for n in self.sub_systems])}"
         return res
     
+    def to_yaml(self):
+        """Turn the object to a dictionary of dictionaries."""
+        res = NamedType.to_yaml(self)
+        dres = res[self.name]
+        dres["sub_systems"] = _dict_to_yaml(self.sub_systems)
+        return res
