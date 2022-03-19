@@ -13,7 +13,6 @@ Date:
 from ._utils import *
 from ._basics import *
 from ._quantity import *
-from ._system_core import *
 from ._system import *
 from ._data_system import *
 from ._function_system import *
