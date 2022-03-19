@@ -23,12 +23,20 @@ class Clock(System):
     units     -- The units of time.
     """
 
-    def __init__(self, init_time=0.0, units="seconds"):
-        state = PhysicalStateVariable(value=init_time,
-                                      units=units,
-                                      description="A simulation clock.")
-        super().__init__(name="clock", state=state)
+    def __init__(
+        self,
+        init_time=0.0,
+        units="seconds",
+        description="A simulation clock."
+    ):
+        state = PhysicalStateVariable(
+            name="t",
+            value=init_time,
+            units=units,
+            description="The simulation time."
+        )
+        super().__init__(name="clock", state=state, description=description)
 
-    def _calculate_next_state(self, dt):
+    def _calculate_my_next_state(self, dt):
         t = self._current_state["t"].value
         self._next_state["t"].value = t + dt

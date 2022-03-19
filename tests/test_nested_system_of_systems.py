@@ -55,7 +55,7 @@ if __name__ == "__main__":
         parents={'x1': sys1},
         transition_func=trans_func_2
     )
-    sos1 = SystemOfSystems(
+    sos1 = System(
         name="combined_system_1",
         sub_systems=[sys1, sys2])
     sys3 = SystemFromFunction(
@@ -71,14 +71,14 @@ if __name__ == "__main__":
             Parameter(0.2, "meters / second", "r4"),
             Parameter(0.1, "1 / second", "c24")
         ],
-        parents={'x2': sos1},
+        parents={'x2': sys2},
         transition_func=trans_func_4
     )
-    sos2 = SystemOfSystems(
+    sos2 = System(
         name="combined_system_2",
         sub_systems=[sys3, sys4]
     )
-    sys = SystemOfSystems(
+    sys = System(
         name="super_system",
         sub_systems=[sos1, sos2]
     )
@@ -86,5 +86,4 @@ if __name__ == "__main__":
     dt = 0.1
     for i in range(10):
         sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
-              + f"x2: {sys.state['x2'].value:{1}.{3}}")
+        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")

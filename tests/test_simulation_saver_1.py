@@ -34,6 +34,6 @@ if __name__ == "__main__":
     saver = SimulationSaver("test.h5", sys)
     dt = 0.1
     for i in range(10):
-        sys.step(dt)
+        sys.unsafe_step(dt)
         print(f"x: {sys.state['x'].value:{1}.{3}}")
         saver.save(sys)

@@ -43,7 +43,7 @@ class Sys1(System):
             description="A simple system."
         )
 
-    def _calculate_next_state(self, dt):
+    def _calculate_my_next_state(self, dt):
         x = self.state['x1'].value
         r = self.parameters['rate_of_change'].value
         self._next_state['x1'].value = x + r * dt
@@ -83,7 +83,7 @@ class Sys2(System):
             description="Another simple system."
         )
 
-    def _calculate_next_state(self, dt):
+    def _calculate_my_next_state(self, dt):
         # Get the parent variable
         x1 = self.get_parent_state('x1').value
         # Get the variables form here
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     sys1 = Sys1()
     sys2 = Sys2(sys1)
     # Put them in a system of system container
-    sys = SystemOfSystems(
+    sys = System(
         name="combined_system",
         sub_systems=[sys1, sys2]
     )
@@ -106,15 +106,5 @@ if __name__ == "__main__":
     # Run the system a bit into the future manually.
     dt = 0.1
     for i in range(10):
-        sys._calculate_next_state(dt)
-        sys._transition()
-        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
-              + f"x2: {sys.state['x2'].value:{1}.{3}}")
-    # This system of system is closed.
-    # So, we can also do this:
-    sys1.state['x1'].value = 0.1
-    sys2.state['x2'].value = 0.3
-    for i in range(10):
         sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
-              + f"x2: {sys.state['x2'].value:{1}.{3}}")
+        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")

@@ -32,5 +32,5 @@ if __name__ == "__main__":
     # Here is how it looks
     dt = 0.1
     for i in range(rnd_sys.max_num_steps - 1):
-        print(f"omega: {rnd_sys.state['omega'].value: {1}.{3}}")
-        rnd_sys.step(dt)
+        print(f"omega: {rnd_sys.state['omega']}")
+        rnd_sys.unsafe_step(dt)

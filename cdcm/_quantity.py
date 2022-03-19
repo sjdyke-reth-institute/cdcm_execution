@@ -118,25 +118,15 @@ class Quantity(NamedType):
     def __str__(self):
         """
         Return a string representation of the Quantity.
+
+        TODO: Make the formating variable and debug approach on numpy arrays.
+        Make units optional.
         """
         if isinstance(self._value, float):
-            res = f"{self._value: {1}.{5}}"
+            res = f"{self.value:9.5f}"
         else:
-            res = str(self._value)
-        res += f" {self._units} ({self.type})"
-        return res
-
-    def __repr__(self):
-        """
-        Return an unambiguous text describing the object.
-        """
-        res = f'{self.type}(value={self.value}, units="{self.units}", ' + \
-              f'name="{self.name}", description='
-        if self.description is None:
-            res += "None"
-        else:
-            res += f'"{trim_str(self.description)}"'
-        res += ")"
+            res = str(self.value)
+        res += f" {self.units}"
         return res
 
     def to_yaml(self):

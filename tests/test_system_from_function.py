@@ -39,5 +39,5 @@ if __name__ == "__main__":
     print(sys)
     dt = 0.1
     for i in range(10):
-        sys.step(dt)
-        print(f"x: {sys.state['x'].value:{1}.{3}}")
+        sys.unsafe_step(dt)
+        print(f"x: {sys.state['x']}")

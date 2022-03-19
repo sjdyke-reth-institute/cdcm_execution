@@ -38,7 +38,7 @@ def trim_str(text: str, size: int = TEXT_TRIMMING_SIZE):
         return text[:size] + " ..."
 
 
-def clip(value: Union[int, float, npt.NDArray],
+def clip(value: Union[int, float, npt.ArrayLike],
          min_value: Union[int, float] = None,
          max_value: Union[int, float] = None):
     """Clip the value (int, float, or numpy array) between the bounds

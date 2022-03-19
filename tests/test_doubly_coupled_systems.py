@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # and then connect them
     sys1.parents["x2"] = sys2
     # now everything is okay
-    sys = SystemOfSystems(
+    sys = System(
         name="combined_system",
         sub_systems=[sys1, sys2]
     )
@@ -54,5 +54,4 @@ if __name__ == "__main__":
     dt = 0.1
     for i in range(10):
         sys.unsafe_step(dt)
-        print(f"x1: {sys.state['x1'].value:{1}.{3}},"
-              + f"x2: {sys.state['x2'].value:{1}.{3}}")
+        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")

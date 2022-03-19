@@ -1,18 +1,19 @@
-"""A class representing a system of systems.
+"""Defines an abstract system class.
+
 
 Author:
     Ilias Bilionis
 
 Date:
-    3/14/2022
+    3/11/2022
 
 """
 
 
-__all__ = ["System", "_assert_and_make_dict", "_dict_to_yaml"]
+__all__ = ['_System', "_assert_and_make_dict", "_dict_to_yaml"]
 
 
-import yaml
+from abc import abstractmethod
 from collections.abc import Sequence
 from copy import deepcopy
 from . import (NamedType,
@@ -61,46 +62,55 @@ def _dict_to_yaml(data):
     return res
 
 
-class System(NamedType):
-    """A class representing a system of systems.
+class _System(NamedType):
+    """Describes an abstract System.
 
-    Keyword Arguments
-    name        -- A name for the system.
-    systems     -- A dictionary of systems. The keys must be strings. The
-                   values must be `System`. Alternatively, a list of systems.
-    description -- A description for the system.
+    A system has the following characteristics:
+        - It has a name.
+        - It has a description of what it does.
+        - It knows its current_state.
+        - It knows which variables from other systems may affect its
+          transition.
+        - It knows how to transition its state to the next timestep.
+
+    All specific CDCM systems must inherit from this class.
+
+    Keyword Arguments:
+    name         -- A name for the system.
+    state        -- A dictionary with keys that are strings corresponding to
+                    the state variable names and values that are
+                    `StateVariable`. Alternatively, use a list. The class will
+                    turn it into a dictionary using the name of the states.
+    parameters   -- A dictionary with keys that are strings corresponding to
+                    parameter names and values that are Parameter objects.
+                    parameters of a system. A list is also possible.
+    parents      -- A dictionary with keys that are strings corresponding
+                    to the state variable names and values that are the
+                    `System` from which this variable must be taken. A list is
+                    also possible.
+    description  -- A long description of the system.
     """
 
     def __init__(
-        self,
-        name="system_of_systems",
-        state={},
-        parameters={},
-        parents={},
-        sub_systems={},
-        description=""
-    ):
-        # Sanity check
-        sub_systems = _assert_and_make_dict(sub_systems, System)
-        self._sub_systems = sub_systems
-        super().__init__(
-            name=name,
-            description=description
-        )
+            self,
+            name="system",
+            state={},
+            parameters={},
+            parents={},
+            description=""):
+        super().__init__(name=name, description=description)
+        # Sanity check for state variables
         state = _assert_and_make_dict(state, StateVariable)
         parameters = _assert_and_make_dict(parameters, Parameter)
-        assert isinstance(parameters, dict),\
-            "The parameters must be a dictionary."
+        # Sanity check for parameters
+        assert isinstance(parameters, dict)
         for p in parameters.values():
-            assert isinstance(p, Parameter),\
-                f"The dictionary vaklue {p} is not a Parameter."
-        assert isinstance(parents, dict),\
-            "The parents must be a dictionary."
+            assert isinstance(p, Parameter)
+        # Sanity check for parents
+        assert isinstance(parents, dict)
         for k, v in parents.items():
-            assert isinstance(k, str),\
-                "Each key in the parents dictionary must be a string."
-            assert isinstance(v, System),\
-                "Each value in the parents dictionary must be a System."
+            assert isinstance(k, str)
+            assert isinstance(v, _System)
             assert v.has_state(k), \
                 f'Parent {v.name} does not have a state named {k}'
         # Initialize variables
@@ -112,15 +122,30 @@ class System(NamedType):
         self._parents = parents
 
     def has_state(self, state_name):
-        """Return True if the system has a state called `state_name`."""
+        """Return True if the system has a state called `state_name`.
+        """
         return state_name in self.state.keys()
 
     def has_parameter(self, param_name):
-        """Return True if the system has a parameter called `param_name`."""
+        """Return True if the system has a parameter called `param_name`.
+        """
         return param_name in self.parameters.keys()
 
+    def get_state(self, state_name):
+        """Get the state called `state_name`.
+        """
+        assert self.has_state(state_name)
+        return self.state[state_name]
+
+    def get_parameter(self, param_name):
+        """Get the parameter called `param_name`.
+        """
+        assert self.has_parameter(param_name)
+        return self.parameters[param_name]
+
     def _get_state_of_type(self, Type):
-        """Return a dictionary with all state components of type `Type`."""
+        """Return a dictionary with all state components of type `Type`.
+        """
         res = {}
         for n, s in self.state.items():
             if isinstance(s, Type):
@@ -129,38 +154,35 @@ class System(NamedType):
 
     @property
     def name(self):
-        """Return the name of the object."""
         return self._name
 
     @property
     def description(self):
-        """Return the description of the object."""
         return self._description
 
     @property
     def parameters(self):
-        """Return the parameters of the object."""
         return self._parameters
 
     @property
     def state(self):
-        """Return the current state."""
         return self._current_state
 
     @property
     def physical_state(self):
-        """Return all physical states."""
         return self._get_state_of_type(PhysicalStateVariable)
 
     @property
     def health_state(self):
-        """Return all health states."""
         return self._get_state_of_type(HealthStateVariable)
 
     @property
     def parents(self):
-        """Return the parents of the object."""
         return self._parents
+
+    @property
+    def time(self):
+        return self._time
 
     def get_parent_state(self, name):
         """
@@ -168,15 +190,9 @@ class System(NamedType):
         """
         return self.parents[name].state[name]
 
-    @property
-    def sub_systems(self):
-        """Return the subsystems."""
-        return self._sub_systems
-
-    def _calculate_my_next_state(self, dt):
+    @abstractmethod
+    def _calculate_next_state(self, dt):
         """Calculate the next sate of the system using the current one.
-
-        **Note that this function should not update the subsystems.**
 
         Arguments:
         dt -- the time step to use when calculating the next state.
@@ -187,18 +203,8 @@ class System(NamedType):
 
         This function should not return anything. It should just calculate
         the next state and store the result in `self._next_state`.
-
-        By default, this function does not do anything.
-
-        The user has to implement it if the states of the system have dynamics.
         """
         pass
-
-    def _calculate_next_state(self, dt):
-        """Transitions the state of the system and of all sub systems."""
-        self._calculate_my_next_state(dt)
-        for s in self.sub_systems.values():
-            s._calculate_next_state(dt)
 
     def _transition(self):
         """This function transitions to the next state.
@@ -210,8 +216,29 @@ class System(NamedType):
         self._current_state, self._next_state = (self._next_state,
                                                  self._current_state)
 
-        for s in self.sub_systems.values():
-            s._transition()
+    @property
+    def can_transition(self):
+        """
+        Return True if the system can transition independently.
+        """
+        return not bool(self.parents)
+
+    def step(self, dt):
+        """Make the system step forward in time.
+
+        Note that this only works if `self.can_transition` is True.
+        If not, then it will raise an error.
+
+        To avoid bugs, `self.can_transition` is calculated every time
+        it is needed. This is in case the parents change.
+        So, doing step may take a while.
+        Use `unsafe_step()` if you are sure the system can transition.
+        """
+        if self.can_transition:
+            self.unsafe_step(dt)
+        else:
+            raise RuntimeError("The system has parents and"
+                               + " it cannot transition.")
 
     def unsafe_step(self, dt):
         """Step without checking if the system can transition.
@@ -222,8 +249,23 @@ class System(NamedType):
         self._transition()
 
     def __str__(self):
-        """Return string representation of combined system."""
-        return yaml.dump(self.to_yaml(), sort_keys=False)
+        """Return a readable string representation of the class.
+
+        TODO: Make this pretty.
+        TODO: Add verbosity control.
+        """
+        res = f"""System name:    {self.name}
+Physical state: {list(self.physical_state.keys())}
+Health state:   {list(self.health_state.keys())}
+Parameters:     {list(self.parameters.keys())}
+Parents:        {list([p.name + "." + v for v, p in self.parents.items()])}"""
+        return res
+
+    def __repr__(self):
+        """Return a complete string representation of the class.
+        """
+        # TODO: Write me
+        return self.__str__()
 
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
@@ -237,6 +279,8 @@ class System(NamedType):
             parents_dict[k] = v.name
         dres["parents"] = parents_dict
         return res
-        dres = res[self.name]
-        dres["sub_systems"] = _dict_to_yaml(self.sub_systems)
-        return res
+
+    def from_yaml(self, data):
+        """TODO Write me."""
+        raise NotImplementedError()
+        super().from_yaml(data)

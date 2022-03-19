@@ -37,7 +37,7 @@ class DataSystem(System):
     """
 
     def __init__(self,
-                 name="DataSystem",
+                 name="data_system",
                  state={},
                  dataset={},
                  description=""):
@@ -91,7 +91,7 @@ class DataSystem(System):
     def dataset(self):
         return self._dataset
 
-    def _calculate_next_state(self, dt):
+    def _calculate_my_next_state(self, dt):
         """Simply moves to the next element of the datasets."""
         next_step = self.steps_so_far + 1
         self._set_state(next_step)

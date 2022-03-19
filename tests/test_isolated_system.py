@@ -43,7 +43,7 @@ class IsolatedSystem(System):
             description="A simple isolated system."
         )
 
-    def _calculate_next_state(self, dt):
+    def _calculate_my_next_state(self, dt):
         x = self.state['x'].value
         r = self.parameters['rate_of_change'].value
         self._next_state['x'].value = x + r * dt
@@ -56,15 +56,5 @@ if __name__ == "__main__":
     # Run the system a bit into the future manually.
     dt = 0.1
     for i in range(10):
-        system._calculate_next_state(dt)
-        system._transition()
-        print(f"x: {system.state['x'].value:{1}.{3}}")
-
-    # Because the system can transition independently
-    # (it doesn't have any parents)
-    print(f'can transition: {system.can_transition}')
-    # we can also do this
-    system.state['x'].value = 0.1
-    for i in range(10):
-        system.step(dt)
-        print(f"x: {system.state['x'].value:{1}.{3}}")
+        system.unsafe_step(dt)
+        print(f"x: {system.state['x']}")

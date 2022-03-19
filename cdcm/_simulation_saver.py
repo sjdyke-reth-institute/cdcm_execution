@@ -15,7 +15,7 @@ __all__ = ["SimulationSaver"]
 import h5py
 import os
 from collections.abc import Iterable
-from . import System, SystemOfSystems
+from . import System
 
 
 def assert_make_h5_subgroup(group, sub_group, **kwargs):
@@ -56,15 +56,13 @@ def assert_make_h5_attribute(group, system, attribute, **kwargs):
 
 def assert_make_h5(group, system, attr_to_save, **kwargs):
     """Make all the subgroups and datasets of the h5 file."""
-    if not isinstance(system, SystemOfSystems):
-        for attr in attr_to_save:
-            assert_make_h5_attribute(group, system, attr, **kwargs)
-    else:
-        for s in system.sub_systems.values():
-            sg = assert_make_h5_subgroup(group, s.name, **kwargs)
-            if s.description is not None:
-                sg.attrs["description"] = s.description
-            assert_make_h5(sg, s, attr_to_save, **kwargs)
+    for attr in attr_to_save:
+        assert_make_h5_attribute(group, system, attr, **kwargs)
+    for s in system.sub_systems.values():
+        sg = assert_make_h5_subgroup(group, s.name, **kwargs)
+        if s.description is not None:
+            sg.attrs["description"] = s.description
+        assert_make_h5(sg, s, attr_to_save, **kwargs)
 
 
 class SimulationSaver(object):
@@ -129,15 +127,13 @@ class SimulationSaver(object):
 
         This a recursive function. The data are saved at index `count`.
         """
-        if not isinstance(system, SystemOfSystems):
-            for attr in self._attr_to_save:
-                for v in getattr(system, attr).values():
-                    d = group[attr + "/" + v.name]
-                    d[count] = v.value
-        else:
-            for s in system.sub_systems.values():
-                g = group[s.name]
-                self._save(count, g, s)
+        for attr in self._attr_to_save:
+            for v in getattr(system, attr).values():
+                d = group[attr + "/" + v.name]
+                d[count] = v.value
+        for s in system.sub_systems.values():
+            g = group[s.name]
+            self._save(count, g, s)
 
     def save(self, system):
         """Save the current state of the system to the file."""
