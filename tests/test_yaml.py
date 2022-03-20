@@ -54,7 +54,7 @@ if __name__ == "__main__":
         parents={'x1': sys1},
         transition_func=trans_func_2
     )
-    sos1 = SystemOfSystems(
+    sos1 = System(
         name="combined_system_1",
         sub_systems=[sys1, sys2])
     sys3 = SystemFromFunction(
@@ -70,14 +70,14 @@ if __name__ == "__main__":
             Parameter(0.2, "meters / second", "r4"),
             Parameter(0.1, "1 / second", "c24")
         ],
-        parents={'x2': sos1},
+        parents={'x2': sys2},
         transition_func=trans_func_4
     )
-    sos2 = SystemOfSystems(
+    sos2 = System(
         name="combined_system_2",
         sub_systems=[sys3, sys4]
     )
-    sys = SystemOfSystems(
+    sys = System(
         name="super_system",
         sub_systems=[sos1, sos2]
     )
