@@ -13,7 +13,6 @@ from cdcm import *
 
 
 class TestQuantities():
-
     """
     Class for testing quantities
     """
@@ -27,7 +26,7 @@ class TestQuantities():
         # Testing integer value
         p = Quantity(1, "m", "random_name", False, "description")
         # It tests Quantity class with arrays
-        arr_float = np.array((1.12, 2.2332, 3.34, 4.5326, 5.67))
+        arr_float = np.array([1.12, 2.2332, 3.34, 4.5326, 5.67])
         p = Quantity(arr_float, "m", "random_name", False, "description")
         arr_int = np.array((1, 2, 3, 4, 5))
         p = Quantity(arr_int, "m", "random_name", False, "description")
@@ -110,11 +109,6 @@ class TestQuantities():
         """
         Tests the description in Quantity class
         """
-        p = Quantity(2, "degC", "random name", True, None)
+        p = Quantity(2, "degC", "random name", True)
         p = Quantity(2, "degC", "random_name", False, "description")
 
-
-if __name__ == '__main__':
-    p = PhysicalStateVariable(value=10.0, units="meters", name="length", 
-                              track=True, description="description")
-    print(p)

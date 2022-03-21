@@ -31,7 +31,7 @@ def _assert_and_make_dict(obj, NamedType):
                  that are of type `NamedType`.
     NamedType -- A type instances of which have an attribute called "name".
 
-    Returns the a dictionary with keys that are strings made out of the name
+    Returns a dictionary with keys that are strings made out of the name
     of the objects and values that are the objects.
     """
     if isinstance(obj, NamedType):

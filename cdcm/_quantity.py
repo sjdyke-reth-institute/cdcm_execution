@@ -6,13 +6,6 @@ Author:
 
 Date:
     3/10/2022
-
-TODO:
-    - Figure out how to enforce SI units.
-    - Passing user-defined units should be a feature,
-      as default `pint.UnitRegistry()` supports limited
-      denominations.
-
 """
 
 
@@ -26,11 +19,11 @@ from collections.abc import Sequence
 from . import NamedType, trim_str
 
 
+
 ureg = pint.UnitRegistry()
 
 
 class Quantity(NamedType):
-
     """
     Defines a CDCM quantity. The quantity knows its units.
     It has a decscription that explains what it is.
@@ -62,7 +55,7 @@ class Quantity(NamedType):
         elif isinstance(value, float):
             dtype = float
             shape = ()
-        elif isinstance(value, Sequence):
+        elif isinstance(value, (list, tuple, np.ndarray)):
             value = np.array(value)
             dtype = value.dtype
             shape = value.shape
@@ -150,7 +143,6 @@ class Quantity(NamedType):
 
 
 class Parameter(Quantity):
-
     """
     A class representing a parameter of a system.
     """
@@ -159,7 +151,6 @@ class Parameter(Quantity):
 
 
 class StateVariable(Quantity):
-
     """
     A class representing a system state variable.
     """
@@ -168,7 +159,6 @@ class StateVariable(Quantity):
 
 
 class PhysicalStateVariable(StateVariable):
-
     """
     A class representing a physical system state variable.
     """
@@ -177,7 +167,6 @@ class PhysicalStateVariable(StateVariable):
 
 
 class HealthStateVariable(StateVariable):
-
     """
     A class representing a health state variable.
     """
