@@ -66,8 +66,21 @@ class System(NamedType):
 
     Keyword Arguments
     name        -- A name for the system.
-    systems     -- A dictionary of systems. The keys must be strings. The
-                   values must be `System`. Alternatively, a list of systems.
+    state       -- The states of the system. A dictionary the keys of
+                   which are strings and the values are 
+                   `PhysicalStateVariable` or `HealthStateVariable`.
+                   Alternatively, a list of `PhysicalStateVariables`
+                   or `HealthStateVariables`.
+    parameters  -- The parameters of the system. A dictionary the keys
+                   of which are strings and the values are `Parameter`.
+                   Alternatively, a list of `Parameter`.
+    parents     -- A dictionary of keys which are strings and values
+                   that are `System`. The keys correspond to inputs that
+                   this system needs from the value `System` for
+                   calculating the next state.
+    sub_systems -- A dictionary of systems. The keys must be strings. 
+                   The values must be `System`. Alternatively, a list of
+                   systems.
     description -- A description for the system.
     """
 
@@ -126,16 +139,6 @@ class System(NamedType):
             if isinstance(s, Type):
                 res[n] = s
         return res
-
-    @property
-    def name(self):
-        """Return the name of the object."""
-        return self._name
-
-    @property
-    def description(self):
-        """Return the description of the object."""
-        return self._description
 
     @property
     def parameters(self):

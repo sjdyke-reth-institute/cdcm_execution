@@ -24,7 +24,7 @@ class NamedType(ABC):
     description -- The description of the object. Optional.
     """
 
-    def __init__(self, *, name="unamed_named_type", description=""):
+    def __init__(self, name="unamed_named_type", description=""):
         assert isinstance(name, str), \
             f"{name} is not a string. Names must be strings!"
         self._name = name
