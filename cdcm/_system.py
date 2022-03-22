@@ -108,6 +108,21 @@ class System(NamedType):
         self.parameters = parameters
         self.parents = parents
         self.sub_systems = sub_systems
+        self._father = None
+
+    @property
+    def father(self):
+        """Get the father of this system.
+
+        The father of this system is the system that contains it.
+        """
+        return self._father
+
+    @father.setter
+    def father(self, father):
+        """Set the father of this subsystem."""
+        # TODO: Continue the implementation of father.
+        pass
 
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`."""
