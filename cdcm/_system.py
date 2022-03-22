@@ -67,7 +67,7 @@ class System(NamedType):
     Keyword Arguments
     name        -- A name for the system.
     state       -- The states of the system. A dictionary the keys of
-                   which are strings and the values are 
+                   which are strings and the values are
                    `PhysicalStateVariable` or `HealthStateVariable`.
                    Alternatively, a list of `PhysicalStateVariables`
                    or `HealthStateVariables`.
@@ -75,10 +75,46 @@ class System(NamedType):
                    of which are strings and the values are `Parameter`.
                    Alternatively, a list of `Parameter`.
     parents     -- A dictionary of keys which are strings and values
-                   that are `System`. The keys correspond to inputs that
-                   this system needs from the value `System` for
-                   calculating the next state.
-    sub_systems -- A dictionary of systems. The keys must be strings. 
+                   that are tuples of type `System` or of type
+                   `(str, System)`. In any case, the keys correspond the
+                   name of the input variable used locally by this
+                   object. For the values the story is as follows. If
+                   the value is just a `System` object, then we assume
+                   that this object has a state with the same name as
+                   the corresponding key. If the value is
+                   `(str, System)`, then we assume that the first item
+                   of the tupe is the name of the input variable in the
+                   `System` object.
+
+                   Here is an example:
+                   ```
+                   parents = {
+                        "input_var_1": system_object_1,
+                        "input_var_2": ("foo", system_object_2)
+                   }
+                   ```
+                   This is a dictionary with two items. The first item
+                   tells us that there is an input named `input_var_1`
+                   which can be found in the object `system_object_1`.
+                   That is, the variable can be accessed through
+                   `system_object_1.state["input_var_1"]`.
+                   The second item, tells us that there is another
+                   input, which we name "input_var_2", that actually
+                   corresponds to a state called "foo" in
+                   `system_object_2`. It can be accessed through
+                   `system_object_2.state["foo"]`.
+
+                    Despite accepting both kinds of parents, the class
+                    using the second type of specification to store
+                    things locally because it is more general. So,
+                    the first item becomes
+                    `"input_var_1": ("input_var_1", system_object_1)`
+                    in the internal representation.
+
+                    Now when you inherit from this class, you can
+                    access these input variables from the `get_parent()`
+                    method by just providing the local name.
+    sub_systems -- A dictionary of systems. The keys must be strings.
                    The values must be `System`. Alternatively, a list of
                    systems.
     description -- A description for the system.
@@ -109,13 +145,32 @@ class System(NamedType):
                 f"The dictionary vaklue {p} is not a Parameter."
         assert isinstance(parents, dict),\
             "The parents must be a dictionary."
-        for k, v in parents.items():
-            assert isinstance(k, str),\
+        new_parents = {}
+        for local_name, value in parents.items():
+            assert isinstance(local_name, str),\
                 "Each key in the parents dictionary must be a string."
-            assert isinstance(v, System),\
-                "Each value in the parents dictionary must be a System."
-            assert v.has_state(k), \
-                f'Parent {v.name} does not have a state named {k}'
+            if isinstance(value, System):
+                assert value.has_state(local_name),\
+                    (f"Parent {value.name} does not have a state named"
+                     + f"{local_name}")
+                new_parents.update({local_name: (local_name, value)})
+            elif isinstance(value, tuple):
+                assert len(value) == 2,\
+                    "The value must be a tuple with two items."
+                remote_name = value[0]
+                assert isinstance(remote_name, str),\
+                    "The first item of the tuple must be a string."
+                system = value[1]
+                assert isinstance(system, System),\
+                    "The second item must be a System."
+                assert system.has_state(remote_name),\
+                    (f"Parent {value.name} does not have a state named"
+                     + f"{local_name}")
+                new_parents.update({local_name: (remote_name, system)})
+            else:
+                raise TypeError(
+                    "Please consult the docstring for the correct type"
+                    + " for the parent input of a system.")
         # Initialize variables
         self._name = name
         self._description = description
@@ -165,11 +220,12 @@ class System(NamedType):
         """Return the parents of the object."""
         return self._parents
 
-    def get_parent_state(self, name):
+    def get_parent_state(self, local_name):
         """
         Get the current version of a parent state.
         """
-        return self.parents[name].state[name]
+        remote_name, system = self.parents[local_name]
+        return system.state[remote_name]
 
     @property
     def sub_systems(self):

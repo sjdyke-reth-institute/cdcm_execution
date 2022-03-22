@@ -15,9 +15,7 @@ __all__ = ['Quantity', 'Parameter',
 
 import numpy as np
 import pint
-from collections.abc import Sequence
-from . import NamedType, trim_str
-
+from . import NamedType
 
 
 ureg = pint.UnitRegistry()
@@ -31,8 +29,9 @@ class Quantity(NamedType):
 
     Arguments:
 
-        value:      The value of the quantity. Must be an int, a double or a
-                    numpy array of ints or floating point numbers.
+        value:      The value of the quantity. Must be an int, a double
+                    or a numpy array of ints or floating point numbers.
+                    We also allow it to be a string.
         units:      Must be a string or a pint object that describes an SI
                     physical unit.
         name:       A string. The name of the quantity. Please be expressive.
@@ -54,6 +53,10 @@ class Quantity(NamedType):
             shape = ()
         elif isinstance(value, float):
             dtype = float
+            shape = ()
+        elif isinstance(value, str):
+            dtype = str
+            # TODO: Check if this is the correct thing to do for HDF5.
             shape = ()
         elif isinstance(value, (list, tuple, np.ndarray)):
             value = np.array(value)

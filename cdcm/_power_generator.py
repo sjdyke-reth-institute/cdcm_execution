@@ -24,7 +24,7 @@ class PowerGenerator(System):
     variable. It is already added. But the inheriting classes must
     make sure that they calculate `power_output` in the method
     `calculate_my_next_state()`.
-    
+
     See `System` for the definition of the keyword arguments.
     """
 
@@ -59,27 +59,31 @@ class DummyPowerGenerator(PowerGenerator):
     Use it for test purposes only.
 
     Keyword Arguments:
-    power_output -- The constant value of the power output.
+    nominal_power_output -- The constant value of the power output in
+                            kWh.
+
+    See `System` for the definition of the keyword arguments.
     """
 
     def __init__(
         self,
         name="dummy_power_generator",
-        nominal_power_output=Parameter(
-            value=10,
+        nominal_power_output=10.0,
+        description="A power generator that generates power out of nothing."
+    ):
+        assert isinstance(nominal_power_output, float)
+        assert nominal_power_output >= 0.0
+        nominal_power_output = Parameter(
+            value=nominal_power_output,
             units="kWh",
             name="nominal_power_output",
             description="The constant power output."
-        ),
-        description="A power generator that generates power out of nothing."
-    ):
+        )
         super().__init__(
             name=name,
             parameters=nominal_power_output,
             description=description
         )
-        assert nominal_power_output.value >= 0.0
-        assert nominal_power_output.units == "kWh"
 
     def _calculate_my_next_state(self, dt):
         self._next_state["power_output"] = (
