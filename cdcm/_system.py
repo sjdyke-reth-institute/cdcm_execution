@@ -118,6 +118,8 @@ class System(NamedType):
                    The values must be `System`. Alternatively, a list of
                    systems.
     description -- A description for the system.
+
+    TODO: The names of the subsystems should be unique. Fix this.
     """
 
     def __init__(
@@ -145,39 +147,12 @@ class System(NamedType):
                 f"The dictionary vaklue {p} is not a Parameter."
         assert isinstance(parents, dict),\
             "The parents must be a dictionary."
-        new_parents = {}
-        for local_name, value in parents.items():
-            assert isinstance(local_name, str),\
-                "Each key in the parents dictionary must be a string."
-            if isinstance(value, System):
-                assert value.has_state(local_name),\
-                    (f"Parent {value.name} does not have a state named"
-                     + f"{local_name}")
-                new_parents.update({local_name: (local_name, value)})
-            elif isinstance(value, tuple):
-                assert len(value) == 2,\
-                    "The value must be a tuple with two items."
-                remote_name = value[0]
-                assert isinstance(remote_name, str),\
-                    "The first item of the tuple must be a string."
-                system = value[1]
-                assert isinstance(system, System),\
-                    "The second item must be a System."
-                assert system.has_state(remote_name),\
-                    (f"Parent {value.name} does not have a state named"
-                     + f"{local_name}")
-                new_parents.update({local_name: (remote_name, system)})
-            else:
-                raise TypeError(
-                    "Please consult the docstring for the correct type"
-                    + " for the parent input of a system.")
-        # Initialize variables
         self._name = name
         self._description = description
         self._current_state = state
         self._next_state = deepcopy(state)
         self._parameters = parameters
-        self._parents = parents
+        self.parents = parents
 
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`."""
@@ -219,6 +194,57 @@ class System(NamedType):
     def parents(self):
         """Return the parents of the object."""
         return self._parents
+
+    @parents.setter
+    def parents(self, new_parents):
+        """Sets the parents from a dictionary.
+
+        See the class docstring for the format of the `new_parents`
+        dictionary.
+
+        Be careful! This class replaces the current parents dictionary.
+        Use the `add_parents_from_dict()` method if you want to add
+        parents to the existing list from a dictionary.
+        Use the `add_parent()` method if you want to add a single
+        new parent.
+        """
+        self._parents = {}
+        self.add_parents_from_dict(new_parents)
+
+    def add_parents_from_dict(self, new_parents):
+        """Adds more parents from a dictionary.
+
+        See the class docstring for the format of the `new_parents`
+        dictionary.
+        """
+        for local_name, value in new_parents.items():
+            if not isinstance(value, tuple):
+                value = (value,)
+            assert len(value) <= 2,\
+                "See the class docstring for details on the parents dict."
+            self.add_parent(local_name, *value)
+
+    def add_parent(self, local_name, system, remote_name=None):
+        """Adds a new parent variable to the class.
+
+        Arguments:
+        local_name -- The name that is used locally for the input
+                      variable. If `remote_name` is not specified,
+                      then we assume that `remote_name == local_name`.
+        system     -- The system from which to take the variable.
+
+        Keyword Arguments:
+        remote_name -- The name of the variable that is used in `styem`.
+        """
+        assert isinstance(local_name, str)
+        assert isinstance(system, System)
+        if remote_name is None:
+            remote_name = local_name
+        else:
+            assert isinstance(remote_name, str)
+        assert local_name not in self.parents.keys(),\
+            f"The parents dictionary already includes a key `{local_name}`."
+        self._parents.update({local_name: (remote_name, system)})
 
     def get_parent_state(self, local_name):
         """
@@ -292,10 +318,9 @@ class System(NamedType):
         dres["health_state"] = _dict_to_yaml(self.health_state)
         dres["parameters"] = _dict_to_yaml(self.parameters)
         parents_dict = {}
-        for k, v in self.parents.items():
-            parents_dict[k] = v.name
+        for local_name, (remote_name, system) in self.parents.items():
+            parents_dict[local_name] = {"remote_name": remote_name,
+                                        "system_name": system.name}
         dres["parents"] = parents_dict
-        return res
-        dres = res[self.name]
         dres["sub_systems"] = _dict_to_yaml(self.sub_systems)
         return res

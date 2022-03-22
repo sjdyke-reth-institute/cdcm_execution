@@ -66,8 +66,8 @@ class SystemFromFunction(System):
             inputs[k] = var.value
         for k, var in self.parameters.items():
             inputs[k] = var.value
-        for k, var in self.parents.items():
-            inputs[k] = var.state[k].value
+        for local_name in self.parents.keys():
+            inputs[local_name] = self.get_parent_state(local_name).value
         new_state = self._transition_func(dt, **inputs)
         for s, v in new_state.items():
             self._next_state[s].value = v
