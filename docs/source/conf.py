@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from urllib.parse import urlparse, parse_qs
 # sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../test_1'))
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -19,8 +20,8 @@ sys.path.insert(0, basedir)
 
 # -- Project information -----------------------------------------------------
 
-project = 'CDCM'
-copyright = '2021, Roman Ibrahimov'
+project = 'CDCM Reconfiguration'
+copyright = '2022, Roman Ibrahimov'
 author = 'Roman Ibrahimov'
 
 master_doc = "index"
@@ -34,10 +35,13 @@ release = '0.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+	# 'sphinxcontrib.visio'
+	]
+	# 'sphinxcontrib.visio'
 #    "sphinx_proof",
     # "myst_parser",
     # "sphinx_togglebutton",
-]
+# ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
