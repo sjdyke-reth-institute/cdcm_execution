@@ -22,23 +22,25 @@ ureg = pint.UnitRegistry()
 
 
 class Quantity(NamedType):
-    """
-    Defines a CDCM quantity. The quantity knows its units.
-    It has a decscription that explains what it is.
-    It has a name. And it has a value.
+    """Defines a CDCM quantity. 
+
+    The quantity knows its units. It has a decscription that explains
+    what it is. It has a name. And it has a value.
 
     Arguments:
 
-        value:      The value of the quantity. Must be an int, a double
-                    or a numpy array of ints or floating point numbers.
-                    We also allow it to be a string.
-        units:      Must be a string or a pint object that describes an SI
-                    physical unit.
-        name:       A string. The name of the quantity. Please be expressive.
-        track:      A boolean. If True the quantity will be tracked during
-                    simulatiojns. If False it will not be tracked.
-        desciption: A desciption of the quantity. Please be expressive.
-
+        value      -- The value of the quantity. Must be an int, a
+                      double or a numpy array of ints or floating point
+                      numbers. We also allow it to be a string.
+        units      -- Must be a string or a pint object that describes
+                      an SI physical unit.
+        name       -- A string. The name of the quantity. Please be
+                      expressive.
+        track      -- A boolean. If True the quantity will be tracked
+                      during simulations. If False it will not be
+                      tracked.
+        desciption -- A desciption of the quantity. Please be
+                      expressive.
     """
 
     def __init__(self, value, units="", name="quantity", track=True,
@@ -67,7 +69,6 @@ class Quantity(NamedType):
                                + " quantity {value}")
         ureg.check(units)
         assert isinstance(track, bool)
-        # Assign values
         self._dtype = dtype
         self._shape = shape
         self._value = value
@@ -112,11 +113,10 @@ class Quantity(NamedType):
         return self._track
 
     def __str__(self):
-        """
-        Return a string representation of the Quantity.
+        """Return a string representation of the Quantity.
 
-        TODO: Make the formating variable and debug approach on numpy arrays.
-        Make units optional.
+        TODO: Make the formating variable and debug approach on numpy
+        arrays. Make units optional.
         """
         if isinstance(self._value, float):
             res = f"{self.value:9.5f}"
@@ -146,32 +146,24 @@ class Quantity(NamedType):
 
 
 class Parameter(Quantity):
-    """
-    A class representing a parameter of a system.
-    """
+    """A class representing a parameter of a system."""
 
     pass
 
 
 class StateVariable(Quantity):
-    """
-    A class representing a system state variable.
-    """
+    """A class representing a system state variable."""
 
     pass
 
 
 class PhysicalStateVariable(StateVariable):
-    """
-    A class representing a physical system state variable.
-    """
+    """A class representing a physical system state variable."""
 
     pass
 
 
 class HealthStateVariable(StateVariable):
-    """
-    A class representing a health state variable.
-    """
+    """A class representing a health state variable."""
 
     pass

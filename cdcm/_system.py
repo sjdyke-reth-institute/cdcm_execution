@@ -9,7 +9,7 @@ Date:
 """
 
 
-__all__ = ["System", "_assert_and_make_dict", "_dict_to_yaml"]
+__all__ = ["System", "_dict_to_yaml"]
 
 
 import yaml
@@ -22,39 +22,8 @@ from . import (NamedType,
                HealthStateVariable)
 
 
-def _assert_and_make_dict(obj, NamedType):
-    """Check if the `obj` is a dict and turn it into a dict if it is not.
-
-    Arguments
-    obj       -- Either an object of type `NamedType` or a Sequence of type
-                `NamedType` or a `dict` with keys that are strings and values
-                 that are of type `NamedType`.
-    NamedType -- A type instances of which have an attribute called "name".
-
-    Returns a dictionary with keys that are strings made out of the name
-    of the objects and values that are the objects.
-    """
-    if isinstance(obj, NamedType):
-        obj = [obj]
-    if isinstance(obj, Sequence):
-        new_obj = {}
-        for o in obj:
-            assert isinstance(o, NamedType), \
-                f"{o} is not of type {NamedType}"
-            assert hasattr(o, "name"), \
-                f"{o} does not have an attribute called 'name'"
-            new_obj.update({o.name: o})
-        return new_obj
-    assert isinstance(obj, dict), \
-        (f"{obj} is not must either be a NamedType, a Sequence[NamedType]"
-         + " or a Dictionary[String, NamedType].")
-    for o in obj.values():
-        assert isinstance(o, NamedType), f"{o} is not of type {NamedType}"
-    return obj
-
-
 def _dict_to_yaml(data):
-    """Turns a dictionary of object to a dictionary of dictionaries."""
+    """Turns a dictionary of objects to a dictionary of dictionaries."""
     res = {}
     for k, v in data.items():
         res.update(v.to_yaml())
@@ -104,20 +73,22 @@ class System(NamedType):
                    `system_object_2`. It can be accessed through
                    `system_object_2.state["foo"]`.
 
-                    Despite accepting both kinds of parents, the class
-                    using the second type of specification to store
-                    things locally because it is more general. So,
-                    the first item becomes
-                    `"input_var_1": ("input_var_1", system_object_1)`
-                    in the internal representation.
+                   Despite accepting both kinds of parents, the class
+                   using the second type of specification to store
+                   things locally because it is more general. So,
+                   the first item becomes
+                   `"input_var_1": ("input_var_1", system_object_1)`
+                   in the internal representation.
 
-                    Now when you inherit from this class, you can
-                    access these input variables from the `get_parent()`
-                    method by just providing the local name.
+                   Now when you inherit from this class, you can
+                   access these input variables from the `get_parent()`
+                   method by just providing the local name.
     sub_systems -- A dictionary of systems. The keys must be strings.
                    The values must be `System`. Alternatively, a list of
                    systems.
     description -- A description for the system.
+
+    TODO: The names of the subsystems should be unique. Fix this.
     """
 
     def __init__(
@@ -129,81 +100,140 @@ class System(NamedType):
         sub_systems={},
         description=""
     ):
-        # Sanity check
-        sub_systems = _assert_and_make_dict(sub_systems, System)
-        self._sub_systems = sub_systems
         super().__init__(
             name=name,
             description=description
         )
-        state = _assert_and_make_dict(state, StateVariable)
-        parameters = _assert_and_make_dict(parameters, Parameter)
-        assert isinstance(parameters, dict),\
-            "The parameters must be a dictionary."
-        for p in parameters.values():
-            assert isinstance(p, Parameter),\
-                f"The dictionary vaklue {p} is not a Parameter."
-        assert isinstance(parents, dict),\
-            "The parents must be a dictionary."
-        new_parents = {}
-        for local_name, value in parents.items():
-            assert isinstance(local_name, str),\
-                "Each key in the parents dictionary must be a string."
-            if isinstance(value, System):
-                assert value.has_state(local_name),\
-                    (f"Parent {value.name} does not have a state named"
-                     + f"{local_name}")
-                new_parents.update({local_name: (local_name, value)})
-            elif isinstance(value, tuple):
-                assert len(value) == 2,\
-                    "The value must be a tuple with two items."
-                remote_name = value[0]
-                assert isinstance(remote_name, str),\
-                    "The first item of the tuple must be a string."
-                system = value[1]
-                assert isinstance(system, System),\
-                    "The second item must be a System."
-                assert system.has_state(remote_name),\
-                    (f"Parent {value.name} does not have a state named"
-                     + f"{local_name}")
-                new_parents.update({local_name: (remote_name, system)})
-            else:
-                raise TypeError(
-                    "Please consult the docstring for the correct type"
-                    + " for the parent input of a system.")
-        # Initialize variables
-        self._name = name
-        self._description = description
-        self._current_state = state
-        self._next_state = deepcopy(state)
-        self._parameters = parameters
-        self._parents = parents
+        self.state = state
+        self.parameters = parameters
+        self.parents = parents
+        self.sub_systems = sub_systems
+        self._father = None
+
+    @property
+    def father(self):
+        """Get the father of this system.
+
+        The father of this system is the system that contains it.
+        """
+        return self._father
+
+    @father.setter
+    def father(self, father):
+        """Set the father of this subsystem."""
+        # TODO: Continue the implementation of father.
+        pass
 
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`."""
         return state_name in self.state.keys()
 
     def has_parameter(self, param_name):
-        """Return True if the system has a parameter called `param_name`."""
+        """Return True if the system has a parameter called
+        `param_name`."""
         return param_name in self.parameters.keys()
 
     def _get_state_of_type(self, Type):
-        """Return a dictionary with all state components of type `Type`."""
+        """Return a dictionary with all state components of type
+        `Type`."""
         res = {}
         for n, s in self.state.items():
             if isinstance(s, Type):
                 res[n] = s
         return res
 
+    def _add_type(self, local_name, obj, Type, out_dict):
+        """Add a new `system` which is referred by `name`."""
+        assert isinstance(local_name, str),\
+            "The name must be a string."
+        assert isinstance(obj, Type),\
+            f"You must supply a {Type} object."
+        new_item = {local_name: obj}
+        out_dict.update(new_item)
+        return new_item
+
+    def _add_types(self, new_objs, Type, out_dict):
+        """Add many subsystems from a dictionary or a list.
+
+        Arguments:
+        objs --     The objects to be added. Either a dictionary with
+                    keys that are strings and values that are `Type` or
+                    a `Sequence` of `Type`. In the latter case, we
+                    assume that `Type` the objects are also `NamedType`,
+                    i.e., they have a name attribute. If the do, the
+                    name attribute is used as a key.
+        Type     -- The type of the objects being added.
+        out_dict -- The dictionary on which to add the objects.
+        """
+        if isinstance(new_objs, Type):
+            new_objs = [new_objs]
+        if isinstance(new_objs, Sequence):
+            tmp = {}
+            for obj in new_objs:
+                assert isinstance(obj, NamedType),\
+                    "The objects must be of `NamedType`."
+                tmp.update({obj.name: obj})
+            new_objs = tmp
+        else:
+            assert isinstance(new_objs, dict),\
+                "You must supply a dictionary (or a list) of subsystems."
+        for local_name, obj in new_objs.items():
+            self._add_type(local_name, obj, Type, out_dict)
+        return new_objs
+
     @property
     def parameters(self):
         """Return the parameters of the object."""
         return self._parameters
 
+    @parameters.setter
+    def parameters(self, new_parameters):
+        """Set the parameters from a dictionary or a list."""
+        self._parameters = {}
+        self.add_parameters(new_parameters)
+
+    def add_parameter(self, new_parameter):
+        """Add a new parameter."""
+        self._add_type(new_parameter, Parameter, self._parameters)
+
+    def add_parameters(self, new_parameters):
+        """Add new parameters from a dictionary or a list."""
+        self._add_types(new_parameters, Parameter, self._parameters)
+
     @property
     def state(self):
         """Return the current state."""
         return self._current_state
+
+    @state.setter
+    def state(self, new_state):
+        """Set the states.
+
+        Be careful, it removes the old states.
+        """
+        self._current_state = {}
+        self._next_state = {}
+        self.add_states(new_state)
+
+    def add_state(self, new_state):
+        """Add a single new state variable."""
+        new_item = self._add_type(
+            new_state,
+            StateVariable,
+            self._current_state
+        )
+        self._next_state.update(deepcopy(new_item))
+        return new_item
+
+    def add_states(self, new_states):
+        """Add many new states from a dictionary or a list."""
+        new_items = self._add_types(
+            new_states,
+            StateVariable,
+            self._current_state
+        )
+        self._next_state.update(deepcopy(new_items))
+        return new_items
 
     @property
     def physical_state(self):
@@ -220,6 +250,57 @@ class System(NamedType):
         """Return the parents of the object."""
         return self._parents
 
+    @parents.setter
+    def parents(self, new_parents):
+        """Sets the parents from a dictionary.
+
+        See the class docstring for the format of the `new_parents`
+        dictionary.
+
+        Be careful! This class replaces the current parents dictionary.
+        Use the `add_parents_from_dict()` method if you want to add
+        parents to the existing list from a dictionary.
+        Use the `add_parent()` method if you want to add a single
+        new parent.
+        """
+        self._parents = {}
+        self.add_parents_from_dict(new_parents)
+
+    def add_parents_from_dict(self, new_parents):
+        """Adds more parents from a dictionary.
+
+        See the class docstring for the format of the `new_parents`
+        dictionary.
+        """
+        for local_name, value in new_parents.items():
+            if not isinstance(value, tuple):
+                value = (value,)
+            assert len(value) <= 2,\
+                "See the class docstring for details on the parents dict."
+            self.add_parent(local_name, *value)
+
+    def add_parent(self, local_name, system, remote_name=None):
+        """Adds a new parent variable to the class.
+
+        Arguments:
+        local_name -- The name that is used locally for the input
+                      variable. If `remote_name` is not specified,
+                      then we assume that `remote_name == local_name`.
+        system     -- The system from which to take the variable.
+
+        Keyword Arguments:
+        remote_name -- The name of the variable that is used in `styem`.
+        """
+        assert isinstance(local_name, str)
+        assert isinstance(system, System)
+        if remote_name is None:
+            remote_name = local_name
+        else:
+            assert isinstance(remote_name, str)
+        assert local_name not in self.parents.keys(),\
+            f"The parents dictionary already includes a key `{local_name}`."
+        self._parents.update({local_name: (remote_name, system)})
+
     def get_parent_state(self, local_name):
         """
         Get the current version of a parent state.
@@ -231,6 +312,26 @@ class System(NamedType):
     def sub_systems(self):
         """Return the subsystems."""
         return self._sub_systems
+
+    @sub_systems.setter
+    def sub_systems(self, new_sub_systems):
+        """Set the subsystems of the system from a dictionary.
+
+        Arguments:
+        new_sub_systems -- A dictionary of systems. The keys must be
+                           strings. The values must be `System`.
+                           Alternatively, a list of systems.
+        """
+        self._sub_systems = {}
+        self.add_subystems(new_sub_systems)
+
+    def add_subystem(self, local_name, system):
+        """Add a new `system` which is referred by `name`."""
+        self._add_type(local_name, System, self._sub_systems)
+
+    def add_subystems(self, sub_systems):
+        """Add many subsystems from a dictionary."""
+        self._add_types(sub_systems, System, self._sub_systems)
 
     def _calculate_my_next_state(self, dt):
         """Calculate the next sate of the system using the current one.
@@ -244,17 +345,20 @@ class System(NamedType):
         the current state of the system and that access to all input
         variables is available through `self.parents`.
 
-        This function should not return anything. It should just calculate
-        the next state and store the result in `self._next_state`.
+        This function should not return anything. It should just 
+        calculate the next state and store the result in
+        `self._next_state`.
 
         By default, this function does not do anything.
 
-        The user has to implement it if the states of the system have dynamics.
+        The user has to implement it if the states of the system have
+        dynamics.
         """
         pass
 
     def _calculate_next_state(self, dt):
-        """Transitions the state of the system and of all sub systems."""
+        """Transitions the state of the system and of all sub
+        systems."""
         self._calculate_my_next_state(dt)
         for s in self.sub_systems.values():
             s._calculate_next_state(dt)
@@ -292,10 +396,9 @@ class System(NamedType):
         dres["health_state"] = _dict_to_yaml(self.health_state)
         dres["parameters"] = _dict_to_yaml(self.parameters)
         parents_dict = {}
-        for k, v in self.parents.items():
-            parents_dict[k] = v.name
+        for local_name, (remote_name, system) in self.parents.items():
+            parents_dict[local_name] = {"remote_name": remote_name,
+                                        "system_name": system.name}
         dres["parents"] = parents_dict
-        return res
-        dres = res[self.name]
         dres["sub_systems"] = _dict_to_yaml(self.sub_systems)
         return res

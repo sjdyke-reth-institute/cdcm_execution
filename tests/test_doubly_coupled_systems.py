@@ -43,7 +43,7 @@ if __name__ == "__main__":
         parents={'x1': sys1},
         transition_func=trans_func_2)
     # and then connect them
-    sys1.parents["x2"] = sys2
+    sys1.add_parent("x2", sys2)
     # now everything is okay
     sys = System(
         name="combined_system",
