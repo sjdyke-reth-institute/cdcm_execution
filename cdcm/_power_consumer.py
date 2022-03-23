@@ -29,7 +29,7 @@ class PowerConsumer(System):
     in a `PowerDistributionNetwork`.
 
     Keyword Arguments
-    power_inlet --
+    power_input --
 
     See `System` for the definition for the rest of the keyword
     arguments.
@@ -37,7 +37,7 @@ class PowerConsumer(System):
 
     def __init__(
         self,
-        power_inlet=None,
+        power_input=None,
         name="power_consumer",
         state={},
         parameters={},
