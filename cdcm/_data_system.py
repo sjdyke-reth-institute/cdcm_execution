@@ -25,13 +25,13 @@ class DataSystem(System):
     Keyword Arguments:
     name        -- A name for the system.
     states      -- The dictionary of system states. See `System`.
-    datasets    -- A dictionary the same keys as `states` and values that are
-                   `Iterable` objects containing data.
+    datasets    -- A dictionary the same keys as `states` and values
+                   that are `Iterable` objects containing data.
     description -- A description for the object.
 
     Note that this class completely ignores dt.
-    So the user must be very careful to make sure that the data fed to this
-    class follow the right timestep.
+    So the user must be very careful to make sure that the data fed to
+    this class follow the right timestep.
 
     TODO: Make a version of this that tracks time.
     """

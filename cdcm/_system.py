@@ -108,21 +108,26 @@ class System(NamedType):
         self.parameters = parameters
         self.parents = parents
         self.sub_systems = sub_systems
-        self._father = None
+        self._super_system = None
 
     @property
-    def father(self):
-        """Get the father of this system.
+    def super_system(self):
+        """Get the system that contains this system, it there is any."""
+        return self._super_system
 
-        The father of this system is the system that contains it.
-        """
-        return self._father
+    @super_system.setter
+    def super_system(self, new_super_system):
+        """Set the super system of this subsystem."""
+        assert isinstance(new_super_system, System)
+        self._super_system = new_super_system
 
-    @father.setter
-    def father(self, father):
-        """Set the father of this subsystem."""
-        # TODO: Continue the implementation of father.
-        pass
+    @property
+    def absname(self):
+        """Get the absolute name of this system."""
+        if self.super_system is None:
+            return self.name
+        else:
+            return self.super_system.absname + "/" + self.name
 
     def has_state(self, state_name):
         """Return True if the system has a state called `state_name`."""
@@ -192,9 +197,14 @@ class System(NamedType):
         self._parameters = {}
         self.add_parameters(new_parameters)
 
-    def add_parameter(self, new_parameter):
+    def add_parameter(self, local_name, new_parameter):
         """Add a new parameter."""
-        self._add_type(new_parameter, Parameter, self._parameters)
+        self._add_type(
+            local_name,
+            new_parameter,
+            Parameter,
+            self._parameters
+        )
 
     def add_parameters(self, new_parameters):
         """Add new parameters from a dictionary or a list."""
@@ -215,9 +225,10 @@ class System(NamedType):
         self._next_state = {}
         self.add_states(new_state)
 
-    def add_state(self, new_state):
+    def add_state(self, local_name, new_state):
         """Add a single new state variable."""
         new_item = self._add_type(
+            local_name,
             new_state,
             StateVariable,
             self._current_state
@@ -327,11 +338,23 @@ class System(NamedType):
 
     def add_subystem(self, local_name, system):
         """Add a new `system` which is referred by `name`."""
-        self._add_type(local_name, System, self._sub_systems)
+        self._add_type(
+            local_name,
+            system,
+            System,
+            self._sub_systems
+        )
+        system.super_system = self
 
     def add_subystems(self, sub_systems):
         """Add many subsystems from a dictionary."""
-        self._add_types(sub_systems, System, self._sub_systems)
+        new_sub_systems = self._add_types(
+            sub_systems,
+            System,
+            self._sub_systems
+        )
+        for system in new_sub_systems.values():
+            system.super_system = self
 
     def _calculate_my_next_state(self, dt):
         """Calculate the next sate of the system using the current one.
@@ -398,7 +421,7 @@ class System(NamedType):
         parents_dict = {}
         for local_name, (remote_name, system) in self.parents.items():
             parents_dict[local_name] = {"remote_name": remote_name,
-                                        "system_name": system.name}
+                                        "system_name": system.absname}
         dres["parents"] = parents_dict
         dres["sub_systems"] = _dict_to_yaml(self.sub_systems)
         return res

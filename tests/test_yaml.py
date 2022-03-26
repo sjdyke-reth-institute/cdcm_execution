@@ -18,6 +18,7 @@ def trans_func_1(dt, *, x1, r1):
     new_state = {'x1': new_x1}
     return new_state
 
+
 def trans_func_2(dt, *, x2, x1, r2, c):
     """Another simple transition function."""
     new_x2 = x2 + r2 * dt + c * x1 * dt
