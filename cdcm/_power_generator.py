@@ -34,6 +34,7 @@ class PowerGenerator(System):
         state={},
         parameters={},
         parents={},
+        sub_systems={},
         description=""
     ):
         power_output = PhysicalStateVariable(
@@ -49,6 +50,7 @@ class PowerGenerator(System):
             state=state,
             parameters=parameters,
             parents=parents,
+            sub_systems=sub_systems,
             description=description
         )
 

@@ -42,6 +42,7 @@ class PowerConsumer(System):
         state={},
         parameters={},
         parents={},
+        sub_systems={},
         description=""
     ):
         required_power = PhysicalStateVariable(
@@ -61,6 +62,7 @@ class PowerConsumer(System):
             state=state,
             parameters=parameters,
             parents=parents,
+            sub_systems=sub_systems,
             description=description
         )
 
