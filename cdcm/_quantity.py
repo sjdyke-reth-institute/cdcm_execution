@@ -22,7 +22,7 @@ ureg = pint.UnitRegistry()
 
 
 class Quantity(NamedType):
-    """Defines a CDCM quantity. 
+    """Defines a CDCM quantity.
 
     The quantity knows its units. It has a decscription that explains
     what it is. It has a name. And it has a value.

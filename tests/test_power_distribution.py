@@ -56,4 +56,3 @@ for i in range(5):
     hs.unsafe_step(dt)
     print(f"generated power {d.generated_power},"
           + f" required power {d.required_power}")
-

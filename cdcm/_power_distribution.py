@@ -158,3 +158,7 @@ class PowerDistributionSystem(System):
         for c_name in self.consumer_names:
             s += self.get_parent_state(c_name).value
         return s
+
+    def _calculate_my_next_state(self):
+        """See the base class for the definition."""
+        pass
