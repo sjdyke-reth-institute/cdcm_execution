@@ -9,7 +9,7 @@ Date:
 """
 
 
-__all__ = ["PowerConsumer"]
+__all__ = ["PowerConsumer", "DummyPowerConsumer"]
 
 
 from . import System, PhysicalStateVariable, Parameter
@@ -45,18 +45,6 @@ class PowerConsumer(System):
         sub_systems={},
         description=""
     ):
-        required_power = PhysicalStateVariable(
-            value=0.0,
-            units="kWh",
-            name="required_power",
-            description="The power required to operate during the next"
-                        + " timestep."
-        )
-        state.update(
-            {
-                "required_power": required_power
-            }
-        )
         super().__init__(
             name=name,
             state=state,
@@ -65,6 +53,14 @@ class PowerConsumer(System):
             sub_systems=sub_systems,
             description=description
         )
+        required_power = PhysicalStateVariable(
+            value=0.0,
+            units="kWh",
+            name="required_power",
+            description="The power required to operate during the next"
+                        + " timestep."
+        )
+        self.add_state("required_power", required_power)
 
 
 class DummyPowerConsumer(PowerConsumer):
@@ -95,7 +91,7 @@ class DummyPowerConsumer(PowerConsumer):
         nominal_required_power = Parameter(
             value=nominal_required_power,
             units="kWh",
-            name="nominal_required_power_",
+            name="nominal_required_power",
             description="The constant power required to operate."
         )
         operation_mode = PhysicalStateVariable(

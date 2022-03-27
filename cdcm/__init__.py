@@ -19,3 +19,5 @@ from ._function_system import *
 from ._clock import *
 from ._simulation_saver import *
 from ._power_generator import *
+from ._power_consumer import *
+from ._power_distribution import *

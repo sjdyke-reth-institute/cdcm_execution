@@ -55,6 +55,7 @@ class PowerDistributionSystem(System):
         )
         self._generator_names = []
         self._consumer_names = []
+        self._battery_names = []
 
     @property
     def generator_names(self):
@@ -145,7 +146,7 @@ class PowerDistributionSystem(System):
             consumer_name,
             "required_power",
             system,
-            "power_output",
+            "required_power",
             PowerConsumer,
             self._consumer_names
         )
