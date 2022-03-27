@@ -66,8 +66,40 @@ class PowerDistributionSystem(System):
         """Get the names of the parents that are consumers."""
         return self._consumer_names
 
-    def add_generator(self, system, generator_name=None):
-        """Adds a generator to the distribution network.
+    def _connect_type(
+        self,
+        local_name,
+        remote_name,
+        system,
+        local_prefix,
+        Type,
+        type_names
+    ):
+        """Connects a system of `Type` to the distribution network.
+
+        Arguments:
+        local_lame   -- The local name used for the parent.
+        remote_name  -- The state of the `system` to which we wish to
+                        connect.
+        system       -- The system to connect to. Should be of type
+                        `Type`.
+        local_prefix -- This is used as the prefix of the name if
+                        `local_name` is `None`. In that case, the
+                        `local_name` becomes
+                        `prefix + "_" len(type_names)`.
+        type_names   -- This is a list of local names for the things
+                        that are conencted to this system. On return
+                        `local_name` is appended to it.
+        """
+        assert isinstance(system, Type), (
+            f"System {system.name} is not of type {Type}.")
+        if local_name is None:
+            local_name = f"{local_prefix}_{len(type_names)}"
+        type_names.append(local_name)
+        self.add_parent(local_name, system, remote_name)
+
+    def connect_generator(self, system, generator_name=None):
+        """Connects a generator to the distribution network.
 
         Arguments:
         system     -- The `PowerGenerator` system to connect.
@@ -79,21 +111,25 @@ class PowerDistributionSystem(System):
                           starts from zero and counts the number of
                           generators added so far.
         """
-        assert isinstance(system, PowerGenerator)
-        if generator_name is None:
-            generator_name = f"power_input_{len(self.generator_names)}"
-        self.add_parent(generator_name, system, "power_output")
+        self._connect_type(
+            generator_name,
+            "power_output",
+            system,
+            "power_input",
+            PowerGenerator,
+            self._generator_names
+        )
 
     @property
-    def power_in(self):
+    def generated_power(self):
         """Get the total power generated during this timestep."""
         s = 0.0
         for g_name in self.generator_names:
             s += self.get_parent_state(g_name).value
         return s
 
-    def add_consumer(self, system, consumer_name=None):
-        """Adds a consumer to the distribution network.
+    def connect_consumer(self, system, consumer_name=None):
+        """Connects a consumer to the distribution network.
 
         Arguments:
         system     -- The `PowerConsumer` system to connect.
@@ -105,10 +141,14 @@ class PowerDistributionSystem(System):
                           starts from zero and counts the number of
                           generators added so far.
         """
-        assert isinstance(system, PowerConsumer)
-        if consumer_name is None:
-            consumer_name = f"power_output_{len(self.consumer_names)}"
-        self.add_parent(consumer_name, system, "required_power")
+        self._connect_type(
+            consumer_name,
+            "required_power",
+            system,
+            "power_output",
+            PowerConsumer,
+            self._consumer_names
+        )
 
     @property
     def required_power(self):
