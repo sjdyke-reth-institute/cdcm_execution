@@ -23,7 +23,7 @@ def transition_func(dt, *, x, r):
 
 
 if __name__ == "__main__":
-    sys = SystemFromFunction(
+    sys = System(
         state=PhysicalStateVariable(
             value=0.1,
             units="meters",

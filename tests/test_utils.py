@@ -18,13 +18,13 @@ class TestClip:
         """Tests for the inputs for the clipping utility"""
         # 1. Incorrect value
         with pytest.raises(Exception):
-            clip("str") 
+            clip("str")
         # 2. Both edges cannot be `None`
         min_value, max_value = None, None
         value = np.linspace(0, 1, 11)
         with pytest.raises(Exception):
             clip(value, min_value, max_value)
-    
+
     def test_clip_utility_scalars(self):
         """Test the functionality of the clip utility"""
         min_value, max_value = 0.3, 0.7

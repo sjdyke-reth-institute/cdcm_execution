@@ -87,6 +87,22 @@ class System(NamedType):
                    The values must be `System`. Alternatively, a list of
                    systems.
     description -- A description for the system.
+    transition_func -- A function that tells us how to calculate the new state
+                       from the current state. The transition function must be
+                       as follows:
+                       ```
+                       def transition_func(dt, *, state1, ...
+                                           parent_var1, ...,
+                                           parameter_1, ...):
+                           # Do the calculations
+                           # Make a return a new_state dictionary for the form:
+                           new_state = {'state_var1': value1,
+                                        'state_var2': value2,
+                                        ...}
+                           return new_state
+                       ```
+                       Notice the "*" in the function definition. It is
+                       essential. Do not skip it!
 
     TODO: The names of the subsystems should be unique. Fix this.
     """
@@ -98,7 +114,8 @@ class System(NamedType):
         parameters={},
         parents={},
         sub_systems={},
-        description=""
+        description="",
+        transition_func=None
     ):
         super().__init__(
             name=name,
@@ -109,6 +126,9 @@ class System(NamedType):
         self.parents = parents
         self.sub_systems = sub_systems
         self._super_system = None
+        if transition_func is not None:
+            assert callable(transition_func)
+        self._transition_func = transition_func
 
     @property
     def super_system(self):
@@ -153,6 +173,8 @@ class System(NamedType):
             "The name must be a string."
         assert isinstance(obj, Type),\
             f"You must supply a {Type} object."
+        assert local_name not in out_dict.keys(),\
+            f"There is already a {Type} called {local_name}."
         new_item = {local_name: obj}
         out_dict.update(new_item)
         return new_item
@@ -368,7 +390,7 @@ class System(NamedType):
         the current state of the system and that access to all input
         variables is available through `self.parents`.
 
-        This function should not return anything. It should just 
+        This function should not return anything. It should just
         calculate the next state and store the result in
         `self._next_state`.
 
@@ -377,7 +399,18 @@ class System(NamedType):
         The user has to implement it if the states of the system have
         dynamics.
         """
-        pass
+        if self._transition_func is None:
+            return
+        inputs = {}
+        for k, var in self.state.items():
+            inputs[k] = var.value
+        for k, var in self.parameters.items():
+            inputs[k] = var.value
+        for local_name in self.parents.keys():
+            inputs[local_name] = self.get_parent_state(local_name).value
+        new_state = self._transition_func(dt, **inputs)
+        for s, v in new_state.items():
+            self._next_state[s].value = v
 
     def _calculate_next_state(self, dt):
         """Transitions the state of the system and of all sub
