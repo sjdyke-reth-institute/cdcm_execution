@@ -16,7 +16,6 @@ from .quantity import *
 from .system import *
 from .decorators import *
 from .data_system import *
-from .function_system import *
 from .clock import *
 from .simulation_saver import *
 from .power_generator import *
