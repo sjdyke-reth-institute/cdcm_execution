@@ -10,15 +10,15 @@ Date:
 """
 
 
-from ._utils import *
-from ._basics import *
-from ._quantity import *
-from ._system import *
-from ._decorators import *
-from ._data_system import *
-from ._function_system import *
-from ._clock import *
-from ._simulation_saver import *
-from ._power_generator import *
-from ._power_consumer import *
-from ._power_distribution import *
+from .utils import *
+from .basics import *
+from .quantity import *
+from .system import *
+from .decorators import *
+from .data_system import *
+from .function_system import *
+from .clock import *
+from .simulation_saver import *
+from .power_generator import *
+from .power_consumer import *
+from .power_distribution import *
