@@ -11,47 +11,55 @@ Date:
 
 from cdcm import *
 
+# ****************************
+#       SYSTEM 1
+# ****************************
 
-def trans_func_1(dt, *, x1, x2, r1, c1):
-    """A simple transition function for an isolated system."""
-    new_x1 = x1 + r1 * dt + c1 * x2 * dt
-    new_state = {'x1': new_x1}
-    return new_state
-
-
-def trans_func_2(dt, *, x2, x1, r2, c2):
-    """Another simple transition function."""
-    new_x2 = x2 + r2 * dt + c2 * x1 * dt
-    return {'x2': new_x2}
+x1 = PhysicalStateVariable(0.1, "meters", "r1")
+r1 = Parameter(1.2, "meters / second", "r1")
+c1 = Parameter(0.1, "1 / second", "c1")
 
 
-if __name__ == "__main__":
-    # Notice that I do not have the parent of sys1 ready when I am making it:
-    sys1 = SystemFromFunction(
-        name="system_1",
-        state=PhysicalStateVariable(0.1, "meters", "x1"),
-        parameters=[Parameter(1.2, "meters / second", "r1"),
-                    Parameter(0.1, "1 / second", "c1")],
-        transition_func=trans_func_1
-    )
-    # So, I have to make the parent:
-    sys2 = SystemFromFunction(
-        name="system_2",
-        state=PhysicalStateVariable(0.1, "meters", "x2"),
-        parameters=[Parameter(0.2, "meters / second", "r2"),
-                    Parameter(0.1, "1 / second", "c2")],
-        parents={'x1': sys1},
-        transition_func=trans_func_2)
-    # and then connect them
-    sys1.add_parent("x2", sys2)
-    # now everything is okay
-    sys = System(
-        name="combined_system",
-        sub_systems=[sys1, sys2]
-    )
-    print(sys)
-    # Run it for a while
-    dt = 0.1
-    for i in range(10):
-        sys.unsafe_step(dt)
-        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")
+# Notice how this system has a parent that we haven't defined yet
+@make_system
+def sys1(dt, *, x1=x1, x2=None, r1=r1, c1=c1):
+    """A system that has a parent that hasn't yet been defined."""
+    return x1 + r1 * dt + c1 * x2 * dt
+
+
+# ****************************
+#       SYSTEM 2
+# ****************************
+
+x2 = PhysicalStateVariable(0.1, "meters", "x2")
+r2 = Parameter(0.2, "meters / second", "r2")
+c2 = Parameter(0.1, "1 / second", "c2")
+
+
+@make_system
+def sys2(dt, *, x2=x2, x1=(sys1, "x1"), r2=r2, c2=c2):
+    """A system all the parents of which have been defined."""
+    return x2 + r2 * dt + c2 * x1 * dt
+
+
+# ****************************
+#       COMBINED SYSTEM
+# ****************************
+
+# Now that awe have coupled the systems, we can establish the
+# connection between the parents
+sys1.add_parent("x2", sys2)
+
+# Nowe we can make the combined system
+sys = System(
+    name="combined_system",
+    sub_systems=[sys1, sys2]
+)
+
+print(sys)
+
+# Run it for a while
+dt = 0.1
+for i in range(10):
+    sys.unsafe_step(dt)
+    print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")

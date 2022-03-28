@@ -49,6 +49,9 @@ def make_system(trans_func):
             parameters.update({k: v})
         elif isinstance(v, tuple):
             parents.update({k: v})
+        elif v is None:
+            # assuming this is a parent that hasn't been defined yet
+            pass
         else:
             raise TypeError(f"I cannot understand keyword type {type(v)}")
 

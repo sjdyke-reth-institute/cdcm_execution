@@ -12,7 +12,6 @@ from cdcm import *
 
 
 if __name__ == "__main__":
-    clock = Clock()
     print(str(clock))
     # Simulate the clock
     dt = 0.1

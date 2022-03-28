@@ -28,6 +28,8 @@ class NamedType(ABC):
         assert isinstance(name, str), \
             f"{name} is not a string. Names must be strings!"
         self._name = name
+        if description is None:
+            description = ""
         assert isinstance(description, str), \
             f"{description} is not a string. Descriptions must be strings."
         self._description = description

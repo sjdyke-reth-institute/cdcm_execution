@@ -11,47 +11,73 @@ Date:
 from cdcm import *
 
 
-def trans_func_1(dt, *, x1, r1):
-    """A simple transition function for an isolated system."""
-    new_x1 = x1 + r1 * dt
-    new_state = {'x1': new_x1}
-    return new_state
+# ****************************
+#       SYSTEM 1
+# ****************************
+
+x1 = PhysicalStateVariable(
+    value=0.1,
+    units="meters",
+    name="x1"
+)
+
+r1 = Parameter(
+    value=1.2,
+    units="meters / second",
+    name="r1"
+)
 
 
-def trans_func_2(dt, *, x2, x1, r2, c):
-    """Another simple transition function."""
-    new_x2 = x2 + r2 * dt + c * x1 * dt
-    return {'x2': new_x2}
+@make_system
+def sys1(dt, *, x1=x1, r1=r1):
+    """A simple system."""
+    return x1 + r1 * dt
 
 
-if __name__ == "__main__":
-    sys1 = SystemFromFunction(
-        name="system_1",
-        state=PhysicalStateVariable(value=0.1, units="meters", name="x1"),
-        parameters=Parameter(value=1.2,
-                             units="meters / second",
-                             name="r1",
-                             description="The rate of change."),
-        transition_func=trans_func_1
-    )
-    sys2 = SystemFromFunction(
-        name="system_2",
-        state=PhysicalStateVariable(value=0.3, units="meters", name="x2"),
-        parameters=[Parameter(value=1.2,
-                              units="meters / second",
-                              name="r2",
-                              description="The rate of change."),
-                    Parameter(value=0.1,
-                              units="1 / second",
-                              name="c",
-                              description="The coupling coefficient.")],
-        parents={'x1': sys1},
-        transition_func=trans_func_2
-    )
-    sys = System(name="combined_system", sub_systems=[sys1, sys2])
-    print(sys)
-    dt = 0.1
-    for i in range(10):
-        sys.unsafe_step(dt)
-        print(f"x1: {sys1.state['x1']},"
-              + f"x2: {sys2.state['x2']}")
+# ****************************
+#       SYSTEM 2
+# ****************************
+
+x2 = PhysicalStateVariable(
+    value=0.3,
+    units="meters",
+    name="x2"
+)
+
+r2 = Parameter(
+    value=1.2,
+    units="meters / second",
+    name="r2",
+    description="The rate of change."
+)
+
+c = Parameter(
+    value=0.1,
+    units="1 / second",
+    name="c",
+    description="The coupling coefficient."
+)
+
+
+@make_system
+def sys2(dt, *, x2=x2, x1=(sys1, "x1"), r2=r2, c=c):
+    """Another simple system."""
+    return x2 + r2 * dt + c * x1 * dt
+
+
+# ****************************
+#       COMBINED SYSTEM
+# ****************************
+
+sys = System(name="combined_system", sub_systems=[sys1, sys2])
+
+print(sys)
+
+# ****************************
+#       RUN FORWARD
+# ****************************
+
+dt = 0.1
+for i in range(10):
+    sys.unsafe_step(dt)
+    print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")
