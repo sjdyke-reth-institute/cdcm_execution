@@ -1,4 +1,5 @@
 """Tests the functionality of the SimulationSaver on SystemOfSystems.
+"""Tests the functionality of the SimulationSaver on SystemOfSystems.
 
 Author:
     Ilias Bilionis

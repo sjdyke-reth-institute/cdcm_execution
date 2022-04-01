@@ -42,7 +42,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#system-of-systems">System of Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#physicalstatevariable-and-healthstatevariable">PhysicalStateVariable and HealthStateVariable</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#example-of-a-system-with-two-sub-systems">Example of a System with Two Sub-systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-a-coupled-system">Example of a Coupled System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-a-doubly-coupled-system">Example of a Doubly Coupled System</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
@@ -149,200 +150,312 @@
 </div>
 </div></blockquote>
 </section>
-<section id="example-of-a-system-with-two-sub-systems">
-<h2>Example of a System with Two Sub-systems<a class="headerlink" href="#example-of-a-system-with-two-sub-systems" title="Permalink to this headline"></a></h2>
-<p>In this example, we will create a system with two sub-systems. The full example can be found in <code class="docutils literal notranslate"><span class="pre">/scripts/system_of_systems.py</span></code>. The subsytems are named <span class="guilabel">system_1</span> and <span class="guilabel">system_2</span> respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the <span class="guilabel">system_1</span> to be a parent of the second one. Here is how <span class="guilabel">system_1</span> is created:</p>
+<section id="example-of-a-coupled-system">
+<h2>Example of a Coupled System<a class="headerlink" href="#example-of-a-coupled-system" title="Permalink to this headline"></a></h2>
+<p>In this example, we will create a system with two sub-systems. The full example can be found in <code class="docutils literal notranslate"><span class="pre">/tests/test_coupled_system_from_function.py</span></code>. The subsytems are named <span class="guilabel">sys1</span> and <span class="guilabel">sys2</span> respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the <span class="guilabel">sys1</span> to be a parent of the second one. Here is how <span class="guilabel">sys1</span> is created:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><em>system_1</em></span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Sys1</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
+<div class="code-block-caption"><span class="caption-text"><em>sys1</em></span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 1</span>
+<span class="c1"># ****************************</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;system_1&quot;</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">PhysicalStateVariable</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span>
-                <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The x1 variable.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">HealthStateVariable</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span>
-                <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The h variable.&quot;</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                               <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rate_of_change&quot;</span><span class="p">,</span>
-                               <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change.&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A simple system.&quot;</span>
-        <span class="p">)</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x1&quot;</span>
+<span class="p">)</span>
+
+<span class="n">r1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;r1&quot;</span>
+<span class="p">)</span>
+
+
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys1</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">r1</span><span class="o">=</span><span class="n">r1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A simple system.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">dt</span>
+
 </pre></div>
 </div>
 </div>
-<p>Now, let us create <span class="guilabel">system_2</span>. It can be noticed that <span class="guilabel">system_1</span> is assigned as a parent sub-system:</p>
+<p>Now, let us create <span class="guilabel">sys2</span>. It can be noticed that <span class="guilabel">sys1</span> is assigned as a parent sub-system:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><em>system_2</em></span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Sys2</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
+<div class="code-block-caption"><span class="caption-text"><em>sys2</em></span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 2</span>
+<span class="c1"># ****************************</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys_1</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;system_2&quot;</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
-            <span class="n">value</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span>
-            <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The x2 variable.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Parameter</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rate_of_change_2&quot;</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change 2.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Parameter</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;1 / second&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coupling_coeff&quot;</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Coupling coeff.&quot;</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x1&#39;</span><span class="p">:</span> <span class="n">sys_1</span><span class="p">}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Another simple system.&quot;</span>
-        <span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x2&quot;</span>
+<span class="p">)</span>
+
+<span class="n">r2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change.&quot;</span>
+<span class="p">)</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;1 / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The coupling coefficient.&quot;</span>
+<span class="p">)</span>
+
+
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys2</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="p">(</span><span class="n">sys1</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">),</span> <span class="n">r2</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Another simple system.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+
 </pre></div>
 </div>
 </div>
 <p>Now let us combine both sub-systems under one system:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><em>combined_system</em></span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="c1"># Create the systems</span>
-    <span class="n">sys1</span> <span class="o">=</span> <span class="n">Sys1</span><span class="p">()</span>
-    <span class="n">sys2</span> <span class="o">=</span> <span class="n">Sys2</span><span class="p">(</span><span class="n">sys1</span><span class="p">)</span>
-    <span class="c1"># Put them in a system of system container</span>
-    <span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span>
-        <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">]</span>
-    <span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ****************************</span>
+<span class="c1">#       COMBINED SYSTEM</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span> <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">])</span>
+
 </pre></div>
 </div>
 </div>
-<p>The whole code can be accessed from <code class="docutils literal notranslate"><span class="pre">/scripts/system_of_systems.py</span></code> or below:</p>
+<p>Let’s run it in ten steps:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><em>combined_system</em></span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdcm</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="code-block-caption"><span class="caption-text"><em>10-step run</em></span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ****************************</span>
+<span class="c1">#       RUN FORWARD</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">unsafe_step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x1: </span><span class="si">{</span><span class="n">sys1</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, x2: </span><span class="si">{</span><span class="n">sys2</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The whole code can be accessed from <code class="docutils literal notranslate"><span class="pre">/tests/test_coupled_system_from_function.py</span></code> or below:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><em>Coupled System</em></span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 1</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">x1</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x1&quot;</span>
+<span class="p">)</span>
+
+<span class="n">r1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;r1&quot;</span>
+<span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">Sys1</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;system_1&quot;</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">PhysicalStateVariable</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span>
-                <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The x1 variable.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">HealthStateVariable</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span>
-                <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The h variable.&quot;</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                               <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
-                               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rate_of_change&quot;</span><span class="p">,</span>
-                               <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change.&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A simple system.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_calculate_my_next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;rate_of_change&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_next_state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys1</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">r1</span><span class="o">=</span><span class="n">r1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A simple system.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">dt</span>
 
 
-<span class="k">class</span> <span class="nc">Sys2</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 2</span>
+<span class="c1"># ****************************</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys_1</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;system_2&quot;</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
-            <span class="n">value</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span>
-            <span class="n">track</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The x2 variable.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Parameter</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rate_of_change_2&quot;</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change 2.&quot;</span>
-            <span class="p">),</span>
-            <span class="n">Parameter</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;1 / second&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coupling_coeff&quot;</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Coupling coeff.&quot;</span>
-            <span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x1&#39;</span><span class="p">:</span> <span class="n">sys_1</span><span class="p">}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Another simple system.&quot;</span>
-        <span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x2&quot;</span>
+<span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_calculate_my_next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-        <span class="c1"># Get the parent variable</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_state</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-        <span class="c1"># Get the variables form here</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">r2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;rate_of_change_2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;coupling_coeff&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_next_state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;meters / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The rate of change.&quot;</span>
+<span class="p">)</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;1 / second&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The coupling coefficient.&quot;</span>
+<span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="c1"># Create the systems</span>
-    <span class="n">sys1</span> <span class="o">=</span> <span class="n">Sys1</span><span class="p">()</span>
-    <span class="n">sys2</span> <span class="o">=</span> <span class="n">Sys2</span><span class="p">(</span><span class="n">sys1</span><span class="p">)</span>
-    <span class="c1"># Put them in a system of system container</span>
-    <span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span>
-        <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
-    <span class="c1"># Run the system a bit into the future manually.</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">unsafe_step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x1: </span><span class="si">{</span><span class="n">sys1</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, x2: </span><span class="si">{</span><span class="n">sys2</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys2</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="p">(</span><span class="n">sys1</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">),</span> <span class="n">r2</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Another simple system.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+
+
+<span class="c1"># ****************************</span>
+<span class="c1">#       COMBINED SYSTEM</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span> <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
+
+<span class="c1"># ****************************</span>
+<span class="c1">#       RUN FORWARD</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">unsafe_step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x1: </span><span class="si">{</span><span class="n">sys1</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, x2: </span><span class="si">{</span><span class="n">sys2</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="example-of-a-doubly-coupled-system">
+<h2>Example of a Doubly Coupled System<a class="headerlink" href="#example-of-a-doubly-coupled-system" title="Permalink to this headline"></a></h2>
+<p>In this example, we will create a system with two sub-systems. The full example can be found in <code class="docutils literal notranslate"><span class="pre">/tests/test_doubly_coupled_systems.py</span></code>. The subsytems are named <span class="guilabel">sys1</span> and <span class="guilabel">sys2</span> respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the <span class="guilabel">sys1</span> to be a parent of the second one. Here is how <span class="guilabel">sys1</span> is created:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><em>sys1</em></span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 1</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">x1</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;meters&quot;</span><span class="p">,</span> <span class="s2">&quot;r1&quot;</span><span class="p">)</span>
+<span class="n">r1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">1.2</span><span class="p">,</span> <span class="s2">&quot;meters / second&quot;</span><span class="p">,</span> <span class="s2">&quot;r1&quot;</span><span class="p">)</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;1 / second&quot;</span><span class="p">,</span> <span class="s2">&quot;c1&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Notice how this system has a parent that we haven&#39;t defined yet</span>
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys1</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r1</span><span class="o">=</span><span class="n">r1</span><span class="p">,</span> <span class="n">c1</span><span class="o">=</span><span class="n">c1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A system that has a parent that hasn&#39;t yet been defined.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">dt</span>
+
+</pre></div>
+</div>
+</div>
+<p>Now, let us create <span class="guilabel">sys2</span>. It can be noticed that <span class="guilabel">sys1</span> is assigned as a parent sub-system:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><em>sys2</em></span><a class="headerlink" href="#id7" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 2</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">x2</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;meters&quot;</span><span class="p">,</span> <span class="s2">&quot;x2&quot;</span><span class="p">)</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;meters / second&quot;</span><span class="p">,</span> <span class="s2">&quot;r2&quot;</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;1 / second&quot;</span><span class="p">,</span> <span class="s2">&quot;c2&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys2</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="p">(</span><span class="n">sys1</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">),</span> <span class="n">r2</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span> <span class="n">c2</span><span class="o">=</span><span class="n">c2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A system all the parents of which have been defined.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+
+
+</pre></div>
+</div>
+</div>
+<p>Now let us combine both sub-systems under one system:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><em>combined_system</em></span><a class="headerlink" href="#id8" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       COMBINED SYSTEM</span>
+<span class="c1"># ****************************</span>
+
+<span class="c1"># Now that awe have coupled the systems, we can establish the</span>
+<span class="c1"># connection between the parents</span>
+<span class="n">sys1</span><span class="o">.</span><span class="n">add_parent</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span> <span class="n">sys2</span><span class="p">)</span>
+
+<span class="c1"># Nowe we can make the combined system</span>
+<span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span>
+    <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">]</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<p>Let’s run it in ten steps:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text"><em>10-step run</em></span><a class="headerlink" href="#id9" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># Run it for a while</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">unsafe_step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x1: </span><span class="si">{</span><span class="n">sys1</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, x2: </span><span class="si">{</span><span class="n">sys2</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The whole code can be accessed from <code class="docutils literal notranslate"><span class="pre">/tests/test_doubly_coupled_systems.py</span></code> or below:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text"><em>Doubly Coupled System</em></span><a class="headerlink" href="#id10" title="Permalink to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 1</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">x1</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;meters&quot;</span><span class="p">,</span> <span class="s2">&quot;r1&quot;</span><span class="p">)</span>
+<span class="n">r1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">1.2</span><span class="p">,</span> <span class="s2">&quot;meters / second&quot;</span><span class="p">,</span> <span class="s2">&quot;r1&quot;</span><span class="p">)</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;1 / second&quot;</span><span class="p">,</span> <span class="s2">&quot;c1&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Notice how this system has a parent that we haven&#39;t defined yet</span>
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys1</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r1</span><span class="o">=</span><span class="n">r1</span><span class="p">,</span> <span class="n">c1</span><span class="o">=</span><span class="n">c1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A system that has a parent that hasn&#39;t yet been defined.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">r1</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">*</span> <span class="n">dt</span>
+
+
+<span class="c1"># ****************************</span>
+<span class="c1">#       SYSTEM 2</span>
+<span class="c1"># ****************************</span>
+
+<span class="n">x2</span> <span class="o">=</span> <span class="n">PhysicalStateVariable</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;meters&quot;</span><span class="p">,</span> <span class="s2">&quot;x2&quot;</span><span class="p">)</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="s2">&quot;meters / second&quot;</span><span class="p">,</span> <span class="s2">&quot;r2&quot;</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;1 / second&quot;</span><span class="p">,</span> <span class="s2">&quot;c2&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@make_system</span>
+<span class="k">def</span> <span class="nf">sys2</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="p">(</span><span class="n">sys1</span><span class="p">,</span> <span class="s2">&quot;x1&quot;</span><span class="p">),</span> <span class="n">r2</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span> <span class="n">c2</span><span class="o">=</span><span class="n">c2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A system all the parents of which have been defined.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+
+
+<span class="c1"># ****************************</span>
+<span class="c1">#       COMBINED SYSTEM</span>
+<span class="c1"># ****************************</span>
+
+<span class="c1"># Now that awe have coupled the systems, we can establish the</span>
+<span class="c1"># connection between the parents</span>
+<span class="n">sys1</span><span class="o">.</span><span class="n">add_parent</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span> <span class="n">sys2</span><span class="p">)</span>
+
+<span class="c1"># Nowe we can make the combined system</span>
+<span class="n">sys</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;combined_system&quot;</span><span class="p">,</span>
+    <span class="n">sub_systems</span><span class="o">=</span><span class="p">[</span><span class="n">sys1</span><span class="p">,</span> <span class="n">sys2</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
+
+<span class="c1"># Run it for a while</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">unsafe_step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x1: </span><span class="si">{</span><span class="n">sys1</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, x2: </span><span class="si">{</span><span class="n">sys2</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

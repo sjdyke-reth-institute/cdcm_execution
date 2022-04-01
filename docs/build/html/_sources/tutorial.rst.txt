@@ -12,6 +12,7 @@ System of Systems
    * :guilabel:`parameters`   -- The parameters of the system. A dictionary the keys of which are strings and the values are ``Parameter``.
 
    * :guilabel:`parents`      -- A dictionary of keys which are strings and values that are tuples of type ``System`` or of type ``(str, System)``. In any case, the keys correspond the name of the input variable used locally by this object. For the values the story is as follows. If the value is just a ``System`` object, then we assume that this object has a state with the same name as the corresponding key. If the value is ``(str, System)``, then we assume that the first item of the tupe is the name of the input variable in the ``System`` object. Here is an example:
+
    .. code-block:: python
 
       parents = {
@@ -74,36 +75,85 @@ Parameter represents a parameter of the system and its structure is very similar
                                name="rate_of_change",
                                description="The rate of change.")
 
-Example of a System with Two Sub-systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example of a Coupled System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this example, we will create a system with two sub-systems. The full example can be found in ``/scripts/system_of_systems.py``. The subsytems are named :guilabel:`system_1` and :guilabel:`system_2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`system_1` to be a parent of the second one. Here is how :guilabel:`system_1` is created: 
+In this example, we will create a system with two sub-systems. The full example can be found in ``/tests/test_coupled_system_from_function.py``. The subsytems are named :guilabel:`sys1` and :guilabel:`sys2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`sys1` to be a parent of the second one. Here is how :guilabel:`sys1` is created: 
 
-.. literalinclude:: ../../scripts/system_of_systems.py
+.. literalinclude:: ../../tests/test_coupled_system_from_function.py
    :language: python
-   :caption: *system_1*
-   :lines: 17-46
+   :caption: *sys1*
+   :lines: 13-35
 
 
-Now, let us create :guilabel:`system_2`. It can be noticed that :guilabel:`system_1` is assigned as a parent sub-system:
+Now, let us create :guilabel:`sys2`. It can be noticed that :guilabel:`sys1` is assigned as a parent sub-system:
 
-.. literalinclude:: ../../scripts/system_of_systems.py
+.. literalinclude:: ../../tests/test_coupled_system_from_function.py
    :language: python
-   :caption: *system_2*
-   :lines: 54-86
+   :caption: *sys2*
+   :lines: 37-66
 
 
 Now let us combine both sub-systems under one system: 
 
-.. literalinclude:: ../../scripts/system_of_systems.py
+.. literalinclude:: ../../tests/test_coupled_system_from_function.py
    :language: python
    :caption: *combined_system*
-   :lines: 98-106
+   :lines: 68-73
+
+Let's run it in ten steps: 
+
+.. literalinclude:: ../../tests/test_coupled_system_from_function.py
+   :language: python
+   :caption: *10-step run*
+   :lines: 76-83
 
 
-The whole code can be accessed from ``/scripts/system_of_systems.py`` or below: 
 
-.. literalinclude:: ../../scripts/system_of_systems.py
+The whole code can be accessed from ``/tests/test_coupled_system_from_function.py`` or below: 
+
+.. literalinclude:: ../../tests/test_coupled_system_from_function.py
+   :language: python
+   :caption: *Coupled System*
+   :lines: 13-83
+
+Example of a Doubly Coupled System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this example, we will create a system with two sub-systems. The full example can be found in ``/tests/test_doubly_coupled_systems.py``. The subsytems are named :guilabel:`sys1` and :guilabel:`sys2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`sys1` to be a parent of the second one. Here is how :guilabel:`sys1` is created: 
+
+.. literalinclude:: ../../tests/test_doubly_coupled_systems.py
+   :language: python
+   :caption: *sys1*
+   :lines: 13-28
+
+
+Now, let us create :guilabel:`sys2`. It can be noticed that :guilabel:`sys1` is assigned as a parent sub-system:
+
+.. literalinclude:: ../../tests/test_doubly_coupled_systems.py
+   :language: python
+   :caption: *sys2*
+   :lines: 29-44
+
+
+Now let us combine both sub-systems under one system: 
+
+.. literalinclude:: ../../tests/test_doubly_coupled_systems.py
    :language: python
    :caption: *combined_system*
-   :lines: 14-113
+   :lines: 44-58
+
+Let's run it in ten steps: 
+
+.. literalinclude:: ../../tests/test_doubly_coupled_systems.py
+   :language: python
+   :caption: *10-step run*
+   :lines: 60-65
+
+
+The whole code can be accessed from ``/tests/test_doubly_coupled_systems.py`` or below: 
+
+.. literalinclude:: ../../tests/test_doubly_coupled_systems.py
+   :language: python
+   :caption: *Doubly Coupled System*
+   :lines: 13-65
