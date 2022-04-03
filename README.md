@@ -1,6 +1,6 @@
 # CDCM Code Reconfiguration
 
-The following tutorial demonstrates creating a sustem with sub-systems. The same tutorial can be accessed in ``/docs/build/html/index.html`` prebuilt documentation. 
+The following tutorial demonstrates creating a sustem with sub-systems. The same tutorial can be accessed in ``/docs/build/html/index.html`` prebuilt documentation in the ``docs_branch`` branch. 
 
 Tutorial
 ========
@@ -75,93 +75,161 @@ Parameter represents a parameter of the system and its structure is very similar
                                units="meters / second",
                                name="rate_of_change",
                                description="The rate of change.")
+                               
+                                                           
+### Example of a Coupled System
 
-### Example of a System with Two Sub-systems
-
-
-In this example, we will create a system with two sub-systems. The full example can be found in ``/scripts/system_of_systems.py``. The subsytems are named :guilabel:`system_1` and :guilabel:`system_2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`system_1` to be a parent of the second one. Here is how :guilabel:`system_1` is created: 
-
-    class Sys1(System):
-
-        def __init__(self):
-            name = "system_1"
-            state = [
-                PhysicalStateVariable(
-                    value=0.1,
-                    units="meters",
-                    name="x1",
-                    track=True,
-                    description="The x1 variable."
-                ),
-                HealthStateVariable(
-                    value=0,
-                    units=None,
-                    name="h",
-                    track=True,
-                    description="The h variable."
-                )
-            ]
-            parameters = Parameter(value=1.2,
-                                   units="meters / second",
-                                   name="rate_of_change",
-                                   description="The rate of change.")
-            super().__init__(
-                name=name,
-                state=state,
-                parameters=parameters,
-                description="A simple system."
-            )
+In this example, we will create a system with two sub-systems. The full example can be found in ``/tests/test_coupled_system_from_function.py``. The subsytems are named :guilabel:`sys1` and :guilabel:`sys2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`sys1` to be a parent of the second one. Here is how :guilabel:`sys1` is created: 
 
 
-Now, let us create :guilabel:`system_2`. It can be noticed that :guilabel:`system_1` is assigned as a parent sub-system:
+    # ****************************
+    #       SYSTEM 1
+    # ****************************
+
+    x1 = PhysicalStateVariable(
+        value=0.1,
+        units="meters",
+        name="x1"
+    )
+
+    r1 = Parameter(
+        value=1.2,
+        units="meters / second",
+        name="r1"
+    )
 
 
-    class Sys2(System):
+    @make_system
+    def sys1(dt, *, x1=x1, r1=r1):
+        """A simple system."""
+        return x1 + r1 * dt
 
-        def __init__(self, sys_1):
-            name = "system_2"
-            state = PhysicalStateVariable(
-                value=0.3,
-                units="meters",
-                name="x2",
-                track=True,
-                description="The x2 variable."
-            )
-            parameters = [
-                Parameter(
-                    value=1.2,
-                    units="meters / second",
-                    name="rate_of_change_2",
-                    description="The rate of change 2."
-                ),
-                Parameter(
-                    value=0.1,
-                    units="1 / second",
-                    name="coupling_coeff",
-                    description="Coupling coeff."
-                )
-            ]
-            parents = {'x1': sys_1}
-            super().__init__(
-                name=name,
-                state=state,
-                parameters=parameters,
-                parents=parents,
-                description="Another simple system."
-            )
+
+
+Now, let us create :guilabel:`sys2`. It can be noticed that :guilabel:`sys1` is assigned as a parent sub-system:
+
+
+    # ****************************
+    #       SYSTEM 2
+    # ****************************
+
+    x2 = PhysicalStateVariable(
+        value=0.3,
+        units="meters",
+        name="x2"
+    )
+
+    r2 = Parameter(
+        value=1.2,
+        units="meters / second",
+        name="r2",
+        description="The rate of change."
+    )
+
+    c = Parameter(
+        value=0.1,
+        units="1 / second",
+        name="c",
+        description="The coupling coefficient."
+    )
+
+
+    @make_system
+    def sys2(dt, *, x2=x2, x1=(sys1, "x1"), r2=r2, c=c):
+        """Another simple system."""
+        return x2 + r2 * dt + c * x1 * dt
 
 
 Now let us combine both sub-systems under one system: 
 
-     # Create the systems
-        sys1 = Sys1()
-        sys2 = Sys2(sys1)
-        # Put them in a system of system container
-        sys = System(
-            name="combined_system",
-            sub_systems=[sys1, sys2]
-        )
-        print(sys)
+    # ****************************
+    #       COMBINED SYSTEM
+    # ****************************
+
+    sys = System(name="combined_system", sub_systems=[sys1, sys2])
 
 
-The whole code can be accessed from ``/tests/test_simple_system_of_systems.py``
+Let's run it in ten steps: 
+
+    # ****************************
+    #       RUN FORWARD
+    # ****************************
+
+    dt = 0.1
+    for i in range(10):
+        sys.unsafe_step(dt)
+        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")
+
+
+
+The whole code can be accessed from ``/tests/test_coupled_system_from_function.py``. 
+
+
+### Example of a Doubly Coupled System
+
+
+In this example, we will create a system with two sub-systems. The full example can be found in ``/tests/test_doubly_coupled_systems.py``. The subsytems are named :guilabel:`sys1` and :guilabel:`sys2` respectively. Each sub-system will have its own states and parameters. We will create each sub-system and combine them in the system by assigning the :guilabel:`sys1` to be a parent of the second one. Here is how :guilabel:`sys1` is created: 
+
+
+    # ****************************
+    #       SYSTEM 1
+    # ****************************
+
+    x1 = PhysicalStateVariable(0.1, "meters", "r1")
+    r1 = Parameter(1.2, "meters / second", "r1")
+    c1 = Parameter(0.1, "1 / second", "c1")
+
+
+    # Notice how this system has a parent that we haven't defined yet
+    @make_system
+    def sys1(dt, *, x1=x1, x2=None, r1=r1, c1=c1):
+        """A system that has a parent that hasn't yet been defined."""
+        return x1 + r1 * dt + c1 * x2 * dt
+
+
+
+
+Now, let us create :guilabel:`sys2`. It can be noticed that :guilabel:`sys1` is assigned as a parent sub-system:
+
+    # ****************************
+    #       SYSTEM 2
+    # ****************************
+
+    x2 = PhysicalStateVariable(0.1, "meters", "x2")
+    r2 = Parameter(0.2, "meters / second", "r2")
+    c2 = Parameter(0.1, "1 / second", "c2")
+
+
+    @make_system
+    def sys2(dt, *, x2=x2, x1=(sys1, "x1"), r2=r2, c2=c2):
+        """A system all the parents of which have been defined."""
+        return x2 + r2 * dt + c2 * x1 * dt
+
+Now let us combine both sub-systems under one system: 
+
+    # ****************************
+    #       COMBINED SYSTEM
+    # ****************************
+
+    # Now that awe have coupled the systems, we can establish the
+    # connection between the parents
+    sys1.add_parent("x2", sys2)
+
+    # Nowe we can make the combined system
+    sys = System(
+        name="combined_system",
+        sub_systems=[sys1, sys2]
+    )
+
+Let's run it in ten steps: 
+
+    dt = 0.1
+    for i in range(10):
+        sys.unsafe_step(dt)
+        print(f"x1: {sys1.state['x1']}, x2: {sys2.state['x2']}")
+
+
+The whole code can be accessed from ``/tests/test_doubly_coupled_systems.py``. 
+    
+                               
+                            
