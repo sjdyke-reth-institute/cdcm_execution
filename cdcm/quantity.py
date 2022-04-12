@@ -9,7 +9,7 @@ Date:
 """
 
 
-__all__ = ['Quantity']
+__all__ = ["Quantity"]
 
 
 import numpy as np
@@ -109,10 +109,7 @@ class Quantity(Node):
         """Turn the object to a dictionary of dictionaries."""
         res = super().to_yaml()
         dres = res[self.name]
-        if isinstance(self.value, np.ndarray):
-            dres["value"] = str(self.value)
-        else:
-            dres["value"] = self.value
+        dres["value"] = str(self.value)
         dres["units"] = self.units
         dres["track"] = self.track
         return res
