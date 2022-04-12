@@ -10,19 +10,19 @@ Date:
 """
 
 
-__all__ = ['Quantity', 'Parameter',
-           'StateVariable', 'PhysicalStateVariable', 'HealthStateVariable']
+__all__ = ['Quantity']
 
 
 import numpy as np
 import pint
-from . import NamedType
+from typing import Any
+from . import Node
 
 
 ureg = pint.UnitRegistry()
 
 
-class Quantity(NamedType):
+class Quantity(Node):
     """Defines a CDCM quantity.
 
     The quantity knows its units. It has a decscription that explains
@@ -33,85 +33,65 @@ class Quantity(NamedType):
         value      -- The value of the quantity. Must be an int, a
                       double or a numpy array of ints or floating point
                       numbers. We also allow it to be a string.
+                      Initially, no value is specified. We are not
+                      going to check for the value of quantities.
+                      But keep in mind that for saving them in files,
+                      the type has to be constant through out the life
+                      of the object.
         units      -- Must be a string or a pint object that describes
-                      an SI physical unit.
-        name       -- A string. The name of the quantity. Please be
-                      expressive.
+                      an SI physical unit. This is optional as some
+                      quantities may not have units.
         track      -- A boolean. If True the quantity will be tracked
                       during simulations. If False it will not be
                       tracked.
-        desciption -- A desciption of the quantity. Please be
-                      expressive.
+        owner      -- 
+
+    See `Named` for the rest of the parameters.
     """
 
-    def __init__(self, value, units="", name="quantity", track=True,
-                 description=""):
-        self._initilize(value, units, track)
-        super().__init__(name=name, description=description)
-
-    def _initilize(self, value, units, track):
-        """Do some sanity checks and set the value."""
-        if isinstance(value, int):
-            dtype = int
-            shape = ()
-        elif isinstance(value, float):
-            dtype = float
-            shape = ()
-        elif isinstance(value, str):
-            dtype = str
-            # TODO: Check if this is the correct thing to do for HDF5.
-            shape = ()
-        elif isinstance(value, (list, tuple, np.ndarray)):
-            value = np.array(value)
-            dtype = value.dtype
-            shape = value.shape
-        else:
-            raise RuntimeError(f"I cannot handle the type of the"
-                               + " quantity {value}")
-        ureg.check(units)
-        assert isinstance(track, bool)
-        self._dtype = dtype
-        self._shape = shape
-        self._value = value
-        self._units = units
-        self._track = track
+    def __init__(
+        self,
+        value : Any = None,
+        units : str = "",
+        track : bool = True,
+        owner : None,
+        **kwargs
+    ):
+        self.value = value
+        self.units = units
+        self.track = track
+        super().__init__(**kwargs)
 
     @property
-    def value(self):
+    def value(self) -> Any:
+        """Get the value of the object."""
         return self._value
 
     @value.setter
-    def value(self, new_value):
-        assert isinstance(self.value, type(new_value))
+    def value(self, new_value : Any):
+        """Set the value of the object."""
         self._value = new_value
 
     @property
-    def dtype(self):
-        return self._dtype
-
-    @property
-    def shape(self):
-        return self._shape
-
-    @property
-    def units(self):
+    def units(self) -> str:
+        """Get the units of the object."""
         return self._units
 
-    @property
-    def name(self):
-        return self._name
+    @units.setter
+    def units(self, new_units : str):
+        """Set the units."""
+        ureg.check(units)
+        self._units = units
 
     @property
-    def description(self):
-        return self._description
-
-    @property
-    def type(self):
-        return type(self).__name__
-
-    @property
-    def track(self):
+    def track(self) -> bool:
+        """Check if variable is being tracked during simulations or not."""
         return self._track
+
+    @track.setter
+    def track(self, new_track : bool):
+        """Change the tracking flag."""
+        self._track = new_track
 
     def __str__(self):
         """Return a string representation of the Quantity.
@@ -140,31 +120,4 @@ class Quantity(NamedType):
 
     def from_yaml(self, data):
         """TODO Write me."""
-        super().from_yaml(data)
-        self._initilize(data["value"],
-                        data["units"],
-                        data["track"])
-
-
-class Parameter(Quantity):
-    """A class representing a parameter of a system."""
-
-    pass
-
-
-class StateVariable(Quantity):
-    """A class representing a system state variable."""
-
-    pass
-
-
-class PhysicalStateVariable(StateVariable):
-    """A class representing a physical system state variable."""
-
-    pass
-
-
-class HealthStateVariable(StateVariable):
-    """A class representing a health state variable."""
-
-    pass
+        raise NotImplementedError("This is not implemented yet.")
