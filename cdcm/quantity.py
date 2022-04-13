@@ -15,7 +15,8 @@ __all__ = ["Quantity"]
 
 import numpy as np
 import pint
-from typing import Any
+from typing import Any, Dict
+from numbers import Number
 from . import Node
 
 
@@ -44,9 +45,8 @@ class Quantity(Node):
         track      -- A boolean. If True the quantity will be tracked
                       during simulations. If False it will not be
                       tracked.
-        owner      -- 
 
-    See `Named` for the rest of the parameters.
+    See `Node` for the rest of the parameters.
     """
 
     def __init__(
@@ -54,7 +54,6 @@ class Quantity(Node):
         value : Any = None,
         units : str = "",
         track : bool = True,
-        owner : None,
         **kwargs
     ):
         self.value = value
@@ -80,8 +79,8 @@ class Quantity(Node):
     @units.setter
     def units(self, new_units : str):
         """Set the units."""
-        ureg.check(units)
-        self._units = units
+        ureg.check(new_units)
+        self._units = new_units
 
     @property
     def track(self) -> bool:
@@ -106,11 +105,14 @@ class Quantity(Node):
         res += f" {self.units}"
         return res
 
-    def to_yaml(self):
+    def to_yaml(self) -> Dict[str, Any]:
         """Turn the object to a dictionary of dictionaries."""
         res = super().to_yaml()
         dres = res[self.name]
-        dres["value"] = str(self.value)
+        if isinstance(self.value, Number):
+            dres["value"] = self.value
+        else:
+            dres["value"] = str(self.value)
         dres["units"] = self.units
         dres["track"] = self.track
         return res
