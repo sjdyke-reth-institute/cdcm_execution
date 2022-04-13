@@ -79,7 +79,11 @@ class TransitionFunction(Node):
 
 
 def make_transition(*args : Node, **kwargs : Node):
-    """Automate the creation of a transition function."""
+    """Automate the creation of a transition function.
+
+    The inputs to this decorator are the children states that will
+    be updated by the transition function.
+    """
     children = {}
     for child in args:
         children[child.name] = child
