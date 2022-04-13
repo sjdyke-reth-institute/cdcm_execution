@@ -9,99 +9,33 @@ Date:
 """
 
 
-from . import Named
-from typing import Any, Dict, Sequence, Union, Callable
+__all__ = ["State"]
+
+
+from . import Quantity
 from copy import deepcopy
 
 
-class State(object):
-    """A state variable.
+class State(Quantity):
+    """A class representing a system state variable.
+    
+    This is a `Quantity` that is varying with time.
+    It stores two versions of its value.
+    The current value is in `Quantity.value`.
+    The next value is in `Quantity.next_value`.
+    A call to `Quantity.transition()` writes `next_value` on `value`.
 
+    See `Quantity` for the keyword arguments.
     """
 
-    def __init__(
-        self,
-        *,
-        name : str,
-        initial_value : Any,
-        units : str = "",
-        track : bool = True,
-        description : str = ""
-    ):
-    self.name = name
-    self.units = units
-    self.track = track
-    self.description = description
-    self.value =  initial_value
-    self.next_value = deepcopy(initial_value)
-    self.children = ()
-    self.parents = ()
-    self.owner = None
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._next_value = deepcopy(self.value)
 
+    def _transition():
+        """Writes `value` on `next_value`.
 
-class Parameter(object):
-    """A parameter class."""
-
-    def __init__(
-        self,
-        *,
-        name : str,
-        value : Any,
-        units : str = "",
-        track : bool = True,
-        description : str = ""
-    ):
-    self.name = name
-    self.units = units
-    self.track = track
-    self.description = description
-    self.value = value
-    self.children = ()
-    self.parents = ()
-    self.owner = None
-
-
-class _ContainerOfNamed(object):
-    """A container of named objects."""
-    def __init__(self, *args : Any, **kwargs : Any):
-        for o in args:
-            self.__dict__.update({o.name: o})
-        self.__dict__.updtate(kwargs)
-        self.owner = None
-
-
-class _States(_ContainerOfNamed):
-    """A container of states."""
-
-    def __init__(self, *args : State, **kwargs : State):
-        super().__init__(*args, **kwargs)
-
-
-class _Parameters(_ContainerOfNamed):
-    """A container of parameters."""
-
-    def __init__(self, *args : Parameter, **kwargs : Parameter):
-        super().__init__(*args, **kwargs)
-
-class _Inputs(_ContainerOfNamed):
-
-    def __init__(self, *args : State, **kwargs : State):
-        pass
-
-
-class Component(object):
-
-    def __init__(self,
-        *,
-        name : str,
-        states : Union[Sequence[State], Dict[str, State]],
-        parameters : Union[Sequence[Parameter], Dict[str, Parameter]],
-        inputs : Union[Sequence[State], Dict[str, State]],
-        transition : Callable[States, Parameters, Inputs]) -> States,
-        description : str = ""
-    ):
-    self.name = name
-    self.description = description
-    self.states = _States()
-    self.parameters = _Parameters()
-    self.inputs = _Inputs()
+        Precondition:
+        The `_next_value` has already been set.
+        """
+        self._next_value, self._value = self._value, self._next_value
