@@ -43,4 +43,8 @@ print(yaml.dump(n1.to_yaml(), sort_keys=False))
 print("After removing parent n1 from n3:")
 n1.remove_child(n3)
 print(yaml.dump(n1.to_yaml(), sort_keys=False))
+print(yaml.dump(n3.to_yaml(), sort_keys=False))
+n3.remove_parent(n4)
+print(yaml.dump(n3.to_yaml(), sort_keys=False))
+print(yaml.dump(n4.to_yaml(), sort_keys=False))
 

@@ -13,10 +13,42 @@ Date:
 
 import numpy as np
 import numpy.typing as npt
-from typing import Union
+from typing import Union, Any
 
 
-__all__ = ["TEXT_TRIMMING_SIZE", "trim_str", "clip"]
+__all__ = ["bidict", "TEXT_TRIMMING_SIZE", "trim_str", "clip"]
+
+
+
+class bidict(dict):
+    """A simple bidirectional dictionary."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.inverse = {}
+        for k, v in self.items():
+            self.inverse.update({v: k})
+
+    def __setitem__(self, key : Any, value : Any):
+        if key in self:
+            raise RuntimeError(
+                f"{key} aready in bidirectional dictionary!"
+            )
+        if value in self.inverse:
+            raise RuntimeError(
+                f"{value} already in bidirectional dictionary!"
+            )
+        super().__setitem__(key, value)
+        self.inverse.update({value: key})
+
+    def update(self, new_dict):
+        for k, v in new_dict.items():
+            self[k] = v
+
+    def __delitem__(self, key : Any):
+        del self.inverse[self[key]]
+        super().__delitem__(key)
+
 
 
 # Default text rimming size

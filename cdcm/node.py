@@ -23,34 +23,7 @@ ParentSeq = NewType("ParentSeq", Sequence["Node"])
 ParentInput = Union["Node", ParentSeq, ParentDict]
 
 
-class bidict(dict):
-    """A simple bidirectional dictionary."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.inverse = {}
-        for k, v in self.items():
-            self.inverse.update({v: k})
-
-    def __setitem__(self, key : Any, value : Any):
-        if key in self:
-            raise RuntimeError(
-                f"{key} aready in bidirectional dictionary!"
-            )
-        if value in self.inverse:
-            raise RuntimeError(
-                f"{value} already in bidirectional dictionary!"
-            )
-        super().__setitem__(key, value)
-        self.inverse.update({value: key})
-
-    def update(self, new_dict):
-        for k, v in new_dict.items():
-            self[k] = v
-
-    def __delitem__(self, key : Any):
-        del self.inverse[self[key]]
-        super().__delitem__(key)
+from . import bidict
 
 
 class Node(object):
@@ -93,7 +66,7 @@ class Node(object):
     def parents(self):
         return self._parents
 
-    def _add_this(
+    def _add_parent_or_child(
         self,
         obj : "Node",
         name : str,
@@ -129,7 +102,7 @@ class Node(object):
         parent_name : str = None
     ):
         """Add a child node."""
-        self._add_this(
+        self._add_parent_or_child(
             obj,
             name,
             parent_name,
@@ -145,7 +118,7 @@ class Node(object):
         child_name : str = None
     ):
         """Add a parent node."""
-        self._add_this(
+        self._add_parent_or_child(
             obj,
             name,
             child_name,
@@ -154,7 +127,7 @@ class Node(object):
             "parent"
         )
 
-    def _remove_this(
+    def _remove_parent_or_child(
         self,
         name_or_obj : NameOrNode,
         children_or_parents_dict : NodeDict,
@@ -164,37 +137,23 @@ class Node(object):
 
         See `remove_child()` and `remove_parent()` for usage.
         """
-        print(f"Removing {name_or_obj} from {children_or_parents_dict}")
         if isinstance(name_or_obj, str):
             name = name_or_obj
             obj = children_or_parents_dict[name]
         else:
-            print("This is an object")
             obj = name_or_obj
             name = children_or_parents_dict.inverse[obj]
-            print(f"The name of the object is: {name}")
-        print(f"Getting the dictionary {parent_or_child}")
         parents_or_children_dict = getattr(obj, parent_or_child)
-        print(f"dict = {parents_or_children_dict}")
-        print(f"inverse dict = {parents_or_children_dict.inverse}")
-        quit()
-        parent_or_child_name = parents_or_children_dict.inverse[obj]
-        print(f"the name is {parent_or_child_name}")
-        pritn(f"keys: {parents_or_children_dict.keys()}")
-        print(f"trying to remove: {parent_or_child_name}")
-        quit()
+        parent_or_child_name = parents_or_children_dict.inverse[self]
         del parents_or_children_dict[parent_or_child_name]
-        print(f"removed? dict = {parents_or_children_dict}")
-        quit()
-        del this_dict[name]
-        del that_dict[that_name]
+        del children_or_parents_dict[name]
 
     def remove_child(
         self,
         name_or_obj : NameOrNode
     ):
         """Remove a child."""
-        self._remove_this(
+        self._remove_parent_or_child(
             name_or_obj,
             self.children,
             "parents"
@@ -205,7 +164,7 @@ class Node(object):
         name_or_obj : NameOrNode
     ):
         """Remove a parent."""
-        self._remove_this(
+        self._remove_parent_or_child(
             name_or_obj,
             self.parents,
             "children"
