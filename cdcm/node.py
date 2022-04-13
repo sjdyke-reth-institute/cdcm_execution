@@ -274,3 +274,22 @@ class Node(object):
     def from_yaml(self, data):
         """Set the parameters of the object from a dictionary."""
         raise NotImplementedError("This feature hasn't yet been implemented!")
+
+    def __call__(self):
+        """This updates the values of the children given the values
+        of the parents.
+
+        Only relevant for a `TransitionFunction`.
+
+        Added for symmetry of implementation.
+        """
+        pass
+
+    def _transition(self):
+        """This moves the node forward in time.
+
+        Only relevant of a `State`.
+
+        Added for symmetry of implementation.
+        """
+        pass

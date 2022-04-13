@@ -93,14 +93,6 @@ class Quantity(Node):
         """Change the tracking flag."""
         self._track = new_track
 
-    def _transition(self):
-        """This moves the quantity in time.
-
-        See `State` for an actual implementation. This does nothing
-        here. We include it for symmetry purposes.
-        """
-        pass
-
     def __str__(self):
         """Return a string representation of the Quantity.
 
