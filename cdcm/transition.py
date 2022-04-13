@@ -9,19 +9,11 @@ Date:
 """
 
 
-def get_default_args(func):
-    """Return a dictionary containing the default arguments of a
-    function.
+__all__ = ["TransitionFunction"]
 
-    I took this from here:
-    https://stackoverflow.com/questions/12627118/get-a-function-arguments-default-value
-    """
-    signature = inspect.signature(func)
-    return {
-        k: v.default
-        for k, v in signature.parameters.items()
-        if v.default is not inspect.Parameter.empty
-    }
+
+from . import Node
+from typing import Any, Dict, Callable, Sequence
 
 
 class TransitionFunction(Node):
@@ -49,11 +41,35 @@ class TransitionFunction(Node):
 
     def __init__(
         self,
+        *,
         transition_func : Callable,
         **kwargs
     ):
+        super().__init__(**kwargs)
         self._transition_func = transition_func
 
+    @property
+    def transition_func(self):
+        """Get the transition function."""
+        return self._transition_func
+
+
+    def to_yaml(self) -> Dict[str, Any]:
+        """Turn the object to a dictionary of dictionaries."""
+        res = super().to_yaml()
+        dres = res[self.name]
+        dres["transition_func"] = self.transition_func
+        return res
+
     def __call__(self):
-        """Evaluates the next """
-        pass
+        """Evaluates the next values of the children."""
+        result = self.transition_func(
+            **{
+                name: obj.value
+                for name, obj in self.parents.items()
+            }
+        )
+        if not isinstance(result, Sequence):
+            result = (result, )
+        for new_value, child in zip(result, self.children.values()):
+            child._next_value = new_value

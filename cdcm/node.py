@@ -15,11 +15,13 @@ __all__ = ["Node"]
 from typing import Any, Sequence, Dict, Union, NewType
 NameOrNode = NewType("StrOrNode", Union[str, "Node"])
 NodeDict = NewType("NodeDict", Dict[str, "Node"])
+NodeSeq = Sequence["Node"]
+NodeInput = Union["Node", NodeSeq, NodeDict]
 ChildrenDict = NewType("ChildrenDict", NodeDict)
-ChildrenSeq = NewType("ChildrenSeq", Sequence["Node"])
+ChildrenSeq = NewType("ChildrenSeq", NodeSeq)
 ChildrenInput = Union["Node", ChildrenSeq, ChildrenDict]
 ParentDict = NewType("ParentType", NodeDict)
-ParentSeq = NewType("ParentSeq", Sequence["Node"])
+ParentSeq = NewType("ParentSeq", NodeSeq)
 ParentInput = Union["Node", ParentSeq, ParentDict]
 
 
@@ -43,6 +45,7 @@ class Node(object):
 
     def __init__(
         self,
+        *,
         children : ChildrenInput = {},
         parents : ParentInput = {},
         owner : Any = None,
@@ -54,8 +57,8 @@ class Node(object):
         self.owner = owner
         self._parents = bidict()
         self._children = bidict()
-        #self.add_children(children)
-        #self.add_parents(parents)
+        self.add_children(children)
+        self.add_parents(parents)
 
     @property
     def children(self):
@@ -124,6 +127,46 @@ class Node(object):
             child_name,
             self.parents,
             obj.children,
+            "parent"
+        )
+
+    def _add_parents_or_children(
+        self,
+        parents_or_children_nodes : NodeInput,
+        parents_or_children : str
+    ):
+        """Adds may parents or children.
+
+        See `add_parents()` and `add_children()` for usage.
+        """
+        if isinstance(parents_or_children_nodes, Node):
+            parents_or_children_nodes = (parents_or_children_nodes, )
+        if isinstance(parents_or_children_nodes, Sequence):
+            parents_or_children_nodes = {
+                node.name: node
+                for node in parents_or_children_nodes
+            }
+        add_func = getattr(self, f"add_{parents_or_children}")
+        for name, node in parents_or_children_nodes.items():
+            add_func(node, name)
+
+    def add_children(
+        self,
+        children : NodeInput,
+    ):
+        """Add many children."""
+        self._add_parents_or_children(
+            children,
+            "child"
+        )
+
+    def add_parents(
+        self,
+        parents : NodeInput,
+    ):
+        """Add many children."""
+        self._add_parents_or_children(
+            parents,
             "parent"
         )
 
@@ -220,7 +263,7 @@ class Node(object):
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
         return {
-            self.absname: {
+            self.name: {
                 "description": self.description,
                 "owner": str(self.owner),
                 "parents": str(tuple(str(p) for p in self.parents)),

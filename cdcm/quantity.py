@@ -51,6 +51,7 @@ class Quantity(Node):
 
     def __init__(
         self,
+        *,
         value : Any = None,
         units : str = "",
         track : bool = True,
