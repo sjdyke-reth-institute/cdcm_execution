@@ -251,9 +251,9 @@ class Node(object):
     @description.setter
     def description(self, dsc : str):
         """Set the description of the object."""
-        assert isinstance(dsc, str), (
-            f"{dsc} is not a string. Descriptions must be strings!"
-        )
+        if dsc is None:
+            dsc = ""
+        dsc = str(dsc)
         self._description = dsc
 
     def __str__(self) -> str:

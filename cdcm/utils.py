@@ -12,12 +12,18 @@ Date:
 
 
 import numpy as np
+import inspect
 import numpy.typing as npt
 from typing import Union, Any
 
 
-__all__ = ["bidict", "TEXT_TRIMMING_SIZE", "trim_str", "clip"]
-
+__all__ = [
+    "bidict",
+    "get_default_args",
+    "TEXT_TRIMMING_SIZE",
+    "trim_str",
+    "clip"
+]
 
 
 class bidict(dict):
@@ -49,6 +55,20 @@ class bidict(dict):
         del self.inverse[self[key]]
         super().__delitem__(key)
 
+
+def get_default_args(func):
+    """Return a dictionary containing the default arguments of a
+    function.
+
+    I took this from here:
+    https://stackoverflow.com/questions/12627118/get-a-function-arguments-default-value
+    """
+    signature = inspect.signature(func)
+    return {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
 
 
 # Default text rimming size

@@ -9,10 +9,13 @@ Date:
 """
 
 
-__all__ = ["TransitionFunction"]
+__all__ = [
+    "TransitionFunction",
+    "make_transition"
+]
 
 
-from . import Node
+from . import Node, get_default_args
 from typing import Any, Dict, Callable, Sequence
 
 
@@ -73,3 +76,23 @@ class TransitionFunction(Node):
             result = (result, )
         for new_value, child in zip(result, self.children.values()):
             child._next_value = new_value
+
+
+def make_transition(*args : Node, **kwargs : Node):
+    """Automate the creation of a transition function."""
+    children = {}
+    for child in args:
+        children[child.name] = child
+    children.update(kwargs)
+
+    def make_transition_inner(trans_func):
+        parents = get_default_args(trans_func)
+        return TransitionFunction(
+            name=trans_func.__name__,
+            children=children,
+            parents=parents,
+            description=trans_func.__doc__,
+            transition_func=trans_func
+        )
+
+    return make_transition_inner
