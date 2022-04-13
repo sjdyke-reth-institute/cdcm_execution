@@ -19,11 +19,11 @@ from copy import deepcopy
 class State(Quantity):
     """A class representing a system state variable.
     
-    This is a `Quantity` that is varying with time.
+    This is a `Quantity` that is changing in discrete steps.
     It stores two versions of its value.
-    The current value is in `Quantity.value`.
-    The next value is in `Quantity.next_value`.
-    A call to `Quantity.transition()` writes `next_value` on `value`.
+    The current value is in `State.value`.
+    The next value is in `State.next_value`.
+    A call to `State._transition()` swaps `next_value` and `value`.
 
     See `Quantity` for the keyword arguments.
     """
@@ -32,7 +32,7 @@ class State(Quantity):
         super().__init__(**kwargs)
         self._next_value = deepcopy(self.value)
 
-    def _transition():
+    def _transition(self):
         """Writes `value` on `next_value`.
 
         Precondition:
