@@ -34,7 +34,8 @@ dt = Parameter(
     units="s"
 )
 
-# This is the fully descriptive way to make the transition function.
+
+# This is the fast way to make a transition function
 @make_transition(x)
 def f(x=x, r=r, dt=dt):
     """A simple transition function."""
@@ -50,8 +51,8 @@ print(yaml.dump(f.to_yaml(), sort_keys=False))
 print("State before:")
 print(yaml.dump(x.to_yaml(), sort_keys=False))
 print("Evaluating the next step.")
-f()
-x._transition()
+f.forward()
+x.transition()
 print("State after:")
 print(yaml.dump(x.to_yaml(), sort_keys=False))
 
@@ -90,9 +91,9 @@ print("State before:")
 print(yaml.dump(x1.to_yaml(), sort_keys=False))
 print(yaml.dump(x2.to_yaml(), sort_keys=False))
 print("Evaluating the next step.")
-g()
-x1._transition()
-x2._transition()
+g.forward()
+x1.transition()
+x2.transition()
 print("State after:")
 print(yaml.dump(x1.to_yaml(), sort_keys=False))
 print(yaml.dump(x2.to_yaml(), sort_keys=False))

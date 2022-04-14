@@ -35,7 +35,7 @@ dt = Parameter(
 )
 
 # This is the fully descriptive way to make the transition function.
-f = TransitionFunction(
+f = Transition(
     name="f",
     parents=[x, r, dt],
     children=x,
@@ -52,8 +52,8 @@ print(yaml.dump(f.to_yaml(), sort_keys=False))
 print("State before:")
 print(yaml.dump(x.to_yaml(), sort_keys=False))
 print("Evaluating the next step.")
-f()
-x._transition()
+f.forward()
+x.transition()
 print("State after:")
 print(yaml.dump(x.to_yaml(), sort_keys=False))
 
@@ -71,7 +71,7 @@ x2 = State(
     value=2.0,
     units="m"
 )
-g = TransitionFunction(
+g = Transition(
     name="g",
     parents=[x1, x2, r, dt],
     children=[x1, x2],
@@ -92,9 +92,9 @@ print("State before:")
 print(yaml.dump(x1.to_yaml(), sort_keys=False))
 print(yaml.dump(x2.to_yaml(), sort_keys=False))
 print("Evaluating the next step.")
-g()
-x1._transition()
-x2._transition()
+g.forward()
+x1.transition()
+x2.transition()
 print("State after:")
 print(yaml.dump(x1.to_yaml(), sort_keys=False))
 print(yaml.dump(x2.to_yaml(), sort_keys=False))

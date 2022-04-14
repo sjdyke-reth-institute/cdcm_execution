@@ -275,7 +275,7 @@ class Node(object):
         """Set the parameters of the object from a dictionary."""
         raise NotImplementedError("This feature hasn't yet been implemented!")
 
-    def __call__(self):
+    def propagate(self):
         """This updates the values of the children given the values
         of the parents.
 
@@ -285,7 +285,7 @@ class Node(object):
         """
         pass
 
-    def _transition(self):
+    def transition(self):
         """This moves the node forward in time.
 
         Only relevant of a `State`.
