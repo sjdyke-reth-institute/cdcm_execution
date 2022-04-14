@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-from . import Node, Variable, get_default_args
+from . import Node, Variable, State, get_default_args
 from typing import Any, Dict, Callable, Sequence
 
 
@@ -64,15 +64,20 @@ class Function(Node):
         dres["func"] = self.func
         return res
 
+    def _eval_func(self):
+        """Evaluates the function and returns the result."""
+        return self.func(*(obj.value for obj in self.parents.values()))
+
     def _update_children(self, result, attr):
+        """Writes `result` on `attr` of the children."""
         if not isinstance(result, Sequence):
             result = (result, )
         for new_value, child in zip(result, self.children.values()):
-            child._value = new_value
+            setattr(child, attr, new_value)
 
     def forward(self):
         """Evaluates the next values of the children."""
-        result = self.func(*(obj.value for obj in self.parents.values()))
+        result = self._eval_func()
         self._update_children(result, "_value")
 
 
@@ -89,16 +94,11 @@ class Transition(Function):
 
     def forward(self):
         """Evaluates the next values of the children."""
-        result = self.func(
-            **{
-                name: obj.value
-                for name, obj in self.parents.items()
-            }
-        )
+        result = self._eval_func()
         self._update_children(result, "_next_value")
 
 
-def make_function(*args : Node, **kwargs : Node):
+def make_function(*args : Variable, **kwargs : Variable):
     """Automate the creation of a function.
 
     The inputs to this decorator are the children states that will
@@ -108,10 +108,24 @@ def make_function(*args : Node, **kwargs : Node):
     for child in args:
         children[child.name] = child
     children.update(kwargs)
-
+    children_values_it = iter(children.values())
+    first = next(children_values_it)
+    if isinstance(first, State):
+        ChildType = State
+        FunctionType = Transition
+    elif isinstance(first, Variable):
+        ChildType = Variable
+        FunctionType = Function
+    else:
+        raise TypeError("Children must be Variables.")
+    for child in children.values():
+        if not isinstance(child, ChildType):
+            if ChildType == State:
+                raise TypeError("All children must be States.")
+            raise TypeError("All children must be Variables.")
     def make_function_inner(func):
         parents = get_default_args(func)
-        return Function(
+        return FunctionType(
             name=func.__name__,
             children=children,
             parents=parents,

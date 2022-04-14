@@ -32,7 +32,7 @@ class State(Variable):
         super().__init__(**kwargs)
         self._next_value = deepcopy(self.value)
 
-    def _transition(self):
+    def transition(self):
         """Writes `value` on `next_value`.
 
         Precondition:

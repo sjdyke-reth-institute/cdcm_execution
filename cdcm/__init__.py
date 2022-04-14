@@ -13,9 +13,9 @@ Date:
 from .utils import *
 from .node import *
 from .variable import *
-from .function import *
 from .parameter import *
 from .state import *
+from .function import *
 from .factory import *
 #from .transition import *
 #from .system import *
