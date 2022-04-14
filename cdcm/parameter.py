@@ -11,10 +11,10 @@ Date:
 __all__ = ["Parameter"]
 
 
-from . import Quantity
+from . import Variable
 
 
-class Parameter(Quantity):
+class Parameter(Variable):
     """A class representing a parameter of a system.
 
     See `Quantity` for the keyword arguments.

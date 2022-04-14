@@ -19,12 +19,12 @@ s = State(
     track=True,
     description="A standard state."
 )
-print(yaml.dump(s.to_yaml(), sort_keys=False))
+print(s)
 
 print(f"The next value of the state is: {s._next_value}")
 s._next_value = 1.5
 print("Changing the next value.")
 print(f"The next value of the state is: {s._next_value}")
 print("Swaping values.")
-s._transition()
-print(yaml.dump(s.to_yaml(), sort_keys=False))
+s.transition()
+print(s)

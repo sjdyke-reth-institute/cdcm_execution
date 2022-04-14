@@ -33,18 +33,20 @@ n4 = Node(
 
 n3.add_parent(n4)
 
-print(yaml.dump(n1.to_yaml(), sort_keys=False))
-print(yaml.dump(n2.to_yaml(), sort_keys=False))
-print(yaml.dump(n3.to_yaml(), sort_keys=False))
-print(yaml.dump(n4.to_yaml(), sort_keys=False))
+
+print(n1)
+print(n2)
+print(n3)
+print(n4)
+
 
 print("Before removing parent n1 from n3:")
-print(yaml.dump(n1.to_yaml(), sort_keys=False))
+print(n1)
 print("After removing parent n1 from n3:")
 n1.remove_child(n3)
-print(yaml.dump(n1.to_yaml(), sort_keys=False))
-print(yaml.dump(n3.to_yaml(), sort_keys=False))
+print(n1)
+print(n3)
 n3.remove_parent(n4)
-print(yaml.dump(n3.to_yaml(), sort_keys=False))
-print(yaml.dump(n4.to_yaml(), sort_keys=False))
+print(n3)
+print(n4)
 

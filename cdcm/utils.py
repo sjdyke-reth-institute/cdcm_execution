@@ -11,6 +11,7 @@ Date:
 """
 
 
+import yaml
 import numpy as np
 import inspect
 import numpy.typing as npt
@@ -54,6 +55,13 @@ class bidict(dict):
     def __delitem__(self, key : Any):
         del self.inverse[self[key]]
         super().__delitem__(key)
+
+
+def yamlstr(dict_of_dicts):
+    """
+    Turn a dictionary of dictionaries to a yaml string.
+    """
+    return yaml.dumP(dict_of_dicts, sort_keys=False)
 
 
 def get_default_args(func):

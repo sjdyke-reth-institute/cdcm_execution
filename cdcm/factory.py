@@ -13,7 +13,7 @@ __all__ = ["make_node"]
 
 
 
-from . import Node, Variable, State, Parameter, Factor, Transition
+from . import Node, Variable, State, Parameter, Function, Transition
 from ast import literal_eval
 
 
@@ -22,7 +22,7 @@ CHAR_TO_NODE_TYPES = {
     "V": Variable,
     "S": State,
     "P": Parameter,
-    "F": Factor,
+    "F": Function,
     "T": Transition
 }
 

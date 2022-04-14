@@ -10,35 +10,34 @@ Date:
 
 import numpy as np
 from cdcm import *
-import yaml
 
 
 # Testing floating point value
-q = Quantity(
+q = Variable(
     value=43.658123,
     units="m",
-    name="random_name",
+    name="q1",
     track=True,
     description="Some description.")
-print(yaml.dump(q.to_yaml(), sort_keys=False))
+print(q)
 
 # Testing integer value
-q = Quantity(
+q = Variable(
     value=1,
     units="km",
-    name="random_name",
+    name="q2",
     track=False,
     description="description"
 )
-print(yaml.dump(q.to_yaml(), sort_keys=False))
+print(q)
 
-# It tests Quantity class with arrays
+# It tests Variable class with arrays
 arr_float = np.array([1.12, 2.2332, 3.34, 4.5326, 5.67])
-q = Quantity(
+q = Variable(
     value=arr_float,
     units="m",
-    name="random_name",
+    name="q3",
     track=False,
     description="description"
 )
-print(yaml.dump(q.to_yaml(), sort_keys=False))
+print(q)

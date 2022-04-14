@@ -12,14 +12,14 @@ Date:
 __all__ = ["State"]
 
 
-from . import Quantity
+from . import Variable
 from copy import deepcopy
 
 
-class State(Quantity):
+class State(Variable):
     """A class representing a system state variable.
     
-    This is a `Quantity` that is changing in discrete steps.
+    This is a `Variable` that is changing in discrete steps.
     It stores two versions of its value.
     The current value is in `State.value`.
     The next value is in `State.next_value`.

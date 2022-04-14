@@ -12,6 +12,7 @@ Date:
 __all__ = ["Node"]
 
 
+import yaml
 from typing import Any, Sequence, Dict, Union, NewType
 NameOrNode = NewType("StrOrNode", Union[str, "Node"])
 NodeDict = NewType("NodeDict", Dict[str, "Node"])
@@ -258,7 +259,7 @@ class Node(object):
 
     def __str__(self) -> str:
         """Return a string representation of the object."""
-        return self.name
+        return yaml.dump(self.to_yaml(), sort_keys=False)
 
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
@@ -266,8 +267,8 @@ class Node(object):
             self.name: {
                 "description": self.description,
                 "owner": str(self.owner),
-                "parents": str(tuple(str(p) for p in self.parents)),
-                "children": str(tuple(str(c) for c in self.children))
+                "parents": str(tuple(p.absname for p in self.parents.values())),
+                "children": str(tuple(c.absname for c in self.children.values()))
             }
         }
 
@@ -275,21 +276,10 @@ class Node(object):
         """Set the parameters of the object from a dictionary."""
         raise NotImplementedError("This feature hasn't yet been implemented!")
 
-    def propagate(self):
-        """This updates the values of the children given the values
-        of the parents.
-
-        Only relevant for a `TransitionFunction`.
-
-        Added for symmetry of implementation.
-        """
+    def forward(self):
+        """This is provided for symmetry. To be overloaded by Factor."""
         pass
 
     def transition(self):
-        """This moves the node forward in time.
-
-        Only relevant of a `State`.
-
-        Added for symmetry of implementation.
-        """
+        """This is provided for symmetry. To be overloaded by State."""
         pass
