@@ -19,6 +19,7 @@ n1 = Node(
 n2 = Node(
     name="n2"
 )
+
 n1.add_child(n2)
 
 n3 = Node(

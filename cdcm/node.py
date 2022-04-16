@@ -9,11 +9,20 @@ Date:
 """
 
 
-__all__ = ["Node"]
+__all__ = [
+    "Node",
+    "ChildrenInput",
+    "NodeInput",
+    "ParentInput"
+]
 
 
 import yaml
 from typing import Any, Sequence, Dict, Union, NewType
+from functools import partialmethod
+from . import bidict
+
+
 NameOrNode = NewType("StrOrNode", Union[str, "Node"])
 NodeDict = NewType("NodeDict", Dict[str, "Node"])
 NodeSeq = Sequence["Node"]
@@ -24,9 +33,6 @@ ChildrenInput = Union["Node", ChildrenSeq, ChildrenDict]
 ParentDict = NewType("ParentType", NodeDict)
 ParentSeq = NewType("ParentSeq", NodeSeq)
 ParentInput = Union["Node", ParentSeq, ParentDict]
-
-
-from . import bidict
 
 
 class Node(object):
@@ -44,6 +50,9 @@ class Node(object):
     description -- The description of the object. Optional.
     """
 
+    _children : NodeDict = bidict()
+    _parents : NodeDict = bidict()
+
     def __init__(
         self,
         *,
@@ -56,120 +65,102 @@ class Node(object):
         self.name = name
         self.description = description
         self.owner = owner
-        self._parents = bidict()
-        self._children = bidict()
         self.add_children(children)
         self.add_parents(parents)
 
     @property
-    def children(self):
+    def children(self) -> NodeDict :
         """Get the children."""
         return self._children
 
     @property
-    def parents(self):
+    def parents(self) -> NodeDict :
         return self._parents
+
+    def _add_type(
+        self,
+        dict_to_add : NodeDict,
+        type_to_add : str,
+        obj : "Node",
+        name : str
+    ) -> bool :
+        """Add an object of type Node to a the bidict dict_to_add."""
+        if obj in dict_to_add.values():
+            return False
+        if name is None:
+            name = obj.name
+        if name in dict_to_add:
+            if obj in dict_to_add.inverse:
+                return False
+            else:
+                raise RuntimeError(
+                    f"{self.name} already has a {type_to_add} named {name}"
+                )
+        dict_to_add[name] = obj
+        return True
 
     def _add_parent_or_child(
         self,
-        obj : "Node",
-        name : str,
-        parent_or_child_name : str,
         children_or_parents_dict : NodeDict,
-        parents_or_children_dict : NodeDict,
-        child_or_parent : str
-    ):
+        child_or_parent : str,
+        parents_or_children : str,
+        obj : "Node",
+        name : str = None,
+        parent_or_child_name : str = None
+    ) -> bool :
         """Adds a parent or a child.
 
         See `add_child()` and `add_parent()` for usage.
         """
-        if obj in children_or_parents_dict.values():
-            return
-        if name is None:
-            name = obj.name
-        if name in parents_or_children_dict:
-            if obj in parents_or_children_dict.inverse:
-                return
-            else:
-                raise RuntimeError(
-                    f"{self.name} already has a {child_or_parent} named {name}"
-                )
-        if parent_or_child_name is None:
-            parent_or_child_name = self.name
-        children_or_parents_dict[name] = obj       
-        parents_or_children_dict[parent_or_child_name] = self
-
-    def add_child(
-        self,
-        obj : "Node",
-        name : str = None,
-        parent_name : str = None
-    ):
-        """Add a child node."""
-        self._add_parent_or_child(
+        if self._add_type(
+            children_or_parents_dict,
+            child_or_parent,
             obj,
-            name,
-            parent_name,
-            self.children,
-            obj.parents,
-            "child"
-        )
+            name
+        ):
+            if parent_or_child_name is None:
+                parent_or_child_name = self.name
+            parents_or_children_dict = getattr(self, parents_or_children)
+            parents_or_children_dict[parent_or_child_name] = self
+            return True
+        return False
 
-    def add_parent(
-        self,
-        obj : "Node",
-        name : str = None,
-        child_name : str = None
-    ):
-        """Add a parent node."""
-        self._add_parent_or_child(
-            obj,
-            name,
-            child_name,
-            self.parents,
-            obj.children,
-            "parent"
-        )
+    add_child = partialmethod(
+        _add_parent_or_child,
+        _children,
+        "child",
+        "parents"
+    )
 
-    def _add_parents_or_children(
+    add_parent = partialmethod(
+        _add_parent_or_child,
+        _parents,
+        "parent",
+        "children"
+    )
+
+    def _add_types(
         self,
-        parents_or_children_nodes : NodeInput,
-        parents_or_children : str
+        type_of_nodes : str,
+        nodes : NodeInput
     ):
         """Adds may parents or children.
 
         See `add_parents()` and `add_children()` for usage.
         """
-        if isinstance(parents_or_children_nodes, Node):
-            parents_or_children_nodes = (parents_or_children_nodes, )
-        if isinstance(parents_or_children_nodes, Sequence):
-            parents_or_children_nodes = {
+        if isinstance(nodes, Node):
+            nodes = (nodes, )
+        if isinstance(nodes, Sequence):
+            nodes = {
                 node.name: node
-                for node in parents_or_children_nodes
+                for node in nodes
             }
-        add_func = getattr(self, f"add_{parents_or_children}")
-        for name, node in parents_or_children_nodes.items():
-            add_func(node, name)
+        add_func = getattr(self, f"add_{type_of_nodes}")
+        for name, node in nodes.items():
+            add_func(node, name, None)
 
-    def add_children(
-        self,
-        children : NodeInput,
-    ):
-        """Add many children."""
-        self._add_parents_or_children(
-            children,
-            "child"
-        )
-
-    def add_parents(
-        self,
-        parents : NodeInput,
-    ):
-        """Add many children."""
-        self._add_parents_or_children(
-            parents,
-            "parent"
-        )
+    add_children = partialmethod(_add_types, "child")
+    add_parents = partialmethod(_add_types, "parent")
 
     def _remove_parent_or_child(
         self,
