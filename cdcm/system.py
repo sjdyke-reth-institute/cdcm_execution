@@ -89,8 +89,10 @@ class System(Node):
 
     def add_node(self, obj, name=None):
         """Add a node."""
-        self._add_type(self._nodes, obj, name)
-        obj.owner = self
+        if self._add_type(self._nodes, obj, name):
+            obj.owner = self
+            name = self.nodes.inverse[obj]
+            self.__dict__[name] = obj
 
     @property
     def nodes(self):
