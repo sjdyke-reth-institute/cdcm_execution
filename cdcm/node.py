@@ -50,8 +50,15 @@ class Node(object):
     description -- The description of the object. Optional.
     """
 
-    _children : NodeDict = bidict()
-    _parents : NodeDict = bidict()
+    _TYPE_DICTS = {
+        "child": "children",
+        "parent": "parents"
+    }
+
+    _REFLECTION = {
+        "child": "parent",
+        "parent": "child"
+    }
 
     def __init__(
         self,
@@ -65,6 +72,8 @@ class Node(object):
         self.name = name
         self.description = description
         self.owner = owner
+        self._children : NodeDict = bidict()
+        self._parents : NodeDict = bidict()
         self.add_children(children)
         self.add_parents(parents)
 
@@ -82,9 +91,13 @@ class Node(object):
         dict_to_add : NodeDict,
         type_to_add : str,
         obj : "Node",
-        name : str
+        name : str = None
     ) -> bool :
-        """Add an object of type Node to a the bidict dict_to_add."""
+        """Add `obj` of `type_to_add` in `dict_to_add` with key `name`.
+
+        Returns True if the object is added and False if the object is
+        already in.
+        """
         if obj in dict_to_add.values():
             return False
         if name is None:
@@ -101,42 +114,44 @@ class Node(object):
 
     def _add_parent_or_child(
         self,
-        children_or_parents_dict : NodeDict,
         child_or_parent : str,
-        parents_or_children : str,
         obj : "Node",
         name : str = None,
         parent_or_child_name : str = None
     ) -> bool :
         """Adds a parent or a child.
 
+        This function ensures the reflexivity of a child - parent
+        relationship, i.e., the if I add x to be the child of y, then I
+        must also make y the parent of x.
+
         See `add_child()` and `add_parent()` for usage.
         """
+        dict_to_add = getattr(self, self._TYPE_DICTS[child_or_parent])
         if self._add_type(
-            children_or_parents_dict,
+            dict_to_add,
             child_or_parent,
             obj,
             name
         ):
-            if parent_or_child_name is None:
-                parent_or_child_name = self.name
-            parents_or_children_dict = getattr(self, parents_or_children)
-            parents_or_children_dict[parent_or_child_name] = self
-            return True
+            parent_or_child = self._REFLECTION[child_or_parent]
+            dict_to_add = getattr(obj, self._TYPE_DICTS[parent_or_child])
+            return obj._add_type(
+                dict_to_add,
+                parent_or_child,
+                self,
+                parent_or_child_name
+            )
         return False
 
     add_child = partialmethod(
         _add_parent_or_child,
-        _children,
-        "child",
-        "parents"
+        "child"
     )
 
     add_parent = partialmethod(
         _add_parent_or_child,
-        _parents,
-        "parent",
-        "children"
+        "parent"
     )
 
     def _add_types(
@@ -162,48 +177,47 @@ class Node(object):
     add_children = partialmethod(_add_types, "child")
     add_parents = partialmethod(_add_types, "parent")
 
-    def _remove_parent_or_child(
+    def _remove_type(
         self,
         name_or_obj : NameOrNode,
-        children_or_parents_dict : NodeDict,
-        parent_or_child : str
+        dict_to_remove_from : NodeDict
+    ):
+        """Removes `name_or_obj` from `dict_to_remove_from`.
+
+        Returns the object that was just removed.
+        """
+        if isinstance(name_or_obj, str):
+            name = name_or_obj
+            obj = dict_to_remove_from[name]
+        else:
+            obj = name_or_obj
+            name = dict_to_remove_from.inverse[obj]
+        del dict_to_remove_from[name]
+        return obj
+
+    def _remove_parent_or_child(
+        self,
+        child_or_parent : NodeDict,
+        name_or_obj : NameOrNode
     ):
         """Removes a parent or a child.
 
         See `remove_child()` and `remove_parent()` for usage.
         """
-        if isinstance(name_or_obj, str):
-            name = name_or_obj
-            obj = children_or_parents_dict[name]
-        else:
-            obj = name_or_obj
-            name = children_or_parents_dict.inverse[obj]
-        parents_or_children_dict = getattr(obj, parent_or_child)
-        parent_or_child_name = parents_or_children_dict.inverse[self]
-        del parents_or_children_dict[parent_or_child_name]
-        del children_or_parents_dict[name]
-
-    def remove_child(
-        self,
-        name_or_obj : NameOrNode
-    ):
-        """Remove a child."""
-        self._remove_parent_or_child(
-            name_or_obj,
-            self.children,
-            "parents"
+        children_or_parents_dict = getattr(
+            self,
+            self._TYPE_DICTS[child_or_parent]
         )
-
-    def remove_parent(
-        self,
-        name_or_obj : NameOrNode
-    ):
-        """Remove a parent."""
-        self._remove_parent_or_child(
-            name_or_obj,
-            self.parents,
-            "children"
+        obj = self._remove_type(name_or_obj, children_or_parents_dict)
+        parent_or_child = self._REFLECTION[child_or_parent]
+        parents_or_children_dict = getattr(
+            obj,
+            self._TYPE_DICTS[parent_or_child]
         )
+        obj._remove_type(self, parents_or_children_dict)
+
+    remove_child = partialmethod(_remove_parent_or_child, "child")
+    remove_parent = partialmethod(_remove_parent_or_child, "parent")
 
     @property
     def owner(self):
