@@ -89,7 +89,6 @@ class Node(object):
     def _add_type(
         self,
         dict_to_add : NodeDict,
-        type_to_add : str,
         obj : "Node",
         name : str = None
     ) -> bool :
@@ -130,7 +129,6 @@ class Node(object):
         dict_to_add = getattr(self, self._TYPE_DICTS[child_or_parent])
         if self._add_type(
             dict_to_add,
-            child_or_parent,
             obj,
             name
         ):
@@ -138,7 +136,6 @@ class Node(object):
             dict_to_add = getattr(obj, self._TYPE_DICTS[parent_or_child])
             return obj._add_type(
                 dict_to_add,
-                parent_or_child,
                 self,
                 parent_or_child_name
             )
@@ -172,15 +169,15 @@ class Node(object):
             }
         add_func = getattr(self, f"add_{type_of_nodes}")
         for name, node in nodes.items():
-            add_func(node, name, None)
+            add_func(node, name)
 
     add_children = partialmethod(_add_types, "child")
     add_parents = partialmethod(_add_types, "parent")
 
     def _remove_type(
         self,
-        name_or_obj : NameOrNode,
-        dict_to_remove_from : NodeDict
+        dict_to_remove_from : NodeDict,
+        name_or_obj : NameOrNode
     ):
         """Removes `name_or_obj` from `dict_to_remove_from`.
 
@@ -208,13 +205,13 @@ class Node(object):
             self,
             self._TYPE_DICTS[child_or_parent]
         )
-        obj = self._remove_type(name_or_obj, children_or_parents_dict)
+        obj = self._remove_type(children_or_parents_dict, name_or_obj)
         parent_or_child = self._REFLECTION[child_or_parent]
         parents_or_children_dict = getattr(
             obj,
             self._TYPE_DICTS[parent_or_child]
         )
-        obj._remove_type(self, parents_or_children_dict)
+        obj._remove_type(parents_or_children_dict, self)
 
     remove_child = partialmethod(_remove_parent_or_child, "child")
     remove_parent = partialmethod(_remove_parent_or_child, "parent")
@@ -271,7 +268,7 @@ class Node(object):
         return {
             self.name: {
                 "description": self.description,
-                "owner": str(self.owner),
+                "owner": str(self.owner.absname) if self.owner is not None else "",
                 "parents": str(tuple(p.absname for p in self.parents.values())),
                 "children": str(tuple(c.absname for c in self.children.values()))
             }
