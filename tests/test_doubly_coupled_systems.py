@@ -11,8 +11,7 @@ Date:
 
 from cdcm import *
 import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
+from pyvis.network import Network
 
 
 # ****************************
@@ -108,10 +107,10 @@ print(sys)
 # ****************************
 #       DRAW THE DAG
 # ****************************
-g = sys.graph
-pos = nx.nx_agraph.graphviz_layout(g)
-nx.draw(g, with_labels=True, pos=pos)
-plt.show()
+g = sys.dag
+net = Network(notebook=True, directed=True)
+net.from_nx(g)
+net.show("double_coupled.html")
 
 # ****************************
 #       RUN FORWARD
