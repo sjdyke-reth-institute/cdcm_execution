@@ -54,7 +54,6 @@ replace_prnt_with_raise_value_error = replace_with_raise_value_error(
 
 
 class System(Node):
-
     """A system represents a set of nodes.
 
     The nodes may be any class that inherits from Node.
