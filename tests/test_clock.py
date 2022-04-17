@@ -11,10 +11,10 @@ Date:
 from cdcm import *
 
 
-if __name__ == "__main__":
-    print(str(clock))
-    # Simulate the clock
-    dt = 0.1
-    for i in range(10):
-        clock.unsafe_step(dt)
-        print(f"time = {clock.state['t']}")
+clock = make_clock(0.1)
+print(clock)
+
+for i in range(10):
+    clock.forward()
+    print(f"time = {clock.t.value:1.2f}")
+    clock.transition()

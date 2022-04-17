@@ -10,29 +10,22 @@ Date:
 
 from cdcm import *
 
+# ****************************
+# System 0
+# ****************************
+clock =
 
 # ****************************
 #       SYSTEM 1
 # ****************************
 
-x1 = PhysicalStateVariable(
-    value=0.1,
-    units="meters",
-    name="x1"
-)
+x1 = make_node("S:x1:0.1:meters")
+r1 = make_node("P:r1:1.2:meters/second")
 
-r1 = Parameter(
-    value=1.2,
-    units="meters / second",
-    name="r1"
-)
-
-
-@make_system
-def sys1(dt, *, x1=x1, r1=r1):
+@make_function
+def f1(x1=x1, r1=r1, dt=dt):
     """A simple system."""
     return x1 + r1 * dt
-
 
 # ****************************
 #       SYSTEM 2
