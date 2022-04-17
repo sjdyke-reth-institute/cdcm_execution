@@ -108,7 +108,7 @@ print(sys)
 # ****************************
 #       DRAW THE DAG
 # ****************************
-g = sys.dag
+g = sys.graph
 pos = nx.nx_agraph.graphviz_layout(g)
 nx.draw(g, with_labels=True, pos=pos)
 plt.show()

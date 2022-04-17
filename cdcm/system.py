@@ -84,7 +84,6 @@ class System(Node):
         self.add_parents = replace_prnt_with_raise_value_error
         self.remove_parent = replace_prnt_with_raise_value_error
         self.add_nodes = partial(self._add_types, "node")
-        self.remove_node = partial(self._remove_type, self._nodes)
 
         self.add_nodes(nodes)
 
@@ -126,6 +125,18 @@ class System(Node):
             for name, n in self.nodes.items() if isinstance(n, Type)
         }
 
+    def remove_node(
+        self,
+        name_or_obj,
+    ) -> tuple[str, Node]:
+        """Removes a node from the system.
+
+        Returns the name of and the object that was just removed.
+        """
+        name, obj = self._remove_type(self._nodes, name_or_obj)
+        del self.__dict__[name]
+        return name, obj
+
     @cached_property
     def states(self):
         return self.get_nodes_of_type(State)
@@ -141,6 +152,22 @@ class System(Node):
     @cached_property
     def transitions(self):
         return self.get_nodes_of_type(Transition)
+
+    @cached_property
+    def graph(self):
+        """Turn the system to a directed graph.
+
+        This is not necessarily acyclic.
+        It is used for visualization purposes.
+
+        For computational purposes, use dag.
+        """
+        g = nx.DiGraph()
+        for n in self.nodes.values():
+            g.add_node(n.name)
+            for c in n.children.values():
+                g.add_edge(n.name, c.name)
+        return g
 
     @cached_property
     def dag(self):

@@ -179,10 +179,10 @@ class Node(object):
         self,
         dict_to_remove_from : NodeDict,
         name_or_obj : NameOrNode
-    ):
+    ) -> tuple[str, "Node"]:
         """Removes `name_or_obj` from `dict_to_remove_from`.
 
-        Returns the object that was just removed.
+        Returns the name of and the object that was just removed.
         """
         if isinstance(name_or_obj, str):
             name = name_or_obj
@@ -191,7 +191,7 @@ class Node(object):
             obj = name_or_obj
             name = dict_to_remove_from.inverse[obj]
         del dict_to_remove_from[name]
-        return obj
+        return name, obj
 
     def _remove_parent_or_child(
         self,
@@ -206,7 +206,7 @@ class Node(object):
             self,
             self._TYPE_DICTS[child_or_parent]
         )
-        obj = self._remove_type(children_or_parents_dict, name_or_obj)
+        name, obj = self._remove_type(children_or_parents_dict, name_or_obj)
         parent_or_child = self._REFLECTION[child_or_parent]
         parents_or_children_dict = getattr(
             obj,
@@ -288,8 +288,12 @@ class Node(object):
         pass
 
 
-def replace_node(old_node, new_node):
-    """Replace an old node with a new node."""
+def replace_node(old_node, new_node, keep_old_owner=False):
+    """Replace an old node with a new node.
+
+    Keyword Arguments:
+    keep_old_owner -- If True new_node.owner becomes old_node.owner.
+    """
     parents = old_node.parents.copy()
     children = old_node.children.copy()
     for p in parents:
@@ -298,6 +302,11 @@ def replace_node(old_node, new_node):
         old_node.remove_child(c)
     new_node.add_parents(parents)
     new_node.add_children(children)
-    if old_node.owner is not None:
-        old_node_name = old_node.owner.nodes.inverse[old_node]
-        del old_node.owner.nodes[old_node_name]
+    old_owner = old_node.owner
+    if old_owner is not None:
+        old_owner.remove_node(old_node)
+        if keep_old_owner:
+            new_owner = new_node.owner
+            if new_owner is not None:
+                new_owner.remove_node(new_node)
+            old_owner.add_node(new_node)
