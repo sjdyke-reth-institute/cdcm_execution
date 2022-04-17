@@ -10,7 +10,7 @@ Date:
 """
 
 
-__all__ = ["System", "make_system"]
+__all__ = ["System"]
 
 
 from . import (
@@ -193,26 +193,3 @@ class System(Node):
         for t in self.states.values():
             t.transition()
 
-
-def make_system(trans_func):
-    """Make a system directly from a function.
-
-    See below for an example.
-    """
-    nodes = get_default_args(trans_func)
-    # Find all states and parameters
-    states = {
-        k: v
-        for k, v in nodes.items() if isinstance(v, State)
-    }
-
-    new_trans_func = make_function(*states.values())(trans_func)
-    new_trans_func.description = "A transition function."
-
-    nodes.update({"transition_func": new_trans_func})
-
-    return System(
-        name=trans_func.__name__,
-        nodes=nodes,
-        description=trans_func.__doc__
-    )
