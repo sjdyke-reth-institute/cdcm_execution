@@ -123,6 +123,7 @@ def make_function(*args : Variable, **kwargs : Variable):
             if ChildType == State:
                 raise TypeError("All children must be States.")
             raise TypeError("All children must be Variables.")
+
     def make_function_inner(func):
         parents = get_default_args(func)
         return FunctionType(

@@ -13,31 +13,43 @@ Date:
 from cdcm import *
 
 
-x = PhysicalStateVariable(
-    value=0.1,
-    units="meters",
-    name="x",
-    track=True,
-    description="The x variable."
-)
+x = make_node("S:x:0.1:meters", description="The state of the system.")
+r = make_node("P:r:1.2:meters/second", description="The rate of change.")
+dt = make_node("P:dt:0.1:second", description="The timestep.")
 
-r = Parameter(
-    value=1.2,
-    units="meters / second",
-    name="r",
-    description="The rate of change."
-)
-
-
-@make_system
-def sys(dt, *, x=x, r=r):
+@make_function(x)
+def f(x=x, r=r, dt=dt):
+    """The transition function."""
     return x + r * dt
 
+sys = System(
+    name="sys",
+    nodes=[x, r, dt, f],
+    description="An isolated system."
+)
 
 print(sys)
 
-
-dt = 0.1
+print("Run this forward:")
 for i in range(10):
-    sys.unsafe_step(dt)
-    print(f"x: {sys.state['x']}")
+    sys.forward()
+    sys.transition()
+    print(f"x: {sys.x.value:1.2f}")
+
+# Another way to do exactly the same thing is this:
+x = make_node("S:x:0.1:meters", description="The state of the system.")
+r = make_node("P:r:1.2:meters/second", description="The rate of change.")
+dt = make_node("P:dt:0.1:second", description="The timestep.")
+
+@make_system
+def sys(x=x, r=r, dt=dt):
+    """A simple system."""
+    return x + r * dt
+
+print(sys)
+
+print("Run this forward:")
+for i in range(10):
+    sys.forward()
+    sys.transition()
+    print(f"x: {sys.x.value:1.2f}")

@@ -10,7 +10,7 @@ Date:
 """
 
 
-__all__ = ["System"]
+__all__ = ["System", "make_system"]
 
 
 from . import (
@@ -20,7 +20,9 @@ from . import (
     State,
     Parameter,
     Function,
-    Transition
+    Transition,
+    get_default_args,
+    make_function
 )
 from typing import Any, Dict, Callable, Sequence
 from functools import partial, partialmethod, cached_property
@@ -188,5 +190,29 @@ class System(Node):
 
     def transition(self):
         """Calls transition() on all nodes."""
-        for t in self.transitions:
-            n.transition()
+        for t in self.states.values():
+            t.transition()
+
+
+def make_system(trans_func):
+    """Make a system directly from a function.
+
+    See below for an example.
+    """
+    nodes = get_default_args(trans_func)
+    # Find all states and parameters
+    states = {
+        k: v
+        for k, v in nodes.items() if isinstance(v, State)
+    }
+
+    new_trans_func = make_function(*states.values())(trans_func)
+    new_trans_func.description = "A transition function."
+
+    nodes.update({"transition_func": new_trans_func})
+
+    return System(
+        name=trans_func.__name__,
+        nodes=nodes,
+        description=trans_func.__doc__
+    )
