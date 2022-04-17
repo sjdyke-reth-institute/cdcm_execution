@@ -198,4 +198,3 @@ class System(Node):
         """Calls transition() on all nodes."""
         for t in self.states.values():
             t.transition()
-
