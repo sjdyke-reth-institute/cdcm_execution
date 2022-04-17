@@ -4,3 +4,4 @@ pint
 h5py
 rich
 pyyaml
+networkx
