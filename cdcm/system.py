@@ -92,12 +92,18 @@ class System(Node):
         """Add a node."""
         if self._add_type(self._nodes, obj, name):
             obj.owner = self
-            name = self.nodes.inverse[obj]
+            name = self._nodes.inverse[obj]
             self.__dict__[name] = obj
 
-    @property
+    @cached_property
     def nodes(self):
-        return self._nodes
+        ns = bidict()
+        for name, node in self._nodes.items():
+            if isinstance(node, System):
+                ns.update(node.nodes)
+            else:
+                ns.update({name:node})
+        return ns
 
     def to_yaml(self):
         """Turn the object to a dictionary of dictionaries."""
@@ -106,7 +112,7 @@ class System(Node):
         del dres["children"]
         del dres["parents"]
         dres["nodes"] = {}
-        for n in self.nodes.values():
+        for n in self._nodes.values():
             dres["nodes"].update(n.to_yaml())
         return res
 

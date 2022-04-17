@@ -243,7 +243,7 @@ class Node(object):
     @property
     def absname(self):
         if self.owner is not None:
-            return self.owner.name + '.' + self.name
+            return self.owner.absname + '.' + self.name
         return self.name
 
     @property
