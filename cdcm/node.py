@@ -11,6 +11,7 @@ Date:
 
 __all__ = [
     "Node",
+    "replace_node",
     "ChildrenInput",
     "NodeInput",
     "ParentInput"
@@ -106,7 +107,7 @@ class Node(object):
                 return False
             else:
                 raise RuntimeError(
-                    f"{self.name} already has a {type_to_add} named {name}"
+                    f"{self.name} already has a field named {name}"
                 )
         dict_to_add[name] = obj
         return True
@@ -285,3 +286,18 @@ class Node(object):
     def transition(self):
         """This is provided for symmetry. To be overloaded by State."""
         pass
+
+
+def replace_node(old_node, new_node):
+    """Replace an old node with a new node."""
+    parents = old_node.parents.copy()
+    children = old_node.children.copy()
+    for p in parents:
+        old_node.remove_parent(p)
+    for c in children:
+        old_node.remove_child(c)
+    new_node.add_parents(parents)
+    new_node.add_children(children)
+    if old_node.owner is not None:
+        old_node_name = old_node.owner.nodes.inverse[old_node]
+        del old_node.owner.nodes[old_node_name]
