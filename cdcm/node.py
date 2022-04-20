@@ -11,7 +11,7 @@ Date:
 
 __all__ = [
     "Node",
-    "replace_node",
+    "replace",
     "ChildrenInput",
     "NodeInput",
     "ParentInput"
@@ -19,7 +19,7 @@ __all__ = [
 
 
 import yaml
-from typing import Any, Sequence, Dict, Union, NewType
+from typing import Any, Sequence, Dict, Union, NewType, Tuple
 from functools import partialmethod
 from . import bidict
 
@@ -179,7 +179,7 @@ class Node(object):
         self,
         dict_to_remove_from : NodeDict,
         name_or_obj : NameOrNode
-    ) -> tuple[str, "Node"]:
+    ) -> Tuple[str, "Node"]:
         """Removes `name_or_obj` from `dict_to_remove_from`.
 
         Returns the name of and the object that was just removed.
@@ -288,7 +288,11 @@ class Node(object):
         pass
 
 
-def replace_node(old_node, new_node, keep_old_owner=False):
+def replace(
+    old_node : Node,
+    new_node : Node, 
+    keep_old_owner : bool = False
+):
     """Replace an old node with a new node.
 
     Keyword Arguments:
@@ -310,3 +314,4 @@ def replace_node(old_node, new_node, keep_old_owner=False):
             if new_owner is not None:
                 new_owner.remove_node(new_node)
             old_owner.add_node(new_node)
+
