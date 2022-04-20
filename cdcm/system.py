@@ -24,7 +24,7 @@ from . import (
     get_default_args,
     make_function
 )
-from typing import Any, Dict, Callable, Sequence
+from typing import Any, Dict, Callable, Sequence, Tuple
 from functools import partial, partialmethod, cached_property
 import networkx as nx
 
@@ -128,7 +128,7 @@ class System(Node):
     def remove_node(
         self,
         name_or_obj,
-    ) -> tuple[str, Node]:
+    ) -> Tuple[str, Node]:
         """Removes a node from the system.
 
         Returns the name of and the object that was just removed.
@@ -194,7 +194,7 @@ class System(Node):
         return g
 
     @cached_property
-    def evaluation_order(self) -> tuple[Node]:
+    def evaluation_order(self) -> Tuple[Node]:
         """This is the order in which the graph should be evaluted.
 
         Note that only Functions can be evaluated. So, this returns

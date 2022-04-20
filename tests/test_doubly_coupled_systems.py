@@ -91,7 +91,7 @@ sys2 = System(
 # ****************************
 #   CONNECT SYSTEMS
 # ****************************
-replace_node(placeholder, x2)
+replace(placeholder, x2)
 
 # ****************************
 #       COMBINED SYSTEM
@@ -107,10 +107,11 @@ print(sys)
 # ****************************
 #       DRAW THE DAG
 # ****************************
-g = sys.dag
-net = Network(notebook=True, directed=True)
-net.from_nx(g)
-net.show("double_coupled.html")
+
+#g = sys.graph
+#pos = nx.nx_agraph.graphviz_layout(g)
+#nx.draw(g, with_labels=True, pos=pos)
+#plt.show()
 
 # ****************************
 #       RUN FORWARD
