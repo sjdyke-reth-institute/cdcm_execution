@@ -14,85 +14,60 @@ TODO: Write me.
 __all__ = ['DataSystem']
 
 
-from collections.abc import Iterable
-import numpy as np
-from . import System
+from typing import Sequence
+from . import Variable, Parameter, State, System, make_function
 
 
 class DataSystem(System):
-    """A `System` that simply reads data.
+    """A system that just reads through a data sequence.
 
-    Keyword Arguments:
-    name        -- A name for the system.
-    states      -- The dictionary of system states. See `System`.
-    datasets    -- A dictionary the same keys as `states` and values
-                   that are `Iterable` objects containing data.
-    description -- A description for the object.
+    Arguments
+    data     --  A data sequence.
+    columns  --  A sequence containing the names of each column.
 
-    Note that this class completely ignores dt.
-    So the user must be very careful to make sure that the data fed to
-    this class follow the right timestep.
-
-    TODO: Make a version of this that tracks time.
+    For the rest of the keyword argumetns, see Nodes.
     """
 
-    def __init__(self,
-                 name="data_system",
-                 state={},
-                 dataset={},
-                 description=""):
-        super().__init__(name=name, state=state, description=description)
-        # Sanity checks
-        assert isinstance(dataset, dict)
-        for s in self.state.keys():
-            assert s in dataset.keys(), \
-                "All states must be represented in the dataset."
-        assert len(self.state) == len(dataset), \
-            ("There are elements in dataset without a"
-             + " corresponding element in state.")
-        for d in dataset.values():
-            assert isinstance(d, Iterable)
-        # TODO: The following sanity check is too restrictive. Think about it.
-        for s, var in self.state.items():
-            assert isinstance(var.value, type(dataset[s][0])), \
-                f"Variable {var} is not the same type as its dataset."
-            if isinstance(var.value, np.ndarray):
-                assert var.value.shape == dataset[s][0].shape
-        self._dataset = dataset
-        # Initialize
-        min_dataset_size = 1e9
-        for d in dataset.values():
-            assert isinstance(d, Iterable)
-            if min_dataset_size > len(d):
-                min_dataset_size = len(d)
-        self._max_num_steps = min_dataset_size
-        self._steps_so_far = 0
-        # Initialize the states
-        self._set_state(0)
+    def __init__(
+        self,
+        data : Sequence[Sequence],
+        columns : Sequence[str],
+        column_units : Sequence[str] = None,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        if column_units is None:
+            column_units = (None, ) * len(columns)
+        first_row = data[0]
+        assert len(first_row) == len(columns)
+        assert len(columns) == len(column_units)
+        
+        var_nodes = {
+            Variable(name=n, value=v, units=u)
+            for n, v, u in zip(columns, first_row, column_units)
+        }
+        self.add_node(var_nodes)
 
-    def _set_state(self, idx):
-        """Set the states to idx. Checks if idx is smaller than
-        `self.max_num_steps`."""
-        assert idx < self.max_num_steps
-        for s, var in self.state.items():
-            var.value = self.dataset[s][idx]
+        row_index = State(
+            name="row_index",
+            value=0
+        )
+        self.add_node(row_index)
 
-    @property
-    def max_num_steps(self):
-        """The maximum number of steps that the System can transition."""
-        return self._max_num_steps
+        data_node = Parameter(
+            name="data",
+            value=data
+        )
+        self.add_node(data_node)
 
-    @property
-    def steps_so_far(self):
-        """The number of steps taken so far."""
-        return self._steps_so_far
+        @make_function(row_index)
+        def next_row(ri=row_index):
+            """Returns the next row."""
+            return ri + 1
+        self.add_node(next_row)
 
-    @property
-    def dataset(self):
-        return self._dataset
-
-    def _calculate_my_next_state(self, dt):
-        """Simply moves to the next element of the datasets."""
-        next_step = self.steps_so_far + 1
-        self._set_state(next_step)
-        self._steps_so_far += 1
+        @make_function(*var_nodes.values())
+        def read(ri=row_index, data=data):
+            """Read the data of this row."""
+            return data[ri]
+        self.add_node(read)
