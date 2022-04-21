@@ -58,7 +58,6 @@ class DataSystem(System):
             column_units = (None, ) * num_cols
         if column_desciptions is None:
             column_desciptions = (None, ) * num_cols
-        print(columns)
         first_row = data[0]
         if num_cols > 1:
             assert len(first_row) == num_cols
