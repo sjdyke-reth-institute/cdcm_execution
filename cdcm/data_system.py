@@ -29,7 +29,7 @@ class DataSystem(System):
 
     For the rest of the keyword argumetns, see Nodes.
 
-    TODO: Think about the correct definition
+    TODO: This is not very elegant...
     """
 
     def __init__(
