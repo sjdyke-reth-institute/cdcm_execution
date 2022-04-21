@@ -98,6 +98,7 @@ class Node(object):
         Returns True if the object is added and False if the object is
         already in.
         """
+        print(type(obj), name, dict_to_add)
         if obj in dict_to_add.values():
             return False
         if name is None:

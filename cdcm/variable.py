@@ -94,7 +94,10 @@ class Variable(Node):
         self._track = new_track
 
     def to_yaml(self) -> Dict[str, Any]:
-        """Turn the object to a dictionary of dictionaries."""
+        """Turn the object to a dictionary of dictionaries.
+
+        TODO: make this more beautiful. Number does not work below.
+        """
         res = super().to_yaml()
         dres = res[self.name]
         if isinstance(self.value, Number):
