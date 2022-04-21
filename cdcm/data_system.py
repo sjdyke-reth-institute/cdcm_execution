@@ -11,11 +11,12 @@ TODO: Write me.
 """
 
 
-__all__ = ['DataSystem']
+__all__ = ["DataSystem", "make_data_system"]
 
 
 from typing import Collection, Union, Sequence
 import numpy as np
+from pandas import DataFrame
 from . import Variable, Parameter, State, System, make_function
 
 
@@ -35,25 +36,29 @@ class DataSystem(System):
         self,
         data : Union[Collection, Collection[Collection]],
         columns : Union[str, Sequence[str]],
-        column_units : Sequence[str] = None,
-        column_desciptions : Sequence[str] = None,
+        column_units : Union[str, Sequence[str]] = None,
+        column_desciptions : Union[str, Sequence[str]] = None,
+        column_track : Union[bool, Sequence[bool]] = True,
         **kwargs
     ):
         super().__init__(**kwargs)
         if not isinstance(data[0], Collection):
             num_cols = 1
         else:
-            num_cols = len(data)
+            num_cols = data.shape[1]
         if isinstance(columns, str):
             columns = (columns, )
         if isinstance(column_units, str):
             column_units = (column_units,)
         if isinstance(column_desciptions, str):
             column_desciptions = (column_desciptions,)
+        if isinstance(column_track, bool):
+            column_track = (column_track,) * num_cols
         if column_units is None:
             column_units = (None, ) * num_cols
         if column_desciptions is None:
             column_desciptions = (None, ) * num_cols
+        print(columns)
         first_row = data[0]
         if num_cols > 1:
             assert len(first_row) == num_cols
@@ -61,11 +66,12 @@ class DataSystem(System):
         assert len(column_desciptions) == num_cols
         
         var_nodes = {
-            n: Variable(name=n, units=u, description=d)
-            for n, u, d in zip(
+            n: Variable(name=n, units=u, description=d, track=t)
+            for n, u, d, t in zip(
                 columns,
                 column_units,
-                column_desciptions
+                column_desciptions,
+                column_track
             )
         }
         self.add_nodes(var_nodes)
@@ -100,6 +106,15 @@ class DataSystem(System):
             @make_function(*var_nodes.values())
             def read(row=row, data=data_node):
                 """Read the data of this row."""
-                return data[row]
+                return tuple(d.item() for d in data[row])
         self.add_node(read)
         self.forward()
+
+
+def make_data_system(data : DataFrame, **kwargs):
+    """Make a data system from a pandas DataFrame."""
+    return DataSystem(
+        data.values,
+        columns=data.columns.values,
+        **kwargs
+    )
