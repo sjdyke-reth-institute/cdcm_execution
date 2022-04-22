@@ -108,10 +108,12 @@ print(sys)
 #       DRAW THE DAG
 # ****************************
 
-#g = sys.graph
-#pos = nx.nx_agraph.graphviz_layout(g)
-#nx.draw(g, with_labels=True, pos=pos)
-#plt.show()
+import networkx as nx
+import matplotlib.pyplot as plt
+g = sys.dag
+pos = nx.nx_agraph.graphviz_layout(g)
+nx.draw(g, with_labels=True, pos=pos)
+plt.show()
 
 # ****************************
 #       RUN FORWARD

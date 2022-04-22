@@ -30,6 +30,7 @@ sys = System(
     name="sys",
     nodes=[r, dt, x1, x2, g]
 )
+
 print(sys)
 print(sys.states)
 
@@ -37,6 +38,7 @@ print(sys.states)
 print(sys.x1)
 print(sys.x2)
 print(sys.dt)
+
 
 dg = sys.dag
 print(dg)
