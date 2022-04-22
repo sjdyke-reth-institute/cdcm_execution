@@ -20,7 +20,7 @@ import numpy as np
 
 
 class RCBuildingSystem(System):
-    """An RC model for a single zone.
+    """An 3R2C model for a single zone.
 
     Arguments
 
@@ -28,13 +28,26 @@ class RCBuildingSystem(System):
     weather_system  --  A weather system that includes Tout, Qsg,
                         and Qint.
 
-    TODO: Tina, write a more complete description.
+    T_env           -- The surface temperature of envelope interior
+    T_room          -- The room air temperature
+
+    C_env           -- Capacitance of the envelope
+    C_air           -- Capacitance of the room air
+    R_rc            -- Thermal resistance between room and corridor
+    R_oe            -- Thermal resistance between outdoor and envelope
+    R_er            -- Thermal resistance between room and envelope
+
+    a_sol_env       -- Absorptance of envelope with respect to solar irradiance
+
+    T_cor           -- The temperature of corridor. Typically constant. It
+                       can be replaced with sensor value in implemenation.
+    u               -- Control variable. Input heat loads to the system.
     """
     def __init__(self,
-        dt : Parameter,
-        weather_system : System,
-        **kwargs
-    ):
+                 dt: Parameter,
+                 weather_system: System,
+                 **kwargs
+                 ):
         super().__init__(**kwargs)
 
         T_env = State(
@@ -101,7 +114,7 @@ class RCBuildingSystem(System):
         )
 
         B = Variable(
-            name="Bw",
+            name="B",
             value=np.zeros((2, 5)),
             description="The B matrix (discretized)."
         )
@@ -118,10 +131,10 @@ class RCBuildingSystem(System):
         ):
             """Makes the dynamical system matrices and discretizes them"""
             cA = np.zeros((2, 2))
-            cA[0, 0] = (-1. / C_env) * (1. /R_er + 1./R_oe)
+            cA[0, 0] = (-1. / C_env) * (1. / R_er + 1./R_oe)
             cA[0, 1] = 1. / (C_env * R_er)
             cA[1, 0] = 1. / (C_air * R_er)
-            cA[1, 1] = (-1. / C_air) * (1. /R_er + 1. / R_rc)
+            cA[1, 1] = (-1. / C_air) * (1. / R_er + 1. / R_rc)
 
             cB = np.zeros((2, 5))
             cB[0, 1] = 1./(C_env * R_oe)
@@ -135,7 +148,7 @@ class RCBuildingSystem(System):
             cD = np.zeros(5)
 
             tmp = signal.StateSpace(cA, cB, cC, cD)
-            discrete_matrix = tmp.to_discrete(dt = dt)
+            discrete_matrix = tmp.to_discrete(dt=dt)
             A = discrete_matrix.A
             B = discrete_matrix.B
 
@@ -145,13 +158,13 @@ class RCBuildingSystem(System):
             name="T_cor",
             value=23,
             units="degC",
-            description="IB: I do not know."
+            description="The temperature of corridor."
         )
 
         u = Variable(
             name="u",
             value=0,
-            description="IB: Control."
+            description="Control of input loads to the system"
         )
 
         @make_function(T_env, T_room)
@@ -168,7 +181,7 @@ class RCBuildingSystem(System):
         ):
             """Transitions the system."""
             res = (
-                A @ [T_env, T_room] 
+                A @ [T_env, T_room]
                 + B @ np.append([T_cor, T_out, Q_sg, Q_int], u)
             )
             return res[0], res[1]
