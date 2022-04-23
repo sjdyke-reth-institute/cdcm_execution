@@ -15,55 +15,9 @@ __all__ = ["SimulationSaver"]
 
 import h5py
 import os
+import numpy as np
 from typing import Union
-from . import System
-
-
-def assert_make_h5_subgroup(group, sub_group, **kwargs):
-    """Make a subgroup of a group only if it does not exist."""
-    assert sub_group not in group, \
-        f"{group} already contains a subgroup called '{sub_group}'"
-    # Create the group
-    g = group.create_group(sub_group)
-    return g
-
-
-def assert_make_h5_dataset(group, quantity, **kwargs):
-    """Makes a dataset to store a quantity."""
-    assert quantity.name not in group, \
-        f"{group} already contains a dataset called '{quantity.name}'"
-    maxshape = (kwargs["max_steps"],) + quantity.shape
-    # Create the dataset
-    dst = group.create_dataset(quantity.name, shape=maxshape,
-                               dtype=quantity.dtype)
-    # Add some metadata to the dataset
-    if quantity.units is not None:
-        dst.attrs["units"] = quantity.units
-    if quantity.description is not None:
-        dst.attrs["description"] = quantity.description
-    dst.attrs["type"] = str(type(quantity))
-    return dst
-
-
-def assert_make_h5_attribute(group, system, attribute, **kwargs):
-    """Makes subgroups and datasets of a specific attribute pertaining
-    of system.
-    """
-    sub_group = assert_make_h5_subgroup(group, attribute, **kwargs)
-    for v in getattr(system, attribute).values():
-        if v.track:
-            assert_make_h5_dataset(sub_group, v, **kwargs)
-
-
-def assert_make_h5(group, system, **kwargs):
-    """Make all the subgroups and datasets of the h5 file."""
-    for attr in attr_to_save:
-        assert_make_h5_attribute(group, system, attr, **kwargs)
-    for s in system.sub_systems.values():
-        sg = assert_make_h5_subgroup(group, s.name, **kwargs)
-        if s.description is not None:
-            sg.attrs["description"] = s.description
-        assert_make_h5(sg, s, attr_to_save, **kwargs)
+from . import System, Node, State, Parameter, Variable
 
 
 class SimulationSaver(object):
@@ -108,10 +62,9 @@ class SimulationSaver(object):
         self._file_handler = file_handler
         self._group = group
         self._max_steps = max_steps
-        self._create_h5_structure(group, system)
-        # Counts saving steps
-        self._count = 0
         self._tracked_nodes = []
+        self._count = 0
+        self._create_h5_structure(group, system)
 
     def _create_h5_structure(
         self,
@@ -123,20 +76,19 @@ class SimulationSaver(object):
             system = system_or_node
             sg = group.create_group(system.name)
             sg.attrs["description"] = system.description
-            for n in system.nodes:
+            for n in system.nodes.values():
                 self._create_h5_structure(sg, n)
         else:
             node = system_or_node
-            if (not node.track
-                or not hasattr(node, "value")):
+            if not isinstance(node, Variable):
                 return
             node_type = type(node.value)
             if node_type == int:
                 dtype = "i"
-                shape = (,)
+                shape = ()
             elif node_type == float:
                 dtype = "f"
-                shape = (,)
+                shape = ()
             elif node_type == np.ndarray:
                 dtype = node.value.dtype
                 shape = node.value.shape
@@ -156,12 +108,13 @@ class SimulationSaver(object):
 
     @property
     def max_steps(self):
+        """Get the maximu number of steps that can be saved."""
         return self._max_steps
     
     @property
     def tracked_nodes(self):
+        """Get the tracked nodes."""
         return self._tracked_nodes
-    
 
     @property
     def file_handler(self):
@@ -173,20 +126,16 @@ class SimulationSaver(object):
         """Get the HDF5 group on which we are writing the data."""
         return self._group
 
-    def _save(self, count, group, system):
+    def _save_node(self, node : Variable):
         """Save the current state of the system to the file.
 
         This a recursive function. The data are saved at index `count`.
         """
-        for attr in self._attr_to_save:
-            for v in getattr(system, attr).values():
-                d = group[attr + "/" + v.name]
-                d[count] = v.value
-        for s in system.sub_systems.values():
-            g = group[s.name]
-            self._save(count, g, s)
+        dset = self.file_handler[node.absname]
+        dset[self._count] = node.value
 
-    def save(self, system):
+    def save(self):
         """Save the current state of the system to the file."""
-        self._save(self._count, self.group, system)
+        for n in self.tracked_nodes:
+            self._save_node(n)
         self._count += 1
