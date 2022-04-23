@@ -76,7 +76,7 @@ class SimulationSaver(object):
             system = system_or_node
             sg = group.create_group(system.name)
             sg.attrs["description"] = system.description
-            for n in system.nodes.values():
+            for n in system.direct_nodes.values():
                 self._create_h5_structure(sg, n)
         else:
             node = system_or_node
@@ -92,6 +92,10 @@ class SimulationSaver(object):
             elif node_type == np.ndarray:
                 dtype = node.value.dtype
                 shape = node.value.shape
+            else:
+                raise ValueError(f"Node {node.name} has an uninitialized value."
+                    + " Please specify a value so that I can figure out"
+                    + " the type of the variable I need to store.")
             maxshape = (self.max_steps,) + shape
             # Create the dataset
             dst = group.create_dataset(
