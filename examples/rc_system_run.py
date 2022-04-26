@@ -32,8 +32,6 @@ clock = make_clock(1800)
 
 rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
 
-u_rl = Variable(name="u_rl")x
-
 sys = System(
     name="everything",
     nodes=[clock, weather_sys, rc_sys]
