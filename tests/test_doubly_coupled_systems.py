@@ -24,12 +24,6 @@ clock = make_clock(0.1)
 #       SYSTEM 1
 # ****************************
 
-# Notice how this system has a parent that we haven't defined yet
-#@make_system
-#def sys1(dt, *, x1=x1, x2=None, r1=r1, c1=c1):
-#    """A system that has a parent that hasn't yet been defined."""
-#   return x1 + r1 * dt + c1 * x2 * dt
-
 x1 = make_node("S:x1:0.1:meters", description="State of sys1.")
 r1 = make_node("P:r1:1.2:meters/second", description="Rate parameter for sys1.")
 c1 = make_node("P:c1:0.1:1/meters/second", description="Coupling coefficient.")
