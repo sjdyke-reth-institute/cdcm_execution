@@ -190,7 +190,7 @@ class RCBuildingSystem(System):
                 T_env, T_room,
                 C_env, C_air,
                 R_rc, R_oe, R_er, a_sol_env,
-                A, B, make_matrices,
+                A, B, u, make_matrices,
                 transition
             ]
         )
