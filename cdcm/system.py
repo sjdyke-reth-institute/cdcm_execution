@@ -95,7 +95,33 @@ class System(Node):
             self.__dict__[name] = obj
 
     @cached_property
+    def subsystems(self):
+        """Return the subsystems of this system."""
+        return filter(lambda n: isinstance(n, System), self._nodes)
+
+    @cached_property
+    def direct_nodes(self):
+        """Get the nodes that are directly owned by this system."""
+        return self._nodes
+
+    @cached_property
+    def parameters(self):
+        """Get all the parameters."""
+        return filter(lambda n: isinstance(n, Parameter), self.nodes)
+
+    @cached_property
+    def states(self):
+        """Get all the states."""
+        return filter(lambda n: isinstance(n, State), self.nodes)
+
+    @cached_property
     def nodes(self):
+        """Get all the nodes that are inside this system.
+
+        Note that this does not return subsystems, but the nodes of
+        the subsystems. If you want to get the subystems, please use
+        the subsystems property.
+        """
         ns = bidict()
         for name, node in self._nodes.items():
             if isinstance(node, System):
