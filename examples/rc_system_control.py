@@ -17,14 +17,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def PID(T_room, T_out, T_sp, integral, Kp=20.0, Ki=0.1, Kd=0.0, dt_PI=1800,
+def PID(T_room, T_out, T_sp, integral, e_p,
+        Kp=20.0, Ki=0.1, Kd=0.0, dt_PI=1800,
         u_max=1500, m_dot_max=0.080938984*550/140, m_dot_min=0.080938984,
         Tlvc=7.0, T_sup=16.5, cp_air=1004, rho_air=1.225,
         EFc=np.array([14.8187, -0.2538, 0.1814, -0.0003, -0.0021, 0.002]),
         m_design=0.9264*0.4, dP=500, e_tot=0.6045,
         c_FAN=np.array([0.040759894, 0.08804497,
                         -0.07292612, 0.943739823, 0])):
-    e_p = 0.0
     err = T_sp - T_room
     integral += err*dt_PI
     derivative = (err - e_p) / dt_PI
@@ -53,7 +53,8 @@ def PID(T_room, T_out, T_sp, integral, Kp=20.0, Ki=0.1, Kd=0.0, dt_PI=1800,
     Q_fan = f_pl * m_design * dP / (e_tot * rho_air)
     energy += Q_fan/1000*(dt_PI/3600)
 
-    return integral, u_t, energy
+    e_p = err
+    return integral, e_p, u_t, energy
 
 
 df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
@@ -69,7 +70,7 @@ weather_sys = make_data_system(
     ]
 )
 
-clock = make_clock(1800)
+clock = make_clock(300)
 
 rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
 
@@ -90,15 +91,17 @@ T_sp = 23
 Kp = 20.0
 Ki = 0.1
 Kd = 0.0
+e_p = 0.0
 integral = 0.0
-dt_PI = 1800
+dt_PI = 300
 for i in range(100):
     sys.forward()
     T_room_t = rc_sys.T_room.value
     T_out_t = weather_sys.Tout.value
 
     # Run PID to calculate u_t
-    integral, u_t, energy = PID(T_room_t, T_out_t, T_sp, integral)
+    integral, e_p, u_t, energy = PID(T_room_t,
+                                     T_out_t, T_sp, integral, e_p)
     # Keep track with some measurement
     T_sp_list.append(T_sp)
     u_list.append(u_t)

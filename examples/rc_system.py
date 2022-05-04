@@ -21,7 +21,7 @@ import numpy as np
 class RCBuildingSystem(System):
     """An 5R3C model for a single zone.
 
-    Arguments
+    Arguments:
 
     dt              --  The timestep to use (must be a node.)
     weather_system  --  A weather system that includes:
@@ -29,12 +29,13 @@ class RCBuildingSystem(System):
                         Qsg:  solar irradiance
                         Qint: internal heat gain
                         T_gd: ground temperature
-
+    States:
     T_env           -- The surface temperature of envelope interior [C]
     T_genv          -- The surface temperature of ground envelope interior
                        [C]
     T_room          -- The room air temperature [C]
 
+    Paramters:
     C_env           -- Capacitance of the envelope [J/C]
     C_air           -- Capacitance of the room air [J/C]
     C_genv          -- Capacitance of the ground envelope [J/C]
@@ -45,14 +46,16 @@ class RCBuildingSystem(System):
                        [C/W]
     R_ge            -- Thermal resistance between ground envelope and ground
                        [C/W]
-
     a_sol_env       -- Absorptance of envelope with respect to solar irradiance
     a_sol_room      -- Absorptance of room with respect to solar irradiance
     a_IHG           -- Absorptance of room with respect to internal heat gain
 
+    Variables:
     T_cor           -- The temperature of corridor. Typically constant. It
                        can be replaced with sensor value in implemenation.
     u               -- Control variable. Input heat loads to the system.
+    A               -- Discritized State space A matrix
+    B               -- Discritized State space B matrix
     """
     def __init__(self,
                  dt: Parameter,

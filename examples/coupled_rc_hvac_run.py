@@ -1,17 +1,6 @@
-"""An RC model for a single zone.
-
-Author:
-    Ilias Bilionis
-    Ting-Chun Kuo
-
-Date:
-    4/20/2022
-
-"""
-
-
-from cdcm import *
 from rc_system import RCBuildingSystem
+from hvac_system import HVACSystem
+from cdcm import *
 import pandas as pd
 
 df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
@@ -30,12 +19,12 @@ weather_sys = make_data_system(
 clock = make_clock(300)
 
 rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
+hvac_sys = HVACSystem(clock.dt, weather_sys, rc_sys, name="hvac_sys")
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys]
+    nodes=[clock, weather_sys, rc_sys, hvac_sys]
 )
-
 print(sys)
 
 for i in range(100):
