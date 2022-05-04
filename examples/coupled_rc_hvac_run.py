@@ -28,7 +28,7 @@ sys = System(
 )
 print(sys)
 
-print(np.shape(rc_sys.A.value))
+print("A should have shpae of :", np.shape(rc_sys.A.value))
 for i in range(100):
     sys.forward()
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
