@@ -256,6 +256,7 @@ class RCBuildingSystem(System):
             Q_int=weather_system.Qint
         ):
             """Transitions the system."""
+            print("Actual shape of A:", np.shape(A))
             res = (
                 A @ np.array([T_env, T_genv, T_room]).T
                 + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
