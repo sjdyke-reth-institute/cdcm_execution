@@ -225,14 +225,14 @@ class HVACSystem(System):
         )
 
         @make_function(u, integral, e_p, energy)
-        def transition(
+        def transition_hvac(
             T_sp=T_sp,
             integral=integral, e_p=e_p, energy=energy, u=u,
             Kp=Kp, Ki=Ki, Kd=Kd,
             u_max_h=u_max_h, u_max_c=u_max_c,
             Tlvc=Tlvc, T_sup=T_sup, EFc=EFc, COPh=COPh,
             cp_air=cp_air, rho_air=rho_air,
-            c_FAN=c_FAN,dP=dP, e_tot=e_tot,
+            c_FAN=c_FAN, dP=dP, e_tot=e_tot,
             m_dot_max=m_dot_max, m_dot_min=m_dot_min, m_design=m_design,
             dt=dt,
             Tout_PID=weather_system.Tout,
@@ -280,6 +280,7 @@ class HVACSystem(System):
             Tlvc, T_sup, EFc, COPh,
             cp_air, rho_air,
             c_FAN, dP, e_tot,
-            m_dot_max, m_dot_min, m_design
+            m_dot_max, m_dot_min, m_design,
+            transition_hvac
             ]
         )

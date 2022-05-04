@@ -171,7 +171,7 @@ class RCBuildingSystem(System):
 
         T_gd = Parameter(
             name="T_gd",
-            value=23,
+            value=18,
             units="degC",
             description="The temperature of ground. "
         )
@@ -184,13 +184,13 @@ class RCBuildingSystem(System):
 
         A = Variable(
             name="A",
-            value=np.zeros((2, 2)),
+            value=np.zeros((3, 3)),
             description="The matrix of the dynamical system (discretized)."
         )
 
         B = Variable(
             name="B",
-            value=np.zeros((2, 5)),
+            value=np.zeros((3, 6)),
             description="The B matrix (discretized)."
         )
 
@@ -257,7 +257,7 @@ class RCBuildingSystem(System):
         ):
             """Transitions the system."""
             res = (
-                A @ [T_env, T_genv, T_room]
+                A @ np.array([T_env, T_genv, T_room]).T
                 + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
             )
             return res[0], res[1], res[2]
