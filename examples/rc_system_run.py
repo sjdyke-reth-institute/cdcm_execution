@@ -19,7 +19,7 @@ df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
 weather_sys = make_data_system(
     df[["Tout", "Qsg", "Qint"]],
     name="weather_sytem",
-    column_units=["degC", "Wh", "Wh"],
+    column_units=["degC", "W", "W"],
     column_desciptions=[
         "Outdoor air temperature",
         "Solar irradiance",
@@ -27,7 +27,7 @@ weather_sys = make_data_system(
     ]
 )
 
-clock = make_clock(300)
+clock = make_clock(1800)
 
 rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
 

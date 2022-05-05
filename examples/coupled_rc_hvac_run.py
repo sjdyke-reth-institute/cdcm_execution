@@ -6,6 +6,7 @@ from rc_system import RCBuildingSystem
 from hvac_system import HVACSystem
 from cdcm import *
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
 
@@ -53,12 +54,14 @@ hvac_sys = HVACSystem(
 )
 
 # The combined system
+
 sys = System(
     name="everything",
     nodes=[clock, weather_sys, rc_sys, hvac_sys]
 )
 print(sys)
 
+print("A should have shpae of :", np.shape(rc_sys.A.value))
 for i in range(100):
     sys.forward()
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
