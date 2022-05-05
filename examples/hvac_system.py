@@ -12,6 +12,10 @@ Date:
 __all__ = ["HVACSystem"]
 
 
+"""Write me Tina!
+
+"""
+
 from cdcm import *
 from scipy import signal
 import numpy as np
@@ -19,6 +23,8 @@ import numpy as np
 
 class HVACSystem(System):
     """
+    TODO: UPDATE THIS TINA
+
     This is a demo of VAV system.
     Arguements:
     dt              --  The timestep to use (must be a node.)
@@ -63,41 +69,82 @@ class HVACSystem(System):
     """
     def __init__(self,
                  dt: Parameter,
-                 weather_system: System,
-                 rc_system: System,
+                 u : Variable,
+                 T_out : Variable,
+                 T_room : Variable,
                  **kwargs):
         super().__init__(**kwargs)
 
         T_sp = Variable(
             name="T_sp",
             value=23,
+            units="degC",
             description="Setpoint tempertature of the system"
         )
 
-        integral = State(
-            name="integral",
+        # TODO: Write decorator to simplify the following
+        error = Variable(
+            name="error",
+            units="degC",
             value=0.0,
-            units=None,
-            track=True,
+            description="Difference between setpoint and room temperature"
+        )
+
+        @make_function(error)
+        def f_error(T_sp=T_sp, T_room=T_room):
+            """Find difference between setpoint and room temperature."""
+            return T_sp - T_room
+
+        error_past = State(
+            name="error_past",
+            value=0.0,
+            units="degC",
+            description="The error in the previous step."
+        )
+
+        @make_function(error_past)
+        def f_error_past(error_past=error_past, error=error):
+            """Keeps track of the previous step error."""
+            return error
+        # END OF TODO
+
+        # TODO: Write decorator to simplify the following
+        integral = Variable(
+            name="integral",
+            units="degC * seconds",
             description="Intergral storage of the PID controller"
         )
-        e_p = State(
-            name="e_p",
+
+        integral_past = State(
+            name="integral_past",
             value=0.0,
-            units=None,
-            track=True,
-            description="Portional storage of the PID controller"
+            units="degC * seconds",
+            description="Keeps track of the intgral in the previous timestep"
         )
 
-        u = State(
-            name="u",
+        @make_function(integral)
+        def f_integral(integral_past=integral_past, error=error, dt=dt):
+            """Find the next value of integral."""
+            return integral_past + error * dt
+
+        @make_function(integral_past)
+        def f_integral_past(integral_past=integral_past, integral=integral):
+            """Store the current value of the integral."""
+            return integral
+
+        derivative = Variable(
+            name="derivative",
             value=0.0,
-            units="W",
-            track=True,
-            description="Required input loads to the building/zone"
+            description="The derivative of the error",
         )
 
-        energy = State(
+        @make_function(derivative)
+        def f_derivative(error_past=error_past, error=error, dt=dt):
+            """Find the derivative of the error."""
+            return (error - error_past) / dt
+        # END TODO
+
+        energy = Variable(
             name="energy",
             value=0.0,
             units="W",
@@ -177,16 +224,18 @@ class HVACSystem(System):
 
         EFc = Parameter(
             name="EFc",
-            value=np.array([14.8187, -0.2538, 0.1814, -0.0003, -0.0021,
-                            0.002]),
+            value=np.array(
+                [14.8187, -0.2538, 0.1814, -0.0003, -0.0021, 0.002]
+            ),
             units=None,
             description="heatpump cooling efficiency coefficient"
         )
 
         c_FAN = Parameter(
             name="c_FAN",
-            value=np.array([0.040759894, 0.08804497, -0.07292612, 0.943739823,
-                            0]),
+            value=np.array(
+                [0.040759894, 0.08804497, -0.07292612, 0.943739823, 0]
+            ),
             units=None,
             description="fan efficiency coefficient"
         )
@@ -211,12 +260,14 @@ class HVACSystem(System):
             units="kg/s",
             description="minimum fan design air mass flow rate"
         )
+
         dP = Parameter(
             name="dP",
             value=500,
             units="kg/m/s**2",
             description="fan design pressure rise"
         )
+
         e_tot = Parameter(
             name="e_tot",
             value=0.6045,
@@ -224,62 +275,88 @@ class HVACSystem(System):
             description="fan total efficiency"
         )
 
-        @make_function(u, integral, e_p, energy)
-        def transition(
-            T_sp=T_sp,
-            integral=integral, e_p=e_p, energy=energy, u=u,
-            Kp=Kp, Ki=Ki, Kd=Kd,
-            u_max_h=u_max_h, u_max_c=u_max_c,
-            Tlvc=Tlvc, T_sup=T_sup, EFc=EFc, COPh=COPh,
-            cp_air=cp_air, rho_air=rho_air,
-            c_FAN=c_FAN,dP=dP, e_tot=e_tot,
-            m_dot_max=m_dot_max, m_dot_min=m_dot_min, m_design=m_design,
-            dt=dt,
-            Tout_PID=weather_system.Tout,
-            T_room=rc_system.T_room
+        @make_function(u, energy)
+        def f_u(
+            Tout_PID=T_out,
+            error=error,
+            integral=integral,
+            derivative=derivative,
+            Kp=Kp,
+            Ki=Ki,
+            Kd=Kd,
+            u_max_h=u_max_h,
+            u_max_c=u_max_c,
+            EFc=EFc,
+            Tlvc=Tlvc,
+            m_dot_min=m_dot_min,
+            m_dot_max=m_dot_max,
+            COPh=COPh,
+            m_design=m_design,
+            c_FAN=c_FAN,
+            e_tot=e_tot,
+            rho_air=rho_air
         ):
-            """Transitions the system."""
-            err = T_sp - T_room
-            integral += err*dt
-            derivative = (err - e_p) / dt
-            u_t = Kp * err + Ki * integral + Kd * derivative
+            u = Kp * error + Ki * integral + Kd * derivative
 
             # bound u_t by upper limit
-            if u_t > u_max_h:
-                u_t = u_max_h
-            elif u_t < u_max_c:
-                u_t = u_max_c
-            COPc = (EFc[0] + Tout_PID*EFc[1] + Tlvc*EFc[2]
-                    + (Tout_PID**2)*EFc[3] +
-                    (Tlvc**2)*EFc[4] + Tout_PID*Tlvc*EFc[5])
-            if u_t <= 0:  # cooling case
-                dp = -u_t/2000
+            if u > u_max_h:
+                u = u_max_h
+            elif u < u_max_c:
+                u = u_max_c
+            COPc = (
+                EFc[0] + Tout_PID * EFc[1] + Tlvc * EFc[2]
+                + (Tout_PID ** 2) * EFc[3]
+                + (Tlvc ** 2) * EFc[4] + Tout_PID * Tlvc * EFc[5]
+            )
+            if u <= 0:  # cooling case
+                dp = -u / 2000
                 m_fan = (m_dot_max - m_dot_min) * dp + m_dot_min
-                energy = -1*u_t/COPc/1000*(dt/3600)
-            elif u_t > 0:  # heating case
-                u_c = m_dot_min*cp_air*(T_sup - T_room)
-                u_h = u_t
-                u_t = u_c + u_h
+                energy = -u / COPc / 1000 * (dt / 3600)
+            elif u > 0:  # heating case
+                u_c = m_dot_min * cp_air * (T_sup - T_room)
+                u_h = u
+                u = u_c + u_h
                 m_fan = m_dot_min
-                energy = (u_h / COPh + u_c / COPc) / 1000*(dt/3600)
+                energy = (u_h / COPh + u_c / COPc) / 1000 * (dt / 3600)
 
             f_flow = m_fan / m_design
             f_pl = (c_FAN[0] + c_FAN[1] * f_flow +
                     c_FAN[2] * f_flow**2 + c_FAN[3] * f_flow**3
                     + c_FAN[4] * f_flow**4)
             Q_fan = f_pl * m_design * dP / (e_tot * rho_air)
-            energy += Q_fan/1000*(dt/3600)
-            e_p = err
-            return u_t, integral, e_p, energy
 
-        self.add_nodes([
-            integral, e_p,
-            energy, u, T_sp,
-            Kp, Ki, Kd,
-            u_max_h, u_max_c,
-            Tlvc, T_sup, EFc, COPh,
-            cp_air, rho_air,
-            c_FAN, dP, e_tot,
-            m_dot_max, m_dot_min, m_design
+            energy += Q_fan/1000*(dt/3600)
+
+            return u, energy
+
+        # TODO: Find a way to detect nodes created within this
+        # context and eliminate the need to list them one by one as
+        # done below
+        self.add_nodes(
+            [
+                T_sp,
+                error,
+                error_past,
+                f_error_past,
+                integral,
+                integral_past,
+                f_integral_past,
+                derivative,
+                f_derivative,
+                energy,
+                Kp,
+                Ki,
+                Kd,
+                u_max_h,
+                u_max_c,
+                EFc,
+                Tlvc,
+                m_dot_min,
+                m_dot_max,
+                COPh,
+                m_design,
+                c_FAN,
+                e_tot,
+                rho_air
             ]
         )

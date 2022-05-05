@@ -240,7 +240,7 @@ class RCBuildingSystem(System):
             return A, B
 
         @make_function(T_env, T_genv, T_room)
-        def transition(
+        def transition_room(
             T_env=T_env,
             T_room=T_room,
             T_genv=T_genv,
@@ -262,12 +262,36 @@ class RCBuildingSystem(System):
             )
             return res[0], res[1], res[2]
 
+        T_room_sensor = Variable(
+            name="T_room_sensor",
+            units="degC",
+            description="A temperature sensor at the room"
+        )
+
+        T_room_sensor_sigma = Parameter(
+            name="T_room_sensor_sigma",
+            units="degC",
+            value=0.01,
+            description="Standard deviation of the measurement noise"
+        )
+
+        @make_function(T_room_sensor)
+        def g_T_room_sensor(
+            T_room=T_room,
+            T_room_sensor_sigma=T_room_sensor_sigma
+        ):
+            """Get a sensor measurement."""
+            return T_room + T_room_sensor_sigma * np.random.randn()
+
         self.add_nodes([
                 T_env, T_room, T_genv,
                 C_env, C_room, C_genv,
                 R_rc, R_oe, R_er, R_gr, R_ge,
                 a_sol_env, a_sol_room, a_IHG,
                 A, B, u, make_matrices,
-                transition
+                transition_room,
+                T_room_sensor,
+                T_room_sensor_sigma,
+                g_T_room_sensor
             ]
         )
