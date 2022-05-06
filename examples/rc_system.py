@@ -35,6 +35,11 @@ class RCBuildingSystem(System):
                        [C]
     T_room          -- The room air temperature [C]
 
+    Function nodes:
+    make_matrices   -- Make ABCD discrete matrix for state space model
+    transition_room -- Transition function of the states
+    g_T_room_sensor -- Sensor function of adding noise to the real state
+
     Paramters:
     C_env           -- Capacitance of the envelope [J/C]
     C_air           -- Capacitance of the room air [J/C]
@@ -49,11 +54,15 @@ class RCBuildingSystem(System):
     a_sol_env       -- Absorptance of envelope with respect to solar irradiance
     a_sol_room      -- Absorptance of room with respect to solar irradiance
     a_IHG           -- Absorptance of room with respect to internal heat gain
+    T_room_sensor_sigma -- Standard deviation of the measurement noise
 
     Variables:
+    T_room_sensor   -- A temperature sensor at the room[C]
     T_cor           -- The temperature of corridor. Typically constant. It
                        can be replaced with sensor value in implemenation.
+                       [C]
     u               -- Control variable. Input heat loads to the system.
+                       [W]
     A               -- Discritized State space A matrix
     B               -- Discritized State space B matrix
     """

@@ -1,6 +1,7 @@
 """A HVAC model with PID controller for a single zone.
 
 Author:
+    Ilias Bilionis
     Ting-Chun Kuo
 
 Date:

@@ -1,4 +1,13 @@
-"""Write me Tina!
+"""
+This is a coupled system demo of HVAC system and rc system.
+By adding noise to the weather data, we simulate conditions with sensors.
+
+Author:
+    Ilias Bilionis
+    Ting-Chun Kuo
+
+Date:
+    5/5/2022
 
 """
 
