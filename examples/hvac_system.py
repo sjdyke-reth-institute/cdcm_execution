@@ -13,10 +13,6 @@ Date:
 __all__ = ["HVACSystem"]
 
 
-"""Write me Tina!
-
-"""
-
 from cdcm import *
 from scipy import signal
 import numpy as np
