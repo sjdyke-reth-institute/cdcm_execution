@@ -8,7 +8,7 @@ from cdcm import *
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
 
 # WEATHER SYSTEM
 weather_sys = make_data_system(
@@ -33,10 +33,13 @@ T_out_sensor_sigma = Parameter(
     units="degC",
     value=0.01
 )
+
+
 @make_function(T_out_sensor)
 def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
     """Sample the T_out sensor."""
     return T_out + sigma * np.random.randn()
+
 
 # A clock
 clock = make_clock(300)

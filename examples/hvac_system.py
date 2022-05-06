@@ -23,27 +23,34 @@ import numpy as np
 
 class HVACSystem(System):
     """
-    TODO: UPDATE THIS TINA
-
     This is a demo of VAV system.
     Arguements:
     dt              --  The timestep to use (must be a node.)
+    u               --  Required input loads to the building/zone [W]
     weather_system  --  A weather system that includes:
                         Tout: outdoor air temperature
-                        Qsg:  solar irradiance
-                        Qint: internal heat gain
-                        T_gd: ground temperature
-
     rc_system       --  A rc system that includes:
                         T_room: The room air temperature [C]
-    Variables:
-    T_sp            --  The setpoint temperature [C]
 
     States:
+    integral_past    --  Intergral storage of past time step
+    error_past       --  Portional storage of past time step
+
+
+    Variables:
+    error           --  Difference between setpoint and room temperature
     integral        --  Intergral storage of the PID controller
-    e_p             --  Portional storage of the PID controller
-    u               --  Required input loads to the building/zone [W]
+    derivative      --  The derivative of the error
+    T_sp            --  The setpoint temperature [C]
     energy          --  Consumed energy [W]
+
+    Function nodes:
+    f_error         --  Find difference between setpoint and room temperature.
+    f_error_past    --  Keeps track of the previous step error.
+    f_integral      --  Find the next value of integral.
+    f_integral_past --  Store the current value of the integral.
+    f_derivative    --  Find the derivative of the error.
+    f_u             --  Calculate u to RC model and energy consumption
 
     Parameters of PID controller:
     Kp              --  proportional coefficient of PID controller
@@ -69,9 +76,9 @@ class HVACSystem(System):
     """
     def __init__(self,
                  dt: Parameter,
-                 u : Variable,
-                 T_out : Variable,
-                 T_room : Variable,
+                 u: Variable,
+                 T_out: Variable,
+                 T_room: Variable,
                  **kwargs):
         super().__init__(**kwargs)
 
@@ -357,6 +364,7 @@ class HVACSystem(System):
                 m_design,
                 c_FAN,
                 e_tot,
-                rho_air
+                rho_air,
+                f_u
             ]
         )
