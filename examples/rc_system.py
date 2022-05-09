@@ -187,7 +187,7 @@ class RCBuildingSystem(System):
 
         u = Variable(
             name="u",
-            value=0,
+            value=0.0,
             description="Control of input loads to the system"
         )
 
@@ -275,6 +275,7 @@ class RCBuildingSystem(System):
         T_room_sensor = Variable(
             name="T_room_sensor",
             units="degC",
+            value=23.0,
             description="A temperature sensor at the room"
         )
 

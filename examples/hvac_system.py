@@ -76,15 +76,9 @@ class HVACSystem(System):
                  u: Variable,
                  T_out: Variable,
                  T_room: Variable,
+                 T_sp: Variable,
                  **kwargs):
         super().__init__(**kwargs)
-
-        T_sp = Variable(
-            name="T_sp",
-            value=23,
-            units="degC",
-            description="Setpoint tempertature of the system"
-        )
 
         # TODO: Write decorator to simplify the following
         error = Variable(
@@ -115,6 +109,7 @@ class HVACSystem(System):
         # TODO: Write decorator to simplify the following
         integral = Variable(
             name="integral",
+            value=0.0,
             units="degC * seconds",
             description="Intergral storage of the PID controller"
         )
@@ -301,7 +296,6 @@ class HVACSystem(System):
             rho_air=rho_air
         ):
             u = Kp * error + Ki * integral + Kd * derivative
-
             # bound u_t by upper limit
             if u > u_max_h:
                 u = u_max_h
@@ -338,7 +332,6 @@ class HVACSystem(System):
         # done below
         self.add_nodes(
             [
-                T_sp,
                 error,
                 error_past,
                 f_error_past,

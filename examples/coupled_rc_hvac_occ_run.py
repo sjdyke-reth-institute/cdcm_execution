@@ -36,6 +36,7 @@ weather_sys = make_data_system(
 T_out_sensor = Variable(
     name="T_out_sensor",
     units="degC",
+    value=18.0,
     description="Measurement of external temperature."
 )
 T_out_sensor_sigma = Parameter(
@@ -57,21 +58,22 @@ clock = make_clock(300)
 # The RC model
 rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
 
-# The HVAC model
-hvac_sys = HVACSystem(
-    clock.dt,
-    T_out_sensor,
-    rc_sys.T_room_sensor,
-    rc_sys.u,
-    name="hvac_sys"
-)
-
 # The occupancy behavior model
 occ_sys = OccupantSystem(
     clock.dt,
-    rc_sys.T_room_sensor,
-    hvac_sys.T_sp
+    rc_sys.T_room_sensor
     )
+
+# The HVAC model
+hvac_sys = HVACSystem(
+    clock.dt,
+    rc_sys.u,
+    T_out_sensor,
+    rc_sys.T_room_sensor,
+    occ_sys.T_sp,
+    name="hvac_sys"
+)
+
 
 # The combined system
 

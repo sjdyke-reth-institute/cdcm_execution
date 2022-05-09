@@ -49,9 +49,15 @@ class OccupantSystem(System):
     def __init__(self,
                  dt: Parameter,
                  T_room: Variable,
-                 T_sp: Variable,
                  **kwargs):
         super().__init__(**kwargs)
+
+        T_sp = State(
+            name="T_sp",
+            value=23,
+            units="degC",
+            description="The setpoint temperature to hvac system"
+        )
 
         T_sp_occ = Variable(
             name="T_sp_occ",
@@ -95,8 +101,7 @@ class OccupantSystem(System):
         @make_function(T_sp_occ)
         def cal_T_sp_occ(T_p=T_p, action_noise=action_noise):
             """Determine the setpoint that changed by the occupant"""
-            return np.exp(np.random.normal(loc=T_p,
-                                           scale=action_noise**2))
+            return np.random.lognormal(mean=T_p, sigma=action_noise, size=1)
 
         @make_function(T_sp)
         def act_T_sp(action=action, T_sp=T_sp, T_sp_occ=T_sp_occ):
@@ -105,6 +110,7 @@ class OccupantSystem(System):
 
         self.add_nodes(
             [
+                T_sp,
                 T_sp_occ,
                 action,
                 T_p,
