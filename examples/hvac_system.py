@@ -28,6 +28,7 @@ class HVACSystem(System):
                         Tout: outdoor air temperature
     rc_system       --  A rc system that includes:
                         T_room: The room air temperature [C]
+    T_sp            --  The setpoint temperature [C] from occupancy model
 
     States:
     integral_past    --  Intergral storage of past time step
@@ -38,7 +39,6 @@ class HVACSystem(System):
     error           --  Difference between setpoint and room temperature
     integral        --  Intergral storage of the PID controller
     derivative      --  The derivative of the error
-    T_sp            --  The setpoint temperature [C]
     energy          --  Consumed energy [W]
 
     Function nodes:
@@ -276,6 +276,7 @@ class HVACSystem(System):
 
         @make_function(u, energy)
         def f_u(
+            dt=dt,
             Tout_PID=T_out,
             error=error,
             integral=integral,
@@ -289,11 +290,15 @@ class HVACSystem(System):
             Tlvc=Tlvc,
             m_dot_min=m_dot_min,
             m_dot_max=m_dot_max,
+            cp_air=cp_air,
+            T_sup=T_sup,
+            T_room=T_room,
             COPh=COPh,
             m_design=m_design,
             c_FAN=c_FAN,
             e_tot=e_tot,
-            rho_air=rho_air
+            rho_air=rho_air,
+            dP=dP
         ):
             u = Kp * error + Ki * integral + Kd * derivative
             # bound u_t by upper limit
