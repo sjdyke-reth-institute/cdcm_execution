@@ -246,5 +246,5 @@ for sample_building in single_zone_building.sample(1):
             name="everything",
             nodes=[clock, weather_sys, rc_sample[0]]
     )
-    print(sys.nodes['R_oe'], sys.nodes['R_oe'], sys.nodes['R_oe'] )
+    #print(sys.nodes['R_oe'], sys.nodes['R_oe'], sys.nodes['R_oe'] )
     #sys.forward()

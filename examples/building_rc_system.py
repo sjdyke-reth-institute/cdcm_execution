@@ -171,11 +171,11 @@ def rc_of_building(building, weather_sys, clock):
         zone_rc_sys.C_room.value = Cp_room
         zone_rc_sys.C_env.value = Cp_env
         zone_rc_sys.C_genv.value = Cp_genv
-        zone_rc_sys.R_rc = R_rc
-        zone_rc_sys.R_oe = R_oe
-        zone_rc_sys.R_er = R_er
-        zone_rc_sys.R_gr = R_gr
-        zone_rc_sys.R_ge = R_ge
+        zone_rc_sys.R_rc.value = R_rc
+        zone_rc_sys.R_oe.value = R_oe
+        zone_rc_sys.R_er.value = R_er
+        zone_rc_sys.R_gr.value = R_gr
+        zone_rc_sys.R_ge.value = R_ge
         building_rc_system.append(zone_rc_sys)
     return building_rc_system
 
