@@ -26,8 +26,9 @@ class OccupantSystem(System):
     dt              --  The timestep to use (must be a node.)
     rc_system       --  A rc system that includes:
                         T_room: The room air temperature [C]
-    hvac_system     --  A hvac system that includes:
-                        T_sp: The setpoint temperature [C]
+
+    States:
+    T_sp            --  The setpoint temperature [C]
 
     Variables:
     T_sp_occ        --  The setpoint that changed by the occupant [C]
