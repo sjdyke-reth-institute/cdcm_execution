@@ -18,6 +18,8 @@ from yabml import *
 from rc_system import RCBuildingSystem
 
 Q_ = ureg().Quantity
+
+
 def rc_of_zone(zone, neighbor):
     """
     Returns the R and C parameters of a zone modelled in YABML required
@@ -139,6 +141,7 @@ def rc_of_zone(zone, neighbor):
         R_rc = np.inf
 
     return Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge
+
 
 def rc_of_building(building, weather_sys, clock):
     """

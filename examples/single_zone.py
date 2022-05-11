@@ -15,7 +15,7 @@ from cdcm import *
 
 from building_rc_system import rc_of_building
 
-df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
 
 weather_sys = make_data_system(
     df[["Tout", "Qsg", "Qint"]],
@@ -246,5 +246,16 @@ for sample_building in single_zone_building.sample(1):
             name="everything",
             nodes=[clock, weather_sys, rc_sample[0]]
     )
-    #print(sys.nodes['R_oe'], sys.nodes['R_oe'], sys.nodes['R_oe'] )
-    #sys.forward()
+    
+    max_steps = 100
+    saver = SimulationSaver("test_rc.h5", sys, max_steps=max_steps)
+
+    for i in range(max_steps):
+        sys.forward()
+        saver.save()
+        sys.transition()
+
+    T_room_sensor = (
+        saver.file_handler["/everything/zone_rc_sys/T_room_sensor"][:]
+    )
+    print(T_room_sensor)
