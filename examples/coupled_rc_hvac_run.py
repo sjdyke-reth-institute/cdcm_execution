@@ -43,6 +43,12 @@ T_out_sensor_sigma = Parameter(
     value=0.01
 )
 
+T_sp = Variable(
+    name="T_sp",
+    units="degC",
+    value=23
+)
+
 
 @make_function(T_out_sensor)
 def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
@@ -62,6 +68,7 @@ hvac_sys = HVACSystem(
     T_out_sensor,
     rc_sys.T_room_sensor,
     rc_sys.u,
+    T_sp,
     name="hvac_sys"
 )
 

@@ -1,4 +1,20 @@
 """A HVAC model with PID controller for a single zone.
+# TODO: ADD Equations here:
+This model contains 4 models, PID controller, a fan model,
+a heating model and a chiller model.
+
+HVAC takes the setpoint temperature (T_sp) as the control signal,
+then transfer the T_sp into input loads by PID controller.
+
+e(t) =& T_{sp, t} - T_{room, t} \\
+u_t =& K_p e(t) + K_i \int^t_0 e(\tau)d\tau + K_d
+\frac{e(t)}{dt} \\
+\int^t_0 e(\tau)d\tau =& int^{t-1}_0 e(\tau)d\tau
++ e(t) dt\\
+\frac{e(t)}{dt} =& \frac{e(t)-e(t-1)}{dt}
+
+Then calculate the energy consumption by a chiller, a heater,
+and a fan model.
 
 Author:
     Ilias Bilionis
