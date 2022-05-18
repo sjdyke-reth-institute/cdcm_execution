@@ -8,6 +8,7 @@ Date:
     05/11/2022
 """
 
+from distutils.command.build_clib import build_clib
 import pandas as pd
 import numpy as np
 from pint import UnitRegistry as ureg
@@ -15,6 +16,7 @@ from pint import UnitRegistry as ureg
 from cdcm import *
 from yabml import *
 
+from hvac_system import HVACSystem
 from rc_system import RCBuildingSystem
 
 Q_ = ureg().Quantity
@@ -143,9 +145,9 @@ def rc_of_zone(zone, neighbor):
     return Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge
 
 
-def rc_of_building(building, weather_sys, clock):
+def building_sys(building, weather_sys, clock):
     """
-    Returns rc system corresponding to the building given.
+    Returns a system corresponding to the building given.
 
     Arguments:
         building: A YABML Building class object of which rc system is 
@@ -160,10 +162,10 @@ def rc_of_building(building, weather_sys, clock):
                object.
 
     Return:
-        building_rc_system: A list containing RC systems of each zone of
+        building_system: A list containing systems of each zone of
                             the building given. It is a list.
     """
-    building_rc_system = []
+    build_system = []
     for z,n in zip(building.zones, building.neighbor):
         zone_rc_sys = RCBuildingSystem(clock.dt,
                                        weather_sys,
@@ -179,8 +181,41 @@ def rc_of_building(building, weather_sys, clock):
         zone_rc_sys.R_er.value = R_er
         zone_rc_sys.R_gr.value = R_gr
         zone_rc_sys.R_ge.value = R_ge
-        building_rc_system.append(zone_rc_sys)
-    return building_rc_system
+
+        T_out_sensor = Variable(
+            name="T_out_sensor",
+            units="degC",
+            description="Measurement of external temperature."
+        )
+        T_out_sensor_sigma = Parameter(
+            name="T_out_sensor_sigma",
+            units="degC",
+            value=0.01
+        )
+        T_sp = Variable(
+            name="T_sp",
+            units="degC",
+            value=23
+        )
+
+        @make_function(T_out_sensor)
+        def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
+            """Sample the T_out sensor."""
+            return T_out + sigma * np.random.randn()
+        
+        zone_hvac_sys = HVACSystem(clock.dt,
+                                   T_out_sensor,
+                                   zone_rc_sys.T_room_sensor,
+                                   zone_rc_sys.u,
+                                   T_sp,
+                                   name="hvac_sys"
+        )
+        sys = System(
+            name="everything",
+            nodes=[clock, weather_sys, zone_rc_sys, zone_hvac_sys]
+        )
+        build_system.append(sys)
+    return build_system
 
 
 
