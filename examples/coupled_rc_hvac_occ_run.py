@@ -1,5 +1,6 @@
 """
-This is a coupled system demo of HVAC system and rc system.
+This is a coupled system demo of HVAC system, rc system, and
+the occupancy system.
 By adding noise to the weather data, we simulate conditions with sensors.
 
 Author:
@@ -87,12 +88,14 @@ hvac_sys = HVACSystem(
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys, hvac_sys, occ_sys]
+    nodes=[clock, weather_sys, rc_sys, hvac_sys, occ_sys, g_T_out_sensor]
 )
 print(sys)
 
 for i in range(100):
     sys.forward()
+    print(f"T_out = {weather_sys.Tout.value:1.2f}")
+    print(f"T_out_noisy = {T_out_sensor.value:1.2f}")
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
     print(f"action = {occ_sys.action.value:1.0f}")
     sys.transition()

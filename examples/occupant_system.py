@@ -1,13 +1,18 @@
 """
-This is a simple occupants model that interact with rc system and hvac.
+This is a simple occupancy model with 1 occupant
+that interact with rc system and hvac.
 If the current room temperature is out of occupancy endurability,
 there is a chace that occupant may override the setpoint temperature.
+# TODO: ADD Equations here and change the code
+In this system, we will return the action of setpoint, on/off of
+lighting and devices system.
 
 Author:
     Ting-Chun Kuo
 
 Date:
     5/5/2022
+    5/18/2022
 
 """
 
@@ -23,28 +28,32 @@ class OccupantSystem(System):
     This is a simple occupancy behavior model.
 
     Arguements:
-    dt              --  The timestep to use (must be a node.)
-    rc_system       --  A rc system that includes:
-                        T_room: The room air temperature [C]
+    clock           --  The clock system
+    T_room          --  The room air temperature [C] from rc system
 
     States:
     T_sp            --  The setpoint temperature [C]
-
-    Variables:
-    T_sp_occ        --  The setpoint that changed by the occupant [C]
+    Occ_t           --  A boolean indicator of occupancy presence to the room
     action          --  A boolean indicator of whether the
                         occupant changes the setpoint
+
+    Variables:
+    p_action        --  Probability of act
+    IHG_occ         --  The internal heat gain casud by occupant
+    lgt_on          --  The ON/OFF indicator of lighting
+    dev_on          --  The ON/OFF indicator of devices
 
     Parameters:
     T_p             --  actual preference temperature of the occupant[C]
     action_noise    --  action noise of the occupants
+    sensitivity     --  occupancy sensitivity of the room temperature
+    time            --  temperary time holding place
 
     Function nodes:
-    cal_action      --  calculate action
-    cal_T_sp_occ    --  Determine the setpoint occupant changes
-    act_T_sp        --  The actual setpoint of the next time step
-
-
+    check_occ       --  check occupancy presence and turn on/off light
+                        and devices
+    cal_act_prob    --  calculate action probability
+    occ_tansition   --  Determine the next state
 
     """
     def __init__(self,
@@ -60,18 +69,18 @@ class OccupantSystem(System):
             description="The setpoint temperature to hvac system"
         )
 
-        T_sp_occ = Variable(
-            name="T_sp_occ",
-            value=23,
-            units="degC",
-            description="The setpoint that changed by the occupant"
+        Occ_t = State(
+            name="Occ_t",
+            value=0,
+            units=None,
+            description="A boolean indicator of occupancy presence to the room"
         )
 
-        action = Variable(
+        action = State(
             name="action",
             value=0,
             units=None,
-            description="A boolean indicator of whether the \
+            description="A boolean indicator of whether the\
                          occupant changes the setpoint"
         )
 
@@ -89,35 +98,126 @@ class OccupantSystem(System):
             description="action noise of the occupants"
         )
 
-        @make_function(action)
-        def cal_action(T_room=T_room, T_p=T_p):
+        sensitivity = Parameter(
+            name="sensitivity",
+            value=0.5,
+            units=None,
+            description="occupancy sensitivity of the room temperature"
+        )
+
+        p_action = Variable(
+            name="p_action",
+            value=0.1,
+            units=None,
+            description="The probability of the occupant to act"
+        )
+
+        lgt_on = Variable(
+            name="lgt_on",
+            value=1.0,
+            units=None,
+            description="The use percentage of ligting"
+        )
+
+        dev_on = Variable(
+            name="dev_on",
+            value=1.0,
+            units=None,
+            description="The use percentage of devices"
+        )
+
+        occ_ihg_base = Variable(
+            name="occ_ihg_base",
+            value=350.0,
+            units="W",
+            description="The base internal heat gain casud by occupant"
+        )
+
+        IHG_occ = Variable(
+            name="IHG_occ",
+            value=0.0,
+            units="W",
+            description="The internal heat gain casud by occupant"
+        )
+
+        time = State(
+            name="time",
+            value=0.0,
+            units="s",
+            description="Current time in sec"
+            )
+
+        @make_function(time)
+        def move_time(time=time, dt=dt):
             """
-            Determine to act or not by temperature difference
+            move time
+            """
+            return time + dt
+
+        @make_function(Occ_t)
+        def check_occ(time=time):
+            """
+            Calculate if occupancy is in the office by clock time
+            """
+            hour = time/3600 % 24
+            occ = 0
+            if (hour >= 8) and (hour <= 17):
+                occ = 1
+            return occ
+
+        @make_function(p_action)
+        def cal_act_prob(T_room=T_room, T_p=T_p, sensitivity=sensitivity):
+            """
+            Determine probability to act or not by temperature difference
             and a sigmoid function.
 
             """
-            x = T_room - T_p
-            return 1 / (1 + np.exp(x))
+            x = sensitivity*(T_room - T_p)**2
+            return 1/(1 + np.exp(-x))
 
-        @make_function(T_sp_occ)
-        def cal_T_sp_occ(T_p=T_p, action_noise=action_noise):
+        @make_function(lgt_on, dev_on, IHG_occ)
+        def turnONOFF(Occ_t=Occ_t, occ_ihg_base=occ_ihg_base):
+            occ_ihg = np.random.normal(loc=occ_ihg_base, scale=occ_ihg_base/4)
+            return Occ_t, Occ_t, occ_ihg
+
+        @make_function(action, T_sp)
+        def occ_tansition(Occ_t=Occ_t,
+                          T_p=T_p,
+                          T_sp=T_sp,
+                          p_action=p_action,
+                          action_noise=action_noise):
             """Determine the setpoint that changed by the occupant"""
-            return np.random.lognormal(mean=T_p, sigma=action_noise, size=1)
-
-        @make_function(T_sp)
-        def act_T_sp(action=action, T_sp=T_sp, T_sp_occ=T_sp_occ):
-            """Determine the actual setpoint of the next time step"""
-            return action * T_sp_occ + (1 - action)*T_sp
+            if Occ_t == 1:
+                u = np.random.random()
+                theta = np.random.normal(loc=0.0, scale=action_noise)
+                if u <= p_action:
+                    T_sp = round((T_p + theta), 2)
+                    action = T_sp
+                else:
+                    action = -1
+            else:
+                occ_ihg = 0
+                action = -1
+                T_sp = T_sp
+            return action, T_sp
 
         self.add_nodes(
             [
                 T_sp,
-                T_sp_occ,
+                Occ_t,
                 action,
+                lgt_on,
+                dev_on,
+                IHG_occ,
+                occ_ihg_base,
                 T_p,
                 action_noise,
-                cal_action,
-                cal_T_sp_occ,
-                act_T_sp
+                sensitivity,
+                time,
+                move_time,
+                check_occ,
+                cal_act_prob,
+                turnONOFF,
+                occ_tansition
             ]
         )
