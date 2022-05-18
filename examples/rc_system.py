@@ -27,8 +27,9 @@ class RCBuildingSystem(System):
     weather_system  --  A weather system that includes:
                         Tout: outdoor air temperature
                         Qsg:  solar irradiance
-                        Qint: internal heat gain
                         T_gd: ground temperature
+    Q_int           --  Internal heat gain calculated from other system
+
     States:
     T_env           -- The surface temperature of envelope interior [C]
     T_genv          -- The surface temperature of ground envelope interior
@@ -69,6 +70,7 @@ class RCBuildingSystem(System):
     def __init__(self,
                  dt: Parameter,
                  weather_system: System,
+                 Q_int: Variable,
                  **kwargs
                  ):
         super().__init__(**kwargs)
@@ -262,7 +264,7 @@ class RCBuildingSystem(System):
             # add noise for Tout, Qsg and Q_int
             T_out=weather_system.Tout,
             Q_sg=weather_system.Qsg,
-            Q_int=weather_system.Qint
+            Q_int=Q_int
         ):
             """Transitions the system."""
             # print("Actual shape of A:", np.shape(A))

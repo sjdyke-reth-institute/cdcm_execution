@@ -57,7 +57,8 @@ def PID(T_room, T_out, T_sp, integral, e_p,
     return integral, e_p, u_t, energy
 
 
-df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+# df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
 
 weather_sys = make_data_system(
     df[["Tout", "Qsg", "Qint"]],
@@ -72,7 +73,14 @@ weather_sys = make_data_system(
 
 clock = make_clock(300)
 
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
+Q_int = Variable(
+    name="Q_int",
+    units="W",
+    value=150,
+    description="Sum of internal heat gain"
+)
+
+rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, name="rc_sys")
 
 sys = System(
     name="everything",

@@ -15,7 +15,7 @@ from cdcm import *
 
 from building_rc_system import rc_of_building
 
-df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("./examples/rc_system_data/weather_data_2017_pandas.csv")
 
 weather_sys = make_data_system(
     df[["Tout", "Qsg", "Qint"]],
