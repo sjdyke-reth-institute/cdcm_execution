@@ -163,7 +163,7 @@ def building_sys(building, weather_sys, clock):
 
     Return:
         building_system: A list containing systems of each zone of
-                            the building given. It is a list.
+                         the building given. It is a list.
     """
     build_system = []
     for z,n in zip(building.zones, building.neighbor):
