@@ -30,6 +30,14 @@ weather_sys = make_data_system(
         "Internal heat gain"
     ]
 )
+
+Q_int = Variable(
+    name="Q_int",
+    units="W",
+    value=150,
+    description="Sum of internal heat gain"
+)
+
 # TODO: Make sensor model to make this simpler
 # Add a sensor to weather system
 T_out_sensor = Variable(
@@ -60,7 +68,7 @@ def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
 clock = make_clock(300)
 
 # The RC model
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
+rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, name="rc_sys")
 
 # The HVAC model
 hvac_sys = HVACSystem(

@@ -14,22 +14,32 @@ from cdcm import *
 from rc_system import RCBuildingSystem
 import pandas as pd
 
-df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+# df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
 
 weather_sys = make_data_system(
-    df[["Tout", "Qsg", "Qint"]],
+    df[["Tout", "Qsg"]],
     name="weather_sytem",
-    column_units=["degC", "W", "W"],
+    column_units=["degC", "W"],
     column_desciptions=[
         "Outdoor air temperature",
-        "Solar irradiance",
-        "Internal heat gain"
+        "Solar irradiance"
     ]
+)
+
+Q_int = Variable(
+    name="Q_int",
+    units="W",
+    value=150,
+    description="Sum of internal heat gain"
 )
 
 clock = make_clock(1800)
 
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, name="rc_sys")
+rc_sys = RCBuildingSystem(clock.dt,
+                          weather_sys,
+                          Q_int,
+                          name="rc_sys")
 
 sys = System(
     name="everything",
