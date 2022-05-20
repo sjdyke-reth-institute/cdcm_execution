@@ -27,13 +27,19 @@ class RCBuildingSystem(System):
     weather_system  --  A weather system that includes:
                         Tout: outdoor air temperature
                         Qsg:  solar irradiance
-                        Qint: internal heat gain
                         T_gd: ground temperature
+    Q_int           --  Internal heat gain calculated from other system
+
     States:
     T_env           -- The surface temperature of envelope interior [C]
     T_genv          -- The surface temperature of ground envelope interior
                        [C]
     T_room          -- The room air temperature [C]
+
+    Function nodes:
+    make_matrices   -- Make ABCD discrete matrix for state space model
+    transition_room -- Transition function of the states
+    g_T_room_sensor -- Sensor function of adding noise to the real state
 
     Paramters:
     C_env           -- Capacitance of the envelope [J/C]
@@ -49,17 +55,22 @@ class RCBuildingSystem(System):
     a_sol_env       -- Absorptance of envelope with respect to solar irradiance
     a_sol_room      -- Absorptance of room with respect to solar irradiance
     a_IHG           -- Absorptance of room with respect to internal heat gain
+    T_room_sensor_sigma -- Standard deviation of the measurement noise
 
     Variables:
+    T_room_sensor   -- A temperature sensor at the room[C]
     T_cor           -- The temperature of corridor. Typically constant. It
                        can be replaced with sensor value in implemenation.
+                       [C]
     u               -- Control variable. Input heat loads to the system.
+                       [W]
     A               -- Discritized State space A matrix
     B               -- Discritized State space B matrix
     """
     def __init__(self,
                  dt: Parameter,
                  weather_system: System,
+                 Q_int: Variable,
                  **kwargs
                  ):
         super().__init__(**kwargs)
@@ -178,7 +189,7 @@ class RCBuildingSystem(System):
 
         u = Variable(
             name="u",
-            value=0,
+            value=0.0,
             description="Control of input loads to the system"
         )
 
@@ -253,10 +264,10 @@ class RCBuildingSystem(System):
             # add noise for Tout, Qsg and Q_int
             T_out=weather_system.Tout,
             Q_sg=weather_system.Qsg,
-            Q_int=weather_system.Qint
+            Q_int=Q_int
         ):
             """Transitions the system."""
-            print("Actual shape of A:", np.shape(A))
+            # print("Actual shape of A:", np.shape(A))
             res = (
                 A @ np.array([T_env, T_genv, T_room]).T
                 + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
@@ -266,6 +277,7 @@ class RCBuildingSystem(System):
         T_room_sensor = Variable(
             name="T_room_sensor",
             units="degC",
+            value=23.0,
             description="A temperature sensor at the room"
         )
 

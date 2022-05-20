@@ -1,6 +1,23 @@
 """A HVAC model with PID controller for a single zone.
+# TODO: ADD Equations here:
+This model contains 4 models, PID controller, a fan model,
+a heating model and a chiller model.
+
+HVAC takes the setpoint temperature (T_sp) as the control signal,
+then transfer the T_sp into input loads by PID controller.
+
+e(t) =& T_{sp, t} - T_{room, t} \\
+u_t =& K_p e(t) + K_i \int^t_0 e(\tau)d\tau + K_d
+\frac{e(t)}{dt} \\
+\int^t_0 e(\tau)d\tau =& int^{t-1}_0 e(\tau)d\tau
++ e(t) dt\\
+\frac{e(t)}{dt} =& \frac{e(t)-e(t-1)}{dt}
+
+Then calculate the energy consumption by a chiller, a heater,
+and a fan model.
 
 Author:
+    Ilias Bilionis
     Ting-Chun Kuo
 
 Date:
@@ -12,10 +29,6 @@ Date:
 __all__ = ["HVACSystem"]
 
 
-"""Write me Tina!
-
-"""
-
 from cdcm import *
 from scipy import signal
 import numpy as np
@@ -23,27 +36,34 @@ import numpy as np
 
 class HVACSystem(System):
     """
-    TODO: UPDATE THIS TINA
-
     This is a demo of VAV system.
     Arguements:
     dt              --  The timestep to use (must be a node.)
+    u               --  Required input loads to the building/zone [W]
     weather_system  --  A weather system that includes:
                         Tout: outdoor air temperature
-                        Qsg:  solar irradiance
-                        Qint: internal heat gain
-                        T_gd: ground temperature
-
     rc_system       --  A rc system that includes:
                         T_room: The room air temperature [C]
-    Variables:
-    T_sp            --  The setpoint temperature [C]
+    T_sp            --  The setpoint temperature [C] from occupancy model
 
     States:
+    integral_past    --  Intergral storage of past time step
+    error_past       --  Portional storage of past time step
+
+
+    Variables:
+    error           --  Difference between setpoint and room temperature
     integral        --  Intergral storage of the PID controller
-    e_p             --  Portional storage of the PID controller
-    u               --  Required input loads to the building/zone [W]
+    derivative      --  The derivative of the error
     energy          --  Consumed energy [W]
+
+    Function nodes:
+    f_error         --  Find difference between setpoint and room temperature.
+    f_error_past    --  Keeps track of the previous step error.
+    f_integral      --  Find the next value of integral.
+    f_integral_past --  Store the current value of the integral.
+    f_derivative    --  Find the derivative of the error.
+    f_u             --  Calculate u to RC model and energy consumption
 
     Parameters of PID controller:
     Kp              --  proportional coefficient of PID controller
@@ -69,18 +89,12 @@ class HVACSystem(System):
     """
     def __init__(self,
                  dt: Parameter,
-                 u : Variable,
-                 T_out : Variable,
-                 T_room : Variable,
+                 u: Variable,
+                 T_out: Variable,
+                 T_room: Variable,
+                 T_sp: Variable,
                  **kwargs):
         super().__init__(**kwargs)
-
-        T_sp = Variable(
-            name="T_sp",
-            value=23,
-            units="degC",
-            description="Setpoint tempertature of the system"
-        )
 
         # TODO: Write decorator to simplify the following
         error = Variable(
@@ -111,6 +125,7 @@ class HVACSystem(System):
         # TODO: Write decorator to simplify the following
         integral = Variable(
             name="integral",
+            value=0.0,
             units="degC * seconds",
             description="Intergral storage of the PID controller"
         )
@@ -283,6 +298,7 @@ class HVACSystem(System):
 
         @make_function(u, energy)
         def f_u(
+            dt=dt,
             Tout_PID=T_out,
             error=error,
             integral=integral,
@@ -296,14 +312,17 @@ class HVACSystem(System):
             Tlvc=Tlvc,
             m_dot_min=m_dot_min,
             m_dot_max=m_dot_max,
+            cp_air=cp_air,
+            T_sup=T_sup,
+            T_room=T_room,
             COPh=COPh,
             m_design=m_design,
             c_FAN=c_FAN,
             e_tot=e_tot,
-            rho_air=rho_air
+            rho_air=rho_air,
+            dP=dP
         ):
             u = Kp * error + Ki * integral + Kd * derivative
-
             # bound u_t by upper limit
             if u > u_max_h:
                 u = u_max_h
@@ -341,7 +360,6 @@ class HVACSystem(System):
 
         self.add_nodes(
             [
-                T_sp,
                 error,
                 error_past,
                 f_error_past,
@@ -364,6 +382,7 @@ class HVACSystem(System):
                 m_design,
                 c_FAN,
                 e_tot,
-                rho_air
+                rho_air,
+                f_u
             ]
         )
