@@ -69,7 +69,7 @@ rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, name="rc_sys")
 
 # The occupancy behavior model
 occ_sys = OccupantSystem(
-    clock.dt,
+    clock,
     rc_sys.T_room_sensor
     )
 

@@ -57,7 +57,7 @@ class OccupantSystem(System):
 
     """
     def __init__(self,
-                 dt: Parameter,
+                 clock: System,
                  T_room: Variable,
                  **kwargs):
         super().__init__(**kwargs)
@@ -140,25 +140,26 @@ class OccupantSystem(System):
             description="The internal heat gain casud by occupant"
         )
 
-        time = State(
-            name="time",
-            value=0.0,
-            units="s",
-            description="Current time in sec"
-            )
+        # time = State(
+        #     name="time",
+        #     value=0.0,
+        #     units="s",
+        #     description="Current time in sec"
+        #     )
 
-        @make_function(time)
-        def move_time(time=time, dt=dt):
-            """
-            move time
-            """
-            return time + dt
+        # @make_function(time)
+        # def move_time(time=time, dt=dt):
+        #     """
+        #     move time
+        #     """
+        #     return time + dt
 
         @make_function(Occ_t)
-        def check_occ(time=time):
+        def check_occ(time=clock.t):
             """
             Calculate if occupancy is in the office by clock time
             """
+            # print(time)
             hour = time/3600 % 24
             occ = 0
             if (hour >= 8) and (hour <= 17):
@@ -213,8 +214,6 @@ class OccupantSystem(System):
                 T_p,
                 action_noise,
                 sensitivity,
-                time,
-                move_time,
                 check_occ,
                 cal_act_prob,
                 turnONOFF,
