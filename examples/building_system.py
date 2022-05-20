@@ -163,12 +163,19 @@ def building_sys(building, weather_sys, clock):
 
     Return:
         building_system: A list containing systems of each zone of
-                            the building given. It is a list.
+                         the building given. It is a list.
     """
     build_system = []
     for z,n in zip(building.zones, building.neighbor):
+        Q_int = Variable(
+            name="Q_int",
+            units="W",
+            value=150,
+            description="Sum of internal heat gain"
+        )
         zone_rc_sys = RCBuildingSystem(clock.dt,
                                        weather_sys,
+                                       Q_int,
                                        name="zone_rc_sys"
         )
         Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge = \
