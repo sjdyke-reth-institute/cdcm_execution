@@ -127,6 +127,12 @@ class HVACSystem(System):
             """Find the next value of integral."""
             return integral_past + error * dt
 
+        #@make_deterministic()
+        #def integral(integral_past=integral_past, error=error, dt=dt):
+        #    return integral_past + error * dt
+
+        #integral_past = StateWithMemory()
+
         @make_function(integral_past)
         def f_integral_past(integral_past=integral_past, integral=integral):
             """Store the current value of the integral."""
@@ -332,6 +338,7 @@ class HVACSystem(System):
         # TODO: Find a way to detect nodes created within this
         # context and eliminate the need to list them one by one as
         # done below
+
         self.add_nodes(
             [
                 T_sp,
