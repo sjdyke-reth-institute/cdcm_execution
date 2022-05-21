@@ -190,9 +190,9 @@ class System(Node):
         """
         g = nx.DiGraph()
         for n in self.nodes.values():
-            g.add_node(n.name)
+            g.add_node(n.absname)
             for c in n.children.values():
-                g.add_edge(n.name, c.name)
+                g.add_edge(n.absname, c.absname)
         return g
 
     @cached_property
@@ -208,15 +208,15 @@ class System(Node):
         """
         g = nx.DiGraph()
         for n in self.nodes.values():
-            g.add_node(n.name)
+            g.add_node(n.absname)
             if isinstance(n, State):
-                g.add_node(n.name + "*")
+                g.add_node(n.absname + "*")
             if isinstance(n, Transition):
                 for c in n.children.values():
-                    g.add_edge(n.name, c.name + '*')
+                    g.add_edge(n.absname, c.absname + '*')
             else:
                 for c in n.children.values():
-                    g.add_edge(n.name, c.name)
+                    g.add_edge(n.absname, c.absname)
         return g
 
     @cached_property

@@ -12,28 +12,18 @@ Date:
 __all__ = [
     "Node",
     "replace",
-    "ChildrenInput",
-    "NodeInput",
-    "ParentInput"
+    "NodeSet"
 ]
 
 
 import yaml
-from typing import Any, Sequence, Dict, Union, NewType, Tuple
+from collections.abc import Iterable
+from typing import Any, Set, NewType
 from functools import partialmethod
 from . import bidict
 
 
-NameOrNode = NewType("StrOrNode", Union[str, "Node"])
-NodeDict = NewType("NodeDict", Dict[str, "Node"])
-NodeSeq = Sequence["Node"]
-NodeInput = Union["Node", NodeSeq, NodeDict]
-ChildrenDict = NewType("ChildrenDict", NodeDict)
-ChildrenSeq = NewType("ChildrenSeq", NodeSeq)
-ChildrenInput = Union["Node", ChildrenSeq, ChildrenDict]
-ParentDict = NewType("ParentType", NodeDict)
-ParentSeq = NewType("ParentSeq", NodeSeq)
-ParentInput = Union["Node", ParentSeq, ParentDict]
+NodeSet = NewType("NodeSet", Set["Node"])
 
 
 class Node(object):
@@ -64,8 +54,8 @@ class Node(object):
     def __init__(
         self,
         *,
-        children : ChildrenInput = {},
-        parents : ParentInput = {},
+        children : NodeSet = set(),
+        parents : NodeSet = set(),
         owner : Any = None,
         name : str = "unamed_node",
         description : str = ""
@@ -73,52 +63,38 @@ class Node(object):
         self.name = name
         self.description = description
         self.owner = owner
-        self._children : NodeDict = bidict()
-        self._parents : NodeDict = bidict()
+        self._children : NodeSet = set()
+        self._parents : NodeSet = set()
         self.add_children(children)
         self.add_parents(parents)
 
     @property
-    def children(self) -> NodeDict :
+    def children(self) -> NodeSet:
         """Get the children."""
         return self._children
 
     @property
-    def parents(self) -> NodeDict :
+    def parents(self) -> NodeSet:
         return self._parents
 
     def _add_type(
         self,
-        dict_to_add : NodeDict,
+        set_to_add : NodeSet,
         obj : "Node",
-        name : str = None
-    ) -> bool :
-        """Add `obj` of `type_to_add` in `dict_to_add` with key `name`.
+    ):
+        """Add object to set.
 
-        Returns True if the object is added and False if the object is
-        already in.
+        Arguments
+        set_to_add -- The set to which the object will be added.
+        obj        -- The object to add.
         """
-        if obj in dict_to_add.values():
-            return False
-        if name is None:
-            name = obj.name
-        if name in dict_to_add:
-            if obj in dict_to_add.inverse:
-                return False
-            else:
-                raise RuntimeError(
-                    f"{self.name} already has a field named {name}"
-                )
-        dict_to_add[name] = obj
-        return True
+        set_to_add.add(obj)
 
     def _add_parent_or_child(
         self,
         child_or_parent : str,
-        obj : "Node",
-        name : str = None,
-        parent_or_child_name : str = None
-    ) -> bool :
+        obj : "Node"
+    ):
         """Adds a parent or a child.
 
         This function ensures the reflexivity of a child - parent
@@ -128,19 +104,10 @@ class Node(object):
         See `add_child()` and `add_parent()` for usage.
         """
         dict_to_add = getattr(self, self._TYPE_DICTS[child_or_parent])
-        if self._add_type(
-            dict_to_add,
-            obj,
-            name
-        ):
-            parent_or_child = self._REFLECTION[child_or_parent]
-            dict_to_add = getattr(obj, self._TYPE_DICTS[parent_or_child])
-            return obj._add_type(
-                dict_to_add,
-                self,
-                parent_or_child_name
-            )
-        return False
+        self._add_type(dict_to_add, obj)
+        parent_or_child = self._REFLECTION[child_or_parent]
+        dict_to_add = getattr(obj, self._TYPE_DICTS[parent_or_child])
+        obj._add_type(dict_to_add, self)
 
     add_child = partialmethod(
         _add_parent_or_child,
@@ -155,48 +122,33 @@ class Node(object):
     def _add_types(
         self,
         type_of_nodes : str,
-        nodes : NodeInput
+        objects : NodeSet
     ):
         """Adds may parents or children.
 
         See `add_parents()` and `add_children()` for usage.
         """
-        if isinstance(nodes, Node):
-            nodes = (nodes, )
-        if isinstance(nodes, Sequence):
-            nodes = {
-                node.name: node
-                for node in nodes
-            }
+        if not isinstance(objects, Iterable):
+            objects = (objects, )
         add_func = getattr(self, f"add_{type_of_nodes}")
-        for name, node in nodes.items():
-            add_func(node, name)
+        for item in objects:
+            add_func(item)
 
     add_children = partialmethod(_add_types, "child")
     add_parents = partialmethod(_add_types, "parent")
 
     def _remove_type(
         self,
-        dict_to_remove_from : NodeDict,
-        name_or_obj : NameOrNode
-    ) -> Tuple[str, "Node"]:
-        """Removes `name_or_obj` from `dict_to_remove_from`.
-
-        Returns the name of and the object that was just removed.
-        """
-        if isinstance(name_or_obj, str):
-            name = name_or_obj
-            obj = dict_to_remove_from[name]
-        else:
-            obj = name_or_obj
-            name = dict_to_remove_from.inverse[obj]
-        del dict_to_remove_from[name]
-        return name, obj
+        dict_to_remove_from : NodeSet,
+        obj : "Node"
+    ):
+        """Removes `name_or_obj` from `dict_to_remove_from`."""
+        dict_to_remove_from.remove(obj)
 
     def _remove_parent_or_child(
         self,
-        child_or_parent : NodeDict,
-        name_or_obj : NameOrNode
+        child_or_parent : NodeSet,
+        obj : "Node"
     ):
         """Removes a parent or a child.
 
@@ -206,7 +158,7 @@ class Node(object):
             self,
             self._TYPE_DICTS[child_or_parent]
         )
-        name, obj = self._remove_type(children_or_parents_dict, name_or_obj)
+        self._remove_type(children_or_parents_dict, obj)
         parent_or_child = self._REFLECTION[child_or_parent]
         parents_or_children_dict = getattr(
             obj,
@@ -262,18 +214,22 @@ class Node(object):
 
     def __str__(self) -> str:
         """Return a string representation of the object."""
-        return yaml.dump(self.to_yaml(), sort_keys=False)
+        return self.to_yaml()
 
-    def to_yaml(self):
+    def to_dict(self):
         """Turn the object to a dictionary of dictionaries."""
         return {
             self.name: {
                 "description": self.description,
                 "owner": str(self.owner.absname) if self.owner is not None else "",
-                "parents": str(tuple(p.absname for p in self.parents.values())),
-                "children": str(tuple(c.absname for c in self.children.values()))
+                "parents": str(tuple(p.absname for p in self.parents)),
+                "children": str(tuple(c.absname for c in self.children))
             }
         }
+
+    def to_yaml(self):
+        """Turn the object to yaml."""
+        return yaml.dump(self.to_dict(), sort_keys=False)
 
     def from_yaml(self, data):
         """Set the parameters of the object from a dictionary."""

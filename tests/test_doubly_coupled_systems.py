@@ -57,7 +57,7 @@ sys1 = System(
 #       SYSTEM 2
 # ****************************
 
-x2 = make_node("S:x2:0.3:meters")
+x2 = make_node("S:x1:0.3:meters")
 r2 = make_node("P:r2:1.2:meters/second",)
 c2 = make_node("P:c2:20.1:1/second")
 s2 = make_node(

@@ -19,11 +19,14 @@ n1 = Node(
 n2 = Node(
     name="n2"
 )
+
 print(n1)
 print(n2)
+
 n1.add_child(n2)
 print(n1)
 print(n2)
+
 
 n3 = Node(
     name="n3"
@@ -65,15 +68,8 @@ print(n4)
 n4.add_children([n6, n7])
 print(n4)
 
-# Add from a dictionary
-n4.add_children({"foo": n8})
-print(n4)
-
 # Test adding multiple parents
 n6.add_parents([n7, n8])
-print(n6)
-
-n6.add_parents({"bar": n5})
 print(n6)
 
 
