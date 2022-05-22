@@ -1,11 +1,11 @@
-"""Tests the functionality of the System class for a simple isolated system.
+"""Demonstrates the various equivalent ways in which we can define a
+new system.
 
 Author:
     Ilias Bilionis
-    Murali Krishnan R
 
 Date:
-    3/14/2022
+    5/22/2022
 
 """
 
@@ -13,14 +13,68 @@ Date:
 from cdcm import *
 import numpy as np
 
+# FIRST WAY - MANUAL
+# Define all variables and compose the system mannually
+x = State(name="x", value=0.1, units="meters")
+r = Parameter(name="r", value=1.2, units="meters/second")
+dt = Parameter(name="dt", value=0.1, units="second")
+sigma = Parameter(name="sigma", value=0.1, units="meters")
+y = Variable(name="y", value=0, units="meters")
 
-with System(name="sys", description="An isolated system") as sys:
-    x = make_node("S:x:0.1:meters", description="The state of the system.")
-    r = make_node("P:r:1.2:meters/second", description="The rate of change.")
-    dt = make_node("P:dt:0.1:second", description="The timestep.")
-    sigma = make_node("P:sigma:0.1:meters",
-        description="The standard deviation of measurement noise.")
-    y = make_node("V:y", units="meters", description="A sensor measurement.")
+@make_function(x)
+def f(x=x, r=r, dt=dt):
+    """The transition function."""
+    return x + r * dt
+
+@make_function(y)
+def g(x=x, sigma=sigma):
+    """An emission function."""
+    return x + sigma * np.random.randn()
+
+sys = System(
+    name="sys",
+    description="An isolated system",
+    nodes=[x, r, dt, sigma, y]
+    )
+
+print(sys)
+
+# SECOND WAY - INHERITANCE
+class NewSystem(System):
+
+    def define_internal_nodes(self):
+        """This function is run automatically when the system is
+        initialized. The system keeps track of all the Nodes that are
+        created inside here and adds them to its node list."""
+        x = State(name="x", value=0.1, units="meters")
+        r = Parameter(name="r", value=1.2, units="meters/second")
+        dt = Parameter(name="dt", value=0.1, units="second")
+        sigma = Parameter(name="sigma", value=0.1, units="meters")
+        y = Variable(name="y", value=0, units="meters")
+
+        @make_function(x)
+        def f(x=x, r=r, dt=dt):
+            """The transition function."""
+            return x + r * dt
+
+        @make_function(y)
+        def g(x=x, sigma=sigma):
+            """An emission function."""
+            return x + sigma * np.random.randn()
+
+sys = NewSystem(name="sys", description="An isolated system")
+
+print(sys)
+
+# THIRD WAY - INHERITANCE BUT WITH DECORATORS
+@make_system
+def sys():
+    """An isolated system."""
+    x = State(name="x", value=0.1, units="meters")
+    r = Parameter(name="r", value=1.2, units="meters/second")
+    dt = Parameter(name="dt", value=0.1, units="second")
+    sigma = Parameter(name="sigma", value=0.1, units="meters")
+    y = Variable(name="y", value=0, units="meters")
 
     @make_function(x)
     def f(x=x, r=r, dt=dt):
@@ -29,6 +83,25 @@ with System(name="sys", description="An isolated system") as sys:
 
     @make_function(y)
     def g(x=x, sigma=sigma):
+        """An emission function."""
+        return x + sigma * np.random.randn()
+
+# FOURTH WAY - CONTEXT MANAGER
+with System(name="sys", description="An isolated system") as sys:
+    x = State(name="x", value=0.1, units="meters")
+    r = Parameter(name="r", value=1.2, units="meters/second")
+    dt = Parameter(name="dt", value=0.1, units="second")
+    sigma = Parameter(name="sigma", value=0.1, units="meters")
+    y = Variable(name="y", value=0, units="meters")
+
+    @make_function(x)
+    def f(x=x, r=r, dt=dt):
+        """The transition function."""
+        return x + r * dt
+
+    @make_function(y)
+    def g(x=x, sigma=sigma):
+        """An emission function."""
         return x + sigma * np.random.randn()
 
 print(sys)

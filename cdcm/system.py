@@ -10,7 +10,7 @@ Date:
 """
 
 
-__all__ = ["System"]
+__all__ = ["System", "make_system"]
 
 
 from . import (
@@ -22,7 +22,8 @@ from . import (
     Function,
     Transition,
     get_default_args,
-    make_function
+    make_function,
+    get_default_args
 )
 from typing import Any, Dict, Callable, Sequence, Tuple
 from functools import partial, partialmethod, cached_property
@@ -90,24 +91,40 @@ class System(Node, AbstractContextManager):
 
         self.add_nodes(nodes)
 
-    def __enter__(self):
+        with self:
+            self.define_internal_nodes()
+
+    def __enter__(self) -> "System":
+        """Enter the context of the system to begin variable definitions."""
         System._contexts.append(self)
         return self
 
     def __exit__(self, typ, value, traceback):
+        """Exit the context of the system."""
         System._contexts.pop()
 
     @staticmethod
     def in_context():
+        """Returns true if we are currently in a context."""
         return bool(System._contexts)
 
     @staticmethod
     def get_context():
+        """Get the current context."""
         return System._contexts[-1]
 
     @staticmethod
     def get_contexts():
+        """Get the context stack."""
         return System._contexts
+
+    def define_internal_nodes(self):
+        """Define the internal nodes of the system.
+
+        Overload this when defining a new system by inheriting from
+        this class.
+        """
+        pass
 
     def add_node(self, obj):
         """Add a node."""
@@ -271,3 +288,14 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
         """Calls transition() on all nodes."""
         for t in self.states:
             t.transition()
+
+
+def make_system(func):
+    signature = get_default_args(func)
+    parents = signature.values()
+    with System(
+        name=func.__name__,
+        description=func.__doc__
+    ) as sys:
+        func(*parents)
+    return sys
