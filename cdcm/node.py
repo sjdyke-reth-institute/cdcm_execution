@@ -26,6 +26,16 @@ from . import bidict
 NodeSet = NewType("NodeSet", Set["Node"])
 
 
+def get_context():
+    from . import System
+    return System.get_context()
+
+
+def in_context():
+    from . import System
+    return System.in_context()
+
+
 class Node(object):
     """A node in a graph.
 
@@ -67,6 +77,8 @@ class Node(object):
         self._parents : NodeSet = list()
         self.add_children(children)
         self.add_parents(parents)
+        if in_context():
+            get_context().add_node(self)
 
     @property
     def children(self) -> NodeSet:

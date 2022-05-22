@@ -26,6 +26,7 @@ from . import (
 )
 from typing import Any, Dict, Callable, Sequence, Tuple
 from functools import partial, partialmethod, cached_property
+from contextlib import AbstractContextManager
 import networkx as nx
 
 
@@ -55,7 +56,7 @@ replace_prnt_with_raise_value_error = replace_with_raise_value_error(
 )
 
 
-class System(Node):
+class System(Node, AbstractContextManager):
     """A system represents a set of nodes.
 
     The nodes may be any class that inherits from Node.
@@ -64,6 +65,8 @@ class System(Node):
         - The system owns its nodes.
         - The system exposes its nodes as attributes.
     """
+
+    _contexts = []
 
     def __init__(
         self,
@@ -86,6 +89,25 @@ class System(Node):
         self.add_nodes = partial(self._add_types, "node")
 
         self.add_nodes(nodes)
+
+    def __enter__(self):
+        System._contexts.append(self)
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        System._contexts.pop()
+
+    @staticmethod
+    def in_context():
+        return bool(System._contexts)
+
+    @staticmethod
+    def get_context():
+        return System._contexts[-1]
+
+    @staticmethod
+    def get_contexts():
+        return System._contexts
 
     def add_node(self, obj):
         """Add a node."""
