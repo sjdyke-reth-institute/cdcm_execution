@@ -76,7 +76,7 @@ class SimulationSaver(object):
             system = system_or_node
             sg = group.create_group(system.name)
             sg.attrs["description"] = system.description
-            for n in system.direct_nodes.values():
+            for n in system.direct_nodes:
                 self._create_h5_structure(sg, n)
         else:
             node = system_or_node

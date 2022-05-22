@@ -15,7 +15,7 @@ __all__ = ["System"]
 
 from . import (
     Node,
-    NodeInput,
+    NodeSet,
     bidict,
     State,
     Parameter,
@@ -67,7 +67,7 @@ class System(Node):
 
     def __init__(
         self,
-        nodes : NodeInput = {},
+        nodes : NodeSet = set(),
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -75,7 +75,7 @@ class System(Node):
             raise ValueError(CHLD_INFERRED_MSG)
         if "parents" in kwargs:
             raise ValueError(PRTNS_INFERRED_MSG)
-        self._nodes = bidict()
+        self._nodes = list()
 
         self.add_child = replace_chld_with_raise_value_error
         self.add_children = replace_chld_with_raise_value_error
@@ -87,32 +87,16 @@ class System(Node):
 
         self.add_nodes(nodes)
 
-    def add_node(self, obj, name=None):
+    def add_node(self, obj):
         """Add a node."""
-        if self._add_type(self._nodes, obj, name):
-            obj.owner = self
-            name = self._nodes.inverse[obj]
-            self.__dict__[name] = obj
+        self._nodes.append(obj)
+        obj.owner = self
+        self.__dict__[obj.name] = obj
 
-    @cached_property
-    def subsystems(self):
-        """Return the subsystems of this system."""
-        return filter(lambda n: isinstance(n, System), self._nodes)
-
-    @cached_property
+    @property
     def direct_nodes(self):
         """Get the nodes that are directly owned by this system."""
         return self._nodes
-
-    @cached_property
-    def parameters(self):
-        """Get all the parameters."""
-        return filter(lambda n: isinstance(n, Parameter), self.nodes)
-
-    @cached_property
-    def states(self):
-        """Get all the states."""
-        return filter(lambda n: isinstance(n, State), self.nodes)
 
     @cached_property
     def nodes(self):
@@ -122,23 +106,23 @@ class System(Node):
         the subsystems. If you want to get the subystems, please use
         the subsystems property.
         """
-        ns = bidict()
-        for name, node in self._nodes.items():
+        ns = set()
+        for node in self.direct_nodes:
             if isinstance(node, System):
                 ns.update(node.nodes)
             else:
-                ns.update({name:node})
+                ns.add(node)
         return ns
 
-    def to_yaml(self):
+    def to_dict(self):
         """Turn the object to a dictionary of dictionaries."""
-        res = super().to_yaml()
+        res = super().to_dict()
         dres = res[self.name]
         del dres["children"]
         del dres["parents"]
         dres["nodes"] = {}
-        for n in self._nodes.values():
-            dres["nodes"].update(n.to_yaml())
+        for n in self.nodes:
+            dres["nodes"].update(n.to_dict())
         return res
 
     def get_nodes_of_type(
@@ -146,22 +130,23 @@ class System(Node):
         Type
     ):
         """Get nodes of `Type`."""
-        return {
-            name: n
-            for name, n in self.nodes.items() if isinstance(n, Type)
-        }
+        return set(
+            filter(
+                lambda n: isinstance(n, Type),
+                self.nodes
+            )
+        )
 
     def remove_node(
         self,
-        name_or_obj,
-    ) -> Tuple[str, Node]:
+        obj : Node,
+    ):
         """Removes a node from the system.
 
         Returns the name of and the object that was just removed.
         """
-        name, obj = self._remove_type(self._nodes, name_or_obj)
-        del self.__dict__[name]
-        return name, obj
+        self._remove_type(self._nodes, obj)
+        del self.__dict__[obj.name]
 
     @cached_property
     def states(self):
@@ -180,6 +165,11 @@ class System(Node):
         return self.get_nodes_of_type(Transition)
 
     @cached_property
+    def subsystems(self):
+        """Return the subsystems of this system."""
+        return self.get_nodes_of_type(System)
+
+    @cached_property
     def graph(self):
         """Turn the system to a directed graph.
 
@@ -189,10 +179,10 @@ class System(Node):
         For computational purposes, use dag.
         """
         g = nx.DiGraph()
-        for n in self.nodes.values():
-            g.add_node(n.absname)
-            for c in n.children.values():
-                g.add_edge(n.absname, c.absname)
+        for n in self.all_nodes:
+            g.add_node(n)
+            for c in n.children:
+                g.add_edge(n, c)
         return g
 
     @cached_property
@@ -207,16 +197,16 @@ class System(Node):
             have to make a new system object.
         """
         g = nx.DiGraph()
-        for n in self.nodes.values():
-            g.add_node(n.absname)
+        for n in self.nodes:
+            g.add_node(n)
             if isinstance(n, State):
                 g.add_node(n.absname + "*")
             if isinstance(n, Transition):
-                for c in n.children.values():
-                    g.add_edge(n.absname, c.absname + '*')
+                for c in n.children:
+                    g.add_edge(n, c.absname + '*')
             else:
-                for c in n.children.values():
-                    g.add_edge(n.absname, c.absname)
+                for c in n.children:
+                    g.add_edge(n, c)
         return g
 
     @cached_property
@@ -233,14 +223,12 @@ class System(Node):
             If you want to add more nodes after having added this, you
             have to make a new system object.
         """
-        g = self.dag
-        fts = nx.topological_sort(g)
-        ts = []
-        for nk in fts:
-            if nk in self.functions:
-                n = self.nodes[nk]
-                ts.append(n)
-        return ts
+        return tuple(
+            filter(
+                lambda n: n in self.functions,
+                nx.topological_sort(self.dag)
+            )
+        )
 
     def forward(self):
         """Moves all systems forward()."""
@@ -249,5 +237,5 @@ class System(Node):
 
     def transition(self):
         """Calls transition() on all nodes."""
-        for t in self.states.values():
+        for t in self.states:
             t.transition()

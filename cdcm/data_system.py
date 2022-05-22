@@ -63,16 +63,16 @@ class DataSystem(System):
             assert len(first_row) == num_cols
         assert len(column_units) == num_cols
         assert len(column_desciptions) == num_cols
-        
-        var_nodes = {
-            n: Variable(name=n, units=u, description=d, track=t)
+        print(columns, column_units, column_desciptions, column_track)
+        var_nodes = tuple(
+            Variable(name=n, units=u, description=d, track=t)
             for n, u, d, t in zip(
                 columns,
                 column_units,
                 column_desciptions,
                 column_track
             )
-        }
+        )
         self.add_nodes(var_nodes)
 
         row = State(
@@ -97,12 +97,12 @@ class DataSystem(System):
             return row + 1
         self.add_node(incrow)
         if num_cols == 1 and isinstance(data, np.ndarray):
-            @make_function(*var_nodes.values())
+            @make_function(*var_nodes)
             def read(row=row, data=data_node):
                 """Read the data of this row."""
                 return data[row].item()
         else:
-            @make_function(*var_nodes.values())
+            @make_function(*var_nodes)
             def read(row=row, data=data_node):
                 """Read the data of this row."""
                 return tuple(d.item() for d in data[row])

@@ -17,7 +17,10 @@ __all__ = [
 
 
 from . import Node, Variable, State, get_default_args
-from typing import Any, Dict, Callable, Sequence
+from typing import Any, Callable, Tuple, NewType, Dict
+from collections.abc import Iterable
+
+NodeTuple = NewType("NodeSet", Tuple["Node"])
 
 
 class Function(Node):
@@ -28,6 +31,12 @@ class Function(Node):
     its parents and sets the values of its children. This action is
     carried out by overloading the `forward()` method.
 
+    In functions, the order of the parents and the children is
+    important. So, instead of using sets for parents and children,
+    we are using tuples. This also means, the the parents and children
+    of a function have to be specified when the function is made and
+    they are immutable.
+
     Keyword Arguments:
     func -- A callable object with inputs and outputs that match the
             number and type of the parents and children of this node,
@@ -35,10 +44,12 @@ class Function(Node):
             `p1` and `p2` and one child `c`, then the function should be
             like this:
             ```
-            def func(*, p1_value, p2_value):
+            def func(p1_value, p2_value, ...):
                 # do some computations
-                return c1_value
+                return c1_value, c2_value, ...
             ```
+    parents -- The parents of the function. Here order matters.
+    children -- The children of the function. Order matters.
 
     For the rest of the keyword arguments see `Node`.
     """
@@ -47,32 +58,40 @@ class Function(Node):
         self,
         *,
         func : Callable,
+        parents : NodeTuple,
+        children : NodeTuple,
         **kwargs
     ):
         super().__init__(**kwargs)
         self._func = func
+        if not isinstance(parents, Iterable):
+            parents = (parents,)
+        if not isinstance(children, Iterable):
+            children = (children,)
+        self.add_parents(parents)
+        self.add_children(children)
 
     @property
     def func(self):
         """Get the function that this Function represents."""
         return self._func
 
-    def to_yaml(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Turn the object to a dictionary of dictionaries."""
-        res = super().to_yaml()
+        res = super().to_dict()
         dres = res[self.name]
         dres["func"] = self.func
         return res
 
     def _eval_func(self):
         """Evaluates the function and returns the result."""
-        return self.func(*(obj.value for obj in self.parents.values()))
+        return self.func(*(obj.value for obj in self.parents))
 
     def _update_children(self, result, attr):
         """Writes `result` on `attr` of the children."""
-        if not isinstance(result, Sequence):
+        if not isinstance(result, Iterable):
             result = (result, )
-        for new_value, child in zip(result, self.children.values()):
+        for new_value, child in zip(result, self.children):
             setattr(child, attr, new_value)
 
     def forward(self):
@@ -104,12 +123,8 @@ def make_function(*args : Variable, **kwargs : Variable):
     The inputs to this decorator are the children states that will
     be updated by the transition function.
     """
-    children = {}
-    for child in args:
-        children[child.name] = child
-    children.update(kwargs)
-    children_values_it = iter(children.values())
-    first = next(children_values_it)
+    children_it = iter(args)
+    first = next(children_it)
     if isinstance(first, State):
         ChildType = State
         FunctionType = Transition
@@ -117,18 +132,19 @@ def make_function(*args : Variable, **kwargs : Variable):
         ChildType = Variable
         FunctionType = Function
     else:
-        raise TypeError("Children must be Variables.")
-    for child in children.values():
+        raise TypeError("Children must be Variables or States.")
+    for child in children_it:
         if not isinstance(child, ChildType):
             if ChildType == State:
                 raise TypeError("All children must be States.")
             raise TypeError("All children must be Variables.")
 
     def make_function_inner(func):
-        parents = get_default_args(func)
+        signature = get_default_args(func)
+        parents = signature.values()
         return FunctionType(
             name=func.__name__,
-            children=children,
+            children=args,
             parents=parents,
             description=func.__doc__,
             func=func

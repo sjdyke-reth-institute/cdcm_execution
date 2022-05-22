@@ -54,17 +54,17 @@ class Node(object):
     def __init__(
         self,
         *,
-        children : NodeSet = set(),
-        parents : NodeSet = set(),
-        owner : Any = None,
         name : str = "unamed_node",
-        description : str = ""
+        description : str = "",
+        children : NodeSet = list(),
+        parents : NodeSet = list(),
+        owner : Any = None
     ):
         self.name = name
         self.description = description
         self.owner = owner
-        self._children : NodeSet = set()
-        self._parents : NodeSet = set()
+        self._children : NodeSet = list()
+        self._parents : NodeSet = list()
         self.add_children(children)
         self.add_parents(parents)
 
@@ -77,47 +77,15 @@ class Node(object):
     def parents(self) -> NodeSet:
         return self._parents
 
-    def _add_type(
-        self,
-        set_to_add : NodeSet,
-        obj : "Node",
-    ):
-        """Add object to set.
+    def add_child(self, obj : "Node", reflexive : bool = True):
+        self._children.append(obj)
+        if reflexive:
+            obj.add_parent(self, reflexive=False)
 
-        Arguments
-        set_to_add -- The set to which the object will be added.
-        obj        -- The object to add.
-        """
-        set_to_add.add(obj)
-
-    def _add_parent_or_child(
-        self,
-        child_or_parent : str,
-        obj : "Node"
-    ):
-        """Adds a parent or a child.
-
-        This function ensures the reflexivity of a child - parent
-        relationship, i.e., the if I add x to be the child of y, then I
-        must also make y the parent of x.
-
-        See `add_child()` and `add_parent()` for usage.
-        """
-        dict_to_add = getattr(self, self._TYPE_DICTS[child_or_parent])
-        self._add_type(dict_to_add, obj)
-        parent_or_child = self._REFLECTION[child_or_parent]
-        dict_to_add = getattr(obj, self._TYPE_DICTS[parent_or_child])
-        obj._add_type(dict_to_add, self)
-
-    add_child = partialmethod(
-        _add_parent_or_child,
-        "child"
-    )
-
-    add_parent = partialmethod(
-        _add_parent_or_child,
-        "parent"
-    )
+    def add_parent(self, obj : "Node", reflexive : bool = True):
+        self._parents.append(obj)
+        if reflexive:
+            obj.add_child(self, reflexive=False)
 
     def _add_types(
         self,
@@ -137,37 +105,15 @@ class Node(object):
     add_children = partialmethod(_add_types, "child")
     add_parents = partialmethod(_add_types, "parent")
 
-    def _remove_type(
-        self,
-        dict_to_remove_from : NodeSet,
-        obj : "Node"
-    ):
-        """Removes `name_or_obj` from `dict_to_remove_from`."""
-        dict_to_remove_from.remove(obj)
+    def remove_child(self, obj, reflexive=True):
+        self.children.remove(obj)
+        if reflexive:
+            obj.remove_parent(self, reflexive=False)
 
-    def _remove_parent_or_child(
-        self,
-        child_or_parent : NodeSet,
-        obj : "Node"
-    ):
-        """Removes a parent or a child.
-
-        See `remove_child()` and `remove_parent()` for usage.
-        """
-        children_or_parents_dict = getattr(
-            self,
-            self._TYPE_DICTS[child_or_parent]
-        )
-        self._remove_type(children_or_parents_dict, obj)
-        parent_or_child = self._REFLECTION[child_or_parent]
-        parents_or_children_dict = getattr(
-            obj,
-            self._TYPE_DICTS[parent_or_child]
-        )
-        obj._remove_type(parents_or_children_dict, self)
-
-    remove_child = partialmethod(_remove_parent_or_child, "child")
-    remove_parent = partialmethod(_remove_parent_or_child, "parent")
+    def remove_parent(self, obj, reflexive=True):
+        self.parents.remove(obj)
+        if reflexive:
+            obj.remove_child(self, reflexive=False)
 
     @property
     def owner(self):
@@ -218,12 +164,15 @@ class Node(object):
 
     def to_dict(self):
         """Turn the object to a dictionary of dictionaries."""
+        get_name = lambda x: x.name if x.owner is self.owner else x.absname
+        parents_str = str(tuple(map(get_name, self.parents)))
+        children_str = str(tuple(map(get_name, self.children)))
         return {
             self.name: {
                 "description": self.description,
                 "owner": str(self.owner.absname) if self.owner is not None else "",
-                "parents": str(tuple(p.absname for p in self.parents)),
-                "children": str(tuple(c.absname for c in self.children))
+                "parents": parents_str,
+                "children": children_str
             }
         }
 
@@ -270,4 +219,3 @@ def replace(
             if new_owner is not None:
                 new_owner.remove_node(new_node)
             old_owner.add_node(new_node)
-

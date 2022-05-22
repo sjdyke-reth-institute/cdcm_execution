@@ -28,6 +28,7 @@ print(node_out)
 print("After we call forward:")
 f.forward()
 print(node_out)
+print(node_in)
 
 # Here is the same Factor made using a decorator
 print('*' * 80)
@@ -37,6 +38,8 @@ node_out = make_node("V:node_out", units="m")
 def f(x=node_in):
     return x ** 2
 print(f)
+print(node_in)
+print(node_out)
 
 print("Before we call forward:")
 print(node_out)

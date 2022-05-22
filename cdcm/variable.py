@@ -93,12 +93,12 @@ class Variable(Node):
         """Change the tracking flag."""
         self._track = new_track
 
-    def to_yaml(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Turn the object to a dictionary of dictionaries.
 
         TODO: make this more beautiful. Number does not work below.
         """
-        res = super().to_yaml()
+        res = super().to_dict()
         dres = res[self.name]
         if isinstance(self.value, Number):
             dres["value"] = self.value
