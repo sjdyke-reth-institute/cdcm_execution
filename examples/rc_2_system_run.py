@@ -39,19 +39,28 @@ clock = make_clock(1800)
 rc_sys = RCBuildingSystem(clock.dt,
                           weather_sys,
                           Q_int,
-                          name="rc_sys")
+                          name="rc_sys_1")
 
 rc_sys2 = RCBuildingSystem(clock.dt,
                            weather_sys,
                            Q_int,
-                           name="rc_sys")
+                           name="rc_sys_2")
 
 sys = System(
     name="everything",
     nodes=[clock, weather_sys, rc_sys, rc_sys2]
 )
 
+sys = System(
+    name="everything",
+    nodes=[clock, weather_sys, rc_sys]
+)
+
+
 print(sys)
+
+print(sys.rc_sys_1)
+quit()
 
 for i in range(100):
     sys.forward()

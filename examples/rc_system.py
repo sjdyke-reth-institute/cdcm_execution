@@ -162,13 +162,13 @@ class RCBuildingSystem(System):
         )
 
         a_sol_room = Parameter(
-            name="a_sol_env",
+            name="a_sol_room",
             value=0.90303,
             description="Absorptance of room with respect to solar irradiance"
         )
 
         a_IHG = Parameter(
-            name="a_sol_env",
+            name="a_IHG",
             value=0.90303,
             description="Absorptance of room with respect to internal heatgain"
         )
