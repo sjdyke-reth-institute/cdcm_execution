@@ -194,7 +194,7 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
 
         Returns the name of and the object that was just removed.
         """
-        self._remove_type(self._nodes, obj)
+        self._nodes.remove(obj)
         del self.__dict__[obj.name]
 
     @cached_property
