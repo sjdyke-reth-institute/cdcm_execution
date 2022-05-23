@@ -18,7 +18,7 @@ Walls are made of Brick wall type 19 given in ASHRAE handbook Table 16.
 Wall area ratio is 0.75 and window area ratio is 0.25. The wall is
 modeled as a segment consisting of 8 layers. The values of
 parameters of layers provided are in British Pound system, but the units
-are SI system as this example is for demonstration purpose. 
+are SI system as this example is for demonstration purpose.
 """
 F01 = Layer(
     thickness=DeterministicParameter('inch', 0.001),
@@ -79,7 +79,7 @@ F02 = Layer(
 brick_wall_19_seg = Segment([F01, M01, F04, I01, M16, F04, G01, F02])
 brick_wall_19 = EnvelopeSegment(
                     brick_wall_19_seg,
-                    DeterministicParameter(None,0.75),
+                    DeterministicParameter(None, 0.75),
                     'BRICK WALL 19'
 )
 """
@@ -108,7 +108,7 @@ air_6mm = Layer(
 window_seg = Segment([clear_3mm, air_6mm, clear_3mm])
 window = EnvelopeSegment(
             window_seg,
-            DeterministicParameter(None,0.25),
+            DeterministicParameter(None, 0.25),
             'Dbl Clr 3mm/6mm Air'
 )
 wall_segments = [brick_wall_19, window]
