@@ -92,6 +92,9 @@ class SimulationSaver(object):
             elif node_type == np.ndarray:
                 dtype = node.value.dtype
                 shape = node.value.shape
+            elif isinstance(node.value, (np.integer, np.inexact)):
+                dtype = node.value.dtype
+                shape = node.value.shape
             else:
                 raise ValueError(f"Node {node.name} has an uninitialized value."
                     + " Please specify a value so that I can figure out"

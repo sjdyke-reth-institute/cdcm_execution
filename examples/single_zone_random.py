@@ -1,10 +1,10 @@
 """
-Example of a single zone fully deterministic building made using YABML.
+Example of a single zone building with uncertainty made in YABML.
 
 Author(s):
     Sreehari Manikkan
 Date:
-    05/11/2022
+    05/23/2022
 """
 
 from yabml import *
@@ -14,23 +14,28 @@ b = DeterministicParameter('m', 15)
 """
 Walls
 -----
-Walls are made of Brick wall type 19 given in ASHRAE handbook Table 16.
-Wall area ratio is 0.75 and window area ratio is 0.25. The wall is
-modeled as a segment consisting of 8 layers. The values of
+Walls are made of either Brick wall type 19 or 18 given in ASHRAE
+handbook Table 16. Wall area ratio is 0.75 and window area ratio is 0.25.
+The wall is modeled as a segment consisting of 8 layers. The values of
 parameters of layers provided are in British Pound system, but the units
-are SI system as this example is for demonstration purpose. 
+are SI system as this example is for demonstration purpose.
 """
 F01 = Layer(
     thickness=DeterministicParameter('inch', 0.001),
-    conductivity=DeterministicParameter('W/m/degC', 0.001),
+    conductivity=DiscreteRandomParameter('W/m/degC',
+                                         [0.01, 0.02],
+                                         [0.5, 0.5]
+                                         ),
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
-    solar_transmittance=DeterministicParameter(None, 0.0),
+    solar_transmittance=DeterministicParameter(None, 0.001),
     description='Outside surface resistance'
 )
 M01 = Layer(
     thickness=DeterministicParameter('inch', 4.0),
-    conductivity=DeterministicParameter('W/m/degC', 6.2),
+    conductivity=NormalRandomParameter('W/m/degC',
+                                       [6.2, 0.1]
+                                       ),
     density=DeterministicParameter('kg/m**3', 120.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.19),
     solar_transmittance=DeterministicParameter(None, 0.),
@@ -41,7 +46,7 @@ F04 = Layer(
     conductivity=DeterministicParameter('W/m/degC', 0.001),
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
-    solar_transmittance=DeterministicParameter(None, 0.),
+    solar_transmittance=DeterministicParameter(None, 0.001),
     description='Wall air space resistance'
 )
 I01 = Layer(
@@ -49,19 +54,23 @@ I01 = Layer(
     conductivity=DeterministicParameter('W/m/degC', 0.2),
     density=DeterministicParameter('kg/m**3', 2.7),
     specific_heat=DeterministicParameter('J / kg / degC', 0.29),
-    solar_transmittance=DeterministicParameter(None, 0.),
+    solar_transmittance=DeterministicParameter(None, 0.001),
     description='R-5, 1 in. insulation board'
 )
 M16 = Layer(
     thickness=DeterministicParameter('inch', 12.0),
     conductivity=DeterministicParameter('W/m/degC', 13.50),
     density=DeterministicParameter('kg/m**3', 140.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.22),
+    specific_heat=UniformRandomParameter('J / kg / degC',
+                                         [0.22, 0.25]
+                                         ),
     solar_transmittance=DeterministicParameter(None, 0.),
     description='12 in. heavy weight concrete'
 )
 G01 = Layer(
-    thickness=DeterministicParameter('inch', 0.625),
+    thickness=LogNormalRandomParameter('inch',
+                                       [0.625, 1e-3]
+                                       ),
     conductivity=DeterministicParameter('W/m/degC', 1.11),
     density=DeterministicParameter('kg/m**3', 50.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.26),
@@ -76,10 +85,25 @@ F02 = Layer(
     solar_transmittance=DeterministicParameter(None, 0.),
     description='Inside vertical surface resistance'
 )
-brick_wall_19_seg = Segment([F01, M01, F04, I01, M16, F04, G01, F02])
-brick_wall_19 = EnvelopeSegment(
-                    brick_wall_19_seg,
-                    DeterministicParameter(None,0.75),
+M13 = Layer(
+    thickness=DeterministicParameter('inch', 8.0),
+    conductivity=DeterministicParameter('W/m/degC', 3.70),
+    density=DeterministicParameter('kg/m**3', 80.0),
+    specific_heat=UniformRandomParameter('J / kg / degC',
+                                         [0.22, 0.25]
+                                         ),
+    solar_transmittance=DeterministicParameter(None, 0.),
+    description='8 in. light weight concrete'
+)
+brick_wall_19 = [F01, M01, F04, I01, M16, F04, G01, F02]
+brick_wall_18 = [F01, M01, F04, I01, M13, F04, G01, F02]
+brick_wall_seg = DiscreteRandomSegment(
+                    [brick_wall_19, brick_wall_18],
+                    [0.7, 0.3]
+)
+brick_wall = EnvelopeSegment(
+                    brick_wall_seg,
+                    DeterministicParameter(None, 0.75),
                     'BRICK WALL 19'
 )
 """
@@ -94,7 +118,8 @@ clear_3mm = Layer(
     conductivity=DeterministicParameter('W/m/degC', 0.9),
     density=DeterministicParameter('kg/m**3', 0, 'Value NA'),
     specific_heat=DeterministicParameter('J / kg / degC', 0, 'Value NA'),
-    solar_transmittance=DeterministicParameter(None, 0.837),
+    solar_transmittance=DiscreteRandomParameter(None,
+                                                [0.8, 0.9]),
     description='Window material glazing CLEAR GLASS 3MM'
 )
 air_6mm = Layer(
@@ -108,10 +133,10 @@ air_6mm = Layer(
 window_seg = Segment([clear_3mm, air_6mm, clear_3mm])
 window = EnvelopeSegment(
             window_seg,
-            DeterministicParameter(None,0.25),
+            DeterministicParameter(None, 0.25),
             'Dbl Clr 3mm/6mm Air'
 )
-wall_segments = [brick_wall_19, window]
+wall_segments = [brick_wall, window]
 wall1 = Envelope(a, b, wall_segments)
 wall2 = Envelope(a, b, wall_segments)
 wall3 = Envelope(a, b, wall_segments)
@@ -127,7 +152,9 @@ F08 = Layer(
     thickness=DeterministicParameter('inch.', 0.03),
     conductivity=DeterministicParameter('W/m/degC', 314.0),
     density=DeterministicParameter('kg/m**3', 489.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.12),
+    specific_heat=UniformRandomParameter('J / kg / degC',
+                                         [0.12, 0.15]
+                                         ),
     solar_transmittance=DeterministicParameter(None, 0.),
     description='Metal surface'
 )
@@ -135,7 +162,9 @@ G03 = Layer(
     thickness=DeterministicParameter('inch.', 0.5),
     conductivity=DeterministicParameter('W/m/degC', 0.47),
     density=DeterministicParameter('kg/m**3', 25.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.31),
+    specific_heat=LogNormalRandomParameter('J / kg / degC',
+                                           [0.31, 1e-3]
+                                           ),
     solar_transmittance=DeterministicParameter(None, 0.),
     description='1/2 in. fiberboard sheathing'
 )
@@ -150,7 +179,9 @@ F05 = Layer(
 I05 = Layer(
     thickness=DeterministicParameter('inch.', 6.08),
     conductivity=DeterministicParameter('W/m/degC', 0.32),
-    density=DeterministicParameter('kg/m**3', 1.2),
+    density=NormalRandomParameter('kg/m**3',
+                                  [1.2, 0.01]
+                                  ),
     specific_heat=DeterministicParameter('J / kg / degC', 0.23),
     solar_transmittance=DeterministicParameter(None, 0.),
     description='R-19, 6-1/4 in. batt insulation'
@@ -205,7 +236,9 @@ floor_type = EnvelopeSegment(
                     DeterministicParameter(None, 1.)
 )
 floor = Envelope(a, a, floor_type)
-zone = Zone(wall1, wall3, wall2, wall4, roof, floor)
+zone = Zone(wall1, wall3, wall2, wall4,
+            roof, floor
+            )
 lat = DeterministicParameter(units='deg', value=40.42)
 lon = DeterministicParameter(units='deg', value=-86.91)
 alt = DeterministicParameter(units='m', value=186.0)
