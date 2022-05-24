@@ -1,11 +1,12 @@
-"""An RC model for a single zone.
+"""An RC model for 2 nighbor zones.
+The temperature of corridor should be replaced as
+the neighbor room nodes.
 
 Author:
-    Ilias Bilionis
     Ting-Chun Kuo
 
 Date:
-    4/20/2022
+    5/24/2022
 
 """
 
@@ -13,6 +14,7 @@ Date:
 from cdcm import *
 from rc_system import RCBuildingSystem
 import pandas as pd
+import numpy as np
 
 # df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
 df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
@@ -51,28 +53,35 @@ rc_sys = RCBuildingSystem(clock.dt,
 
 rc_sys2 = RCBuildingSystem(clock.dt,
                            weather_sys,
-                           T_cor,
+                           rc_sys.T_room,
                            Q_int,
                            name="rc_sys_2")
 
-sys = System(
-    name="everything",
-    nodes=[clock, weather_sys, rc_sys, rc_sys2]
+T_room_sensor_sigma = Parameter(
+    name="T_room_sensor_sigma",
+    units="degC",
+    value=0.1
 )
+
+
+@make_function(T_cor)
+def g_T_cor_sensor(T_neighbor=rc_sys2.T_room, sigma=T_room_sensor_sigma):
+    """Sample the T_out sensor."""
+    return T_neighbor + sigma * np.random.randn()
+
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys]
+    nodes=[clock, weather_sys, rc_sys, rc_sys2, T_cor, g_T_cor_sensor]
 )
-
 
 print(sys)
-
 print(sys.rc_sys_1)
 # quit()
 
 for i in range(100):
     sys.forward()
     print(f"T_room1 = {rc_sys.T_room.value:1.2f}")
+    print(f"T_cor1 = {T_cor.value:1.2f}")
     print(f"T_room2 = {rc_sys2.T_room.value:1.2f}")
     sys.transition()

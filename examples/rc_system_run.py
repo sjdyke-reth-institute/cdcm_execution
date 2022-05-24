@@ -34,10 +34,18 @@ Q_int = Variable(
     description="Sum of internal heat gain"
 )
 
+T_cor = Variable(
+    name="T_cor",
+    units="degC",
+    value=23,
+    description="Corridor temperature"
+)
+
 clock = make_clock(1800)
 
 rc_sys = RCBuildingSystem(clock.dt,
                           weather_sys,
+                          T_cor,
                           Q_int,
                           name="rc_sys")
 

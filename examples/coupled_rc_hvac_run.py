@@ -38,6 +38,13 @@ Q_int = Variable(
     description="Sum of internal heat gain"
 )
 
+T_cor = Variable(
+    name="T_cor",
+    units="degC",
+    value=23,
+    description="Corridor temperature"
+)
+
 # TODO: Make sensor model to make this simpler
 # Add a sensor to weather system
 T_out_sensor = Variable(
@@ -68,7 +75,11 @@ def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
 clock = make_clock(300)
 
 # The RC model
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, name="rc_sys")
+rc_sys = RCBuildingSystem(clock.dt,
+                          weather_sys,
+                          T_cor,
+                          Q_int,
+                          name="rc_sys")
 
 # The HVAC model
 hvac_sys = HVACSystem(

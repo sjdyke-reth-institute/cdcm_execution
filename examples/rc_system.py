@@ -6,6 +6,7 @@ Author:
 
 Date:
     4/21/2022
+    5/24/2022
 
 """
 
@@ -28,6 +29,9 @@ class RCBuildingSystem(System):
                         Tout: outdoor air temperature
                         Qsg:  solar irradiance
                         T_gd: ground temperature
+    T_cor           -- The temperature of corridor. Typically constant. It
+                       can be replaced with sensor value in implemenation.
+                       [C]
     Q_int           --  Internal heat gain calculated from other system
 
     States:
@@ -59,9 +63,6 @@ class RCBuildingSystem(System):
 
     Variables:
     T_room_sensor   -- A temperature sensor at the room[C]
-    T_cor           -- The temperature of corridor. Typically constant. It
-                       can be replaced with sensor value in implemenation.
-                       [C]
     u               -- Control variable. Input heat loads to the system.
                        [W]
     A               -- Discritized State space A matrix
@@ -70,6 +71,7 @@ class RCBuildingSystem(System):
     def __init__(self,
                  dt: Parameter,
                  weather_system: System,
+                 T_cor: Variable,
                  Q_int: Variable,
                  **kwargs
                  ):
@@ -171,13 +173,6 @@ class RCBuildingSystem(System):
             name="a_IHG",
             value=0.90303,
             description="Absorptance of room with respect to internal heatgain"
-        )
-
-        T_cor = Parameter(
-            name="T_cor",
-            value=23,
-            units="degC",
-            description="The temperature of corridor."
         )
 
         T_gd = Parameter(
