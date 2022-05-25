@@ -29,6 +29,8 @@ F01 = Layer(
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
     solar_transmittance=DeterministicParameter(None, 0.001),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Outside surface resistance'
 )
 M01 = Layer(
@@ -39,6 +41,8 @@ M01 = Layer(
     density=DeterministicParameter('kg/m**3', 120.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.19),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='4 in. brick'
 )
 F04 = Layer(
@@ -47,6 +51,8 @@ F04 = Layer(
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
     solar_transmittance=DeterministicParameter(None, 0.001),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Wall air space resistance'
 )
 I01 = Layer(
@@ -55,6 +61,8 @@ I01 = Layer(
     density=DeterministicParameter('kg/m**3', 2.7),
     specific_heat=DeterministicParameter('J / kg / degC', 0.29),
     solar_transmittance=DeterministicParameter(None, 0.001),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-5, 1 in. insulation board'
 )
 M16 = Layer(
@@ -65,6 +73,8 @@ M16 = Layer(
                                          [0.22, 0.25]
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='12 in. heavy weight concrete'
 )
 G01 = Layer(
@@ -75,6 +85,8 @@ G01 = Layer(
     density=DeterministicParameter('kg/m**3', 50.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.26),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='5/8 in. gyp board'
 )
 F02 = Layer(
@@ -83,6 +95,8 @@ F02 = Layer(
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Inside vertical surface resistance'
 )
 M13 = Layer(
@@ -93,6 +107,8 @@ M13 = Layer(
                                          [0.22, 0.25]
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='8 in. light weight concrete'
 )
 brick_wall_19 = [F01, M01, F04, I01, M16, F04, G01, F02]
@@ -120,6 +136,8 @@ clear_3mm = Layer(
     specific_heat=DeterministicParameter('J / kg / degC', 0, 'Value NA'),
     solar_transmittance=DiscreteRandomParameter(None,
                                                 [0.8, 0.9]),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Window material glazing CLEAR GLASS 3MM'
 )
 air_6mm = Layer(
@@ -128,6 +146,8 @@ air_6mm = Layer(
     density=DeterministicParameter('kg/m**3', 0, 'Value NA'),
     specific_heat=DeterministicParameter('J / kg / degC', 718, 'Value NA'),
     solar_transmittance=DeterministicParameter(None, 0.9),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Air filled between panes'
 )
 window_seg = Segment([clear_3mm, air_6mm, clear_3mm])
@@ -156,6 +176,8 @@ F08 = Layer(
                                          [0.12, 0.15]
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Metal surface'
 )
 G03 = Layer(
@@ -166,6 +188,8 @@ G03 = Layer(
                                            [0.31, 1e-3]
                                            ),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='1/2 in. fiberboard sheathing'
 )
 F05 = Layer(
@@ -174,6 +198,8 @@ F05 = Layer(
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Metal surface'
 )
 I05 = Layer(
@@ -184,6 +210,8 @@ I05 = Layer(
                                   ),
     specific_heat=DeterministicParameter('J / kg / degC', 0.23),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-19, 6-1/4 in. batt insulation'
 )
 F03 = Layer(
@@ -192,6 +220,8 @@ F03 = Layer(
     density=DeterministicParameter('kg/m**3', 0.001),
     specific_heat=DeterministicParameter('J / kg / degC', 0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Inside horizontal surface resistance'
 )
 roof_seg = Segment([F01, F08, G03, F05, I05, G01, F03])
@@ -212,6 +242,8 @@ M02 = Layer(
     density=DeterministicParameter('kg/m**3', 32.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.21),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='6 in. LW concrete block'
 )
 I02 = Layer(
@@ -220,6 +252,8 @@ I02 = Layer(
     density=DeterministicParameter('kg/m**3', 2.7),
     specific_heat=DeterministicParameter('J / kg / degC', 0.29),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-10, 2 in. insulation board'
 )
 G02 = Layer(
@@ -228,6 +262,8 @@ G02 = Layer(
     density=DeterministicParameter('kg/m**3', 34.0),
     specific_heat=DeterministicParameter('J / kg / degC', 0.29),
     solar_transmittance=DeterministicParameter(None, 0.),
+    solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
+    IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='5/8 in. plywood'
 )
 floor_seg = Segment([M02, I02, G02, F03])

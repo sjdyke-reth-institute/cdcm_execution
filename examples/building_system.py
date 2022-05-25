@@ -181,8 +181,15 @@ def make_building_cdcm_system(building, weather_sys, clock):
             value=150,
             description="Sum of internal heat gain"
         )
+        T_cor = Variable(
+            name="T_cor",
+            units="degC",
+            value=23,
+            description="Corridor temperature"
+        )
         zone_rc_sys = RCBuildingSystem(clock.dt,
                                        weather_sys,
+                                       T_cor,
                                        Q_int,
                                        name="zone_rc_system")
         Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge = \
