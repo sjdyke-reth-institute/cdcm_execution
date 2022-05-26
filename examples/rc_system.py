@@ -265,7 +265,8 @@ class RCBuildingSystem(System):
             # print("Actual shape of A:", np.shape(A))
             res = (
                 A @ np.array([T_env, T_genv, T_room]).T
-                + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
+                + B @ np.array([T_out, T_gd, Q_sg, Q_int, T_cor, u]).T
+                # + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
             )
             return res[0], res[1], res[2]
 
