@@ -135,7 +135,7 @@ def make_rc_of_cdcm(zone, neighbor):
                 R_oe += 1/R_list[i]
                 Cp_env += C_list[i]
                 R_er += 0.87*5.678/Area_list[i]  # film coefficeint
-        R_er = 1/R_er
+        R_oe = 1/R_oe
 
     # 3R2C case
     if ground is False:
