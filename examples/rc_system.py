@@ -175,7 +175,7 @@ class RCBuildingSystem(System):
             description="Absorptance of room with respect to internal heatgain"
         )
 
-        T_gd = Parameter(
+        T_gd = Variable(
             name="T_gd",
             value=18,
             units="degC",
