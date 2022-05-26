@@ -125,7 +125,7 @@ def make_rc_of_cdcm(zone, neighbor):
     R_rc = 0
 
     # By checking out, ground, cor, set RC model accordingly
-    if out is False:
+    if out is False:  # here R_oe = Cp_env = R_er = inf ??
         Cp_env = np.inf
         R_gr = np.inf
     else:
@@ -137,6 +137,7 @@ def make_rc_of_cdcm(zone, neighbor):
                 R_er += 0.87*5.678/Area_list[i]  # film coefficeint
         R_er = 1/R_er
 
+    # 3R2C case
     if ground is False:
         Cp_genv = np.inf
         R_gr = np.inf
@@ -155,7 +156,6 @@ def make_rc_of_cdcm(zone, neighbor):
         R_rc = 1 / R_rc
     else:
         R_rc = np.inf
-
     return Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge
 
 
@@ -232,7 +232,7 @@ def make_building_cdcm_system(building, weather_sys, clock):
                                    name="zone_hvac_system")
         zone_cdcm_sys = System(
             name="zone_cdcm_system",
-            nodes=[clock, weather_sys, zone_rc_sys, zone_hvac_sys]
+            nodes=[clock, weather_sys, T_cor, zone_rc_sys, zone_hvac_sys]
         )
         building_cdcm_system.append(zone_cdcm_sys)
     return building_cdcm_system

@@ -223,7 +223,8 @@ class RCBuildingSystem(System):
             cA[1, 2] = 1. / (C_genv * R_gr)
             cA[2, 0] = 1. / (C_room * R_er)
             cA[2, 1] = 1. / (C_room * R_gr)
-            cA[2, 2] = (-1. / C_room) * (1. / R_ge + 1. / R_gr + 1. / R_rc)
+            # cA[2, 2] = (-1. / C_room) * (1. / R_ge + 1. / R_gr + 1. / R_rc)
+            cA[2, 2] = (-1. / C_room) * (1. / R_er + 1. / R_gr + 1. / R_rc)
 
             cB = np.zeros((3, 6))
             cB[0, 1] = 1./(C_env * R_oe)
@@ -265,7 +266,8 @@ class RCBuildingSystem(System):
             # print("Actual shape of A:", np.shape(A))
             res = (
                 A @ np.array([T_env, T_genv, T_room]).T
-                + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
+                + B @ np.array([T_out, T_gd, Q_sg, Q_int, T_cor, u]).T
+                # + B @ np.append([T_out, T_gd, Q_sg, Q_int, T_cor], u)
             )
             return res[0], res[1], res[2]
 
