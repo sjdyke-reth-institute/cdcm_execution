@@ -6,8 +6,27 @@ Author(s):
 Date:
     05/23/2022
 """
+import numpy as np
+from pint import UnitRegistry as ureg
 
 from yabml import *
+
+"""
+Unit conversion factors
+-----------------------
+Following are the conversion factors to convert the units in British
+Pound system to SI system
+
+cf1: 1 'inch' = cf1 'm'
+cf2: 1 'Btu inch / hr / foot^2 / degF' = cf2 'W / m / degC'
+cf3: 1 'lb / foot^3' = cf3 'kg / m^3'
+cf4: 1 'Btu / lb / degF' = cf4 'J / kg / degC'
+"""
+Q = ureg().Quantity
+cf1 = Q(1, 'inch').to('m').magnitude
+cf2 = Q(1, 'Btu inch / hr / foot^2 / degF').to('W / m / degC').magnitude
+cf3 = Q(1, 'lb / foot^3').to('kg / m^3').magnitude
+cf4 = Q(1, 'Btu / lb / degF').to('J / kg / degC').magnitude
 
 a = DeterministicParameter('m', 30)
 b = DeterministicParameter('m', 15)
@@ -21,56 +40,56 @@ parameters of layers provided are in British Pound system, but the units
 are SI system as this example is for demonstration purpose.
 """
 F01 = Layer(
-    thickness=DeterministicParameter('inch', 0.001),
+    thickness=DeterministicParameter('m', cf1*0.001),
     conductivity=DiscreteRandomParameter('W/m/degC',
-                                         [0.01, 0.02],
+                                         cf2*np.array([0.01, 0.02]),
                                          [0.5, 0.5]
                                          ),
-    density=DeterministicParameter('kg/m**3', 0.001),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.001),
+    density=DeterministicParameter('kg/m**3', cf3*0.001),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.001),
     solar_transmittance=DeterministicParameter(None, 0.001),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Outside surface resistance'
 )
 M01 = Layer(
-    thickness=DeterministicParameter('inch', 4.0),
+    thickness=DeterministicParameter('m', cf1*4.0),
     conductivity=NormalRandomParameter('W/m/degC',
-                                       [6.2, 0.1]
+                                       cf2*np.array([6.2, 0.1])
                                        ),
-    density=DeterministicParameter('kg/m**3', 120.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.19),
+    density=DeterministicParameter('kg/m**3', cf3*120.0),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.19),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='4 in. brick'
 )
 F04 = Layer(
-    thickness=DeterministicParameter('inch', 0.001),
-    conductivity=DeterministicParameter('W/m/degC', 0.001),
-    density=DeterministicParameter('kg/m**3', 0.001),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.001),
+    thickness=DeterministicParameter('m', cf1*0.001),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.001),
+    density=DeterministicParameter('kg/m**3', cf3*0.001),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.001),
     solar_transmittance=DeterministicParameter(None, 0.001),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Wall air space resistance'
 )
 I01 = Layer(
-    thickness=DeterministicParameter('inch', 1.0),
-    conductivity=DeterministicParameter('W/m/degC', 0.2),
-    density=DeterministicParameter('kg/m**3', 2.7),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.29),
+    thickness=DeterministicParameter('m', cf1*1.0),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.2),
+    density=DeterministicParameter('kg/m**3', cf3*2.7),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.29),
     solar_transmittance=DeterministicParameter(None, 0.001),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-5, 1 in. insulation board'
 )
 M16 = Layer(
-    thickness=DeterministicParameter('inch', 12.0),
-    conductivity=DeterministicParameter('W/m/degC', 13.50),
-    density=DeterministicParameter('kg/m**3', 140.0),
+    thickness=DeterministicParameter('m', cf1*12.0),
+    conductivity=DeterministicParameter('W/m/degC', cf2*13.50),
+    density=DeterministicParameter('kg/m**3', cf3*140.0),
     specific_heat=UniformRandomParameter('J / kg / degC',
-                                         [0.22, 0.25]
+                                         cf4*np.array([0.22, 0.25])
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
@@ -78,33 +97,33 @@ M16 = Layer(
     description='12 in. heavy weight concrete'
 )
 G01 = Layer(
-    thickness=LogNormalRandomParameter('inch',
-                                       [0.625, 1e-3]
+    thickness=LogNormalRandomParameter('m',
+                                       cf1*np.array([0.625, 1e-3])
                                        ),
-    conductivity=DeterministicParameter('W/m/degC', 1.11),
-    density=DeterministicParameter('kg/m**3', 50.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.26),
+    conductivity=DeterministicParameter('W/m/degC', cf2*1.11),
+    density=DeterministicParameter('kg/m**3', cf3*50.0),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.26),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='5/8 in. gyp board'
 )
 F02 = Layer(
-    thickness=DeterministicParameter('inch', 0.001),
-    conductivity=DeterministicParameter('W/m/degC', 0.001),
-    density=DeterministicParameter('kg/m**3', 0.001),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.001),
+    thickness=DeterministicParameter('m', cf1*0.001),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.001),
+    density=DeterministicParameter('kg/m**3', cf3*0.001),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Inside vertical surface resistance'
 )
 M13 = Layer(
-    thickness=DeterministicParameter('inch', 8.0),
-    conductivity=DeterministicParameter('W/m/degC', 3.70),
-    density=DeterministicParameter('kg/m**3', 80.0),
+    thickness=DeterministicParameter('m', cf1*8.0),
+    conductivity=DeterministicParameter('W/m/degC', cf2*3.70),
+    density=DeterministicParameter('kg/m**3', cf3*80.0),
     specific_heat=UniformRandomParameter('J / kg / degC',
-                                         [0.22, 0.25]
+                                         cf4*np.array([0.22, 0.25])
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
@@ -169,11 +188,11 @@ as roof type here. The roof is modelled as a segment consisiting of 7
 layers.
 """
 F08 = Layer(
-    thickness=DeterministicParameter('inch.', 0.03),
-    conductivity=DeterministicParameter('W/m/degC', 314.0),
-    density=DeterministicParameter('kg/m**3', 489.0),
+    thickness=DeterministicParameter('m', cf1*0.03),
+    conductivity=DeterministicParameter('W/m/degC', cf2*314.0),
+    density=DeterministicParameter('kg/m**3', cf3*489.0),
     specific_heat=UniformRandomParameter('J / kg / degC',
-                                         [0.12, 0.15]
+                                         cf4*np.array([0.12, 0.15])
                                          ),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
@@ -181,11 +200,11 @@ F08 = Layer(
     description='Metal surface'
 )
 G03 = Layer(
-    thickness=DeterministicParameter('inch.', 0.5),
-    conductivity=DeterministicParameter('W/m/degC', 0.47),
-    density=DeterministicParameter('kg/m**3', 25.0),
+    thickness=DeterministicParameter('m', cf1*0.5),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.47),
+    density=DeterministicParameter('kg/m**3', cf3*25.0),
     specific_heat=LogNormalRandomParameter('J / kg / degC',
-                                           [0.31, 1e-3]
+                                           cf4*np.array([0.31, 1e-3])
                                            ),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
@@ -193,32 +212,32 @@ G03 = Layer(
     description='1/2 in. fiberboard sheathing'
 )
 F05 = Layer(
-    thickness=DeterministicParameter('inch.', 0.001),
-    conductivity=DeterministicParameter('W/m/degC', 0.001),
-    density=DeterministicParameter('kg/m**3', 0.001),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.001),
+    thickness=DeterministicParameter('m', cf1*0.001),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.001),
+    density=DeterministicParameter('kg/m**3', cf3*0.001),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='Metal surface'
 )
 I05 = Layer(
-    thickness=DeterministicParameter('inch.', 6.08),
-    conductivity=DeterministicParameter('W/m/degC', 0.32),
+    thickness=DeterministicParameter('m', cf1*6.08),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.32),
     density=NormalRandomParameter('kg/m**3',
-                                  [1.2, 0.01]
+                                  cf3*np.array([1.2, 0.01])
                                   ),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.23),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.23),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-19, 6-1/4 in. batt insulation'
 )
 F03 = Layer(
-    thickness=DeterministicParameter('inch.', 0.001),
-    conductivity=DeterministicParameter('W/m/degC', 0.001),
-    density=DeterministicParameter('kg/m**3', 0.001),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.001),
+    thickness=DeterministicParameter('m', cf1*0.001),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.001),
+    density=DeterministicParameter('kg/m**3', cf3*0.001),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.001),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
@@ -237,30 +256,30 @@ Floor
 Floor is modeled as a segment consisting of 4 layers.
 """
 M02 = Layer(
-    thickness=DeterministicParameter('inch.', 6.0),
-    conductivity=DeterministicParameter('W/m/degC', 3.39),
-    density=DeterministicParameter('kg/m**3', 32.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.21),
+    thickness=DeterministicParameter('m', cf1*6.0),
+    conductivity=DeterministicParameter('W/m/degC', cf2*3.39),
+    density=DeterministicParameter('kg/m**3', cf3*32.0),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.21),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='6 in. LW concrete block'
 )
 I02 = Layer(
-    thickness=DeterministicParameter('inch.', 2.0),
-    conductivity=DeterministicParameter('W/m/degC', 0.2),
-    density=DeterministicParameter('kg/m**3', 2.7),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.29),
+    thickness=DeterministicParameter('m', cf1*2.0),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.2),
+    density=DeterministicParameter('kg/m**3', cf3*2.7),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.29),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
     description='R-10, 2 in. insulation board'
 )
 G02 = Layer(
-    thickness=DeterministicParameter('inch.', 0.625),
-    conductivity=DeterministicParameter('W/m/degC', 0.8),
-    density=DeterministicParameter('kg/m**3', 34.0),
-    specific_heat=DeterministicParameter('J / kg / degC', 0.29),
+    thickness=DeterministicParameter('m', cf1*0.625),
+    conductivity=DeterministicParameter('W/m/degC', cf2*0.8),
+    density=DeterministicParameter('kg/m**3', cf3*34.0),
+    specific_heat=DeterministicParameter('J / kg / degC', cf4*0.29),
     solar_transmittance=DeterministicParameter(None, 0.),
     solar_absorptance=UniformRandomParameter(None, [0.5, 0.6]),
     IHG_absorptance=UniformRandomParameter(None, [0.8, 0.9]),
