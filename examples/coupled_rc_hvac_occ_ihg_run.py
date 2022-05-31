@@ -108,12 +108,14 @@ hvac_sys = HVACSystem(
 
 lgt_sys = LightingSystem(
     clock.dt,
-    occ_sys.lgt_on
+    occ_sys.lgt_on,
+    name="lgt_sys"
     )
 
 dev_sys = DeviceSystem(
     clock.dt,
-    occ_sys.dev_on
+    occ_sys.dev_on,
+    name="dev_sys"
     )
 
 
