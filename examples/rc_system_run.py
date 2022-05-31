@@ -34,6 +34,13 @@ Q_int = Variable(
     description="Sum of internal heat gain"
 )
 
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
+)
+
 T_cor = Variable(
     name="T_cor",
     units="degC",
@@ -47,6 +54,7 @@ rc_sys = RCBuildingSystem(clock.dt,
                           weather_sys,
                           T_cor,
                           Q_int,
+                          u_t,
                           name="rc_sys")
 
 sys = System(

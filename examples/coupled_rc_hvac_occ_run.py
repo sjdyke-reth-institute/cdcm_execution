@@ -15,6 +15,7 @@ Date:
 from rc_system import RCBuildingSystem
 from hvac_system import HVACSystem
 from occupant_system import OccupantSystem
+from smart_thermostat import SmartThermostat
 from cdcm import *
 import pandas as pd
 import numpy as np
@@ -38,6 +39,13 @@ Q_int = Variable(
     units="W",
     value=150,
     description="Sum of internal heat gain"
+)
+
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
 )
 
 T_cor = Variable(
@@ -72,7 +80,8 @@ def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
 clock = make_clock(300)
 
 # The RC model
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, T_cor, Q_int, name="rc_sys")
+rc_sys = RCBuildingSystem(clock.dt, weather_sys, T_cor, Q_int,
+                          u_t, name="rc_sys")
 
 # The occupancy behavior model
 occ_sys = OccupantSystem(
@@ -80,29 +89,44 @@ occ_sys = OccupantSystem(
     rc_sys.T_room_sensor
     )
 
+thermostat = SmartThermostat(
+    clock,
+    occ_sys.action,
+    rc_sys.T_room_sensor,
+    name="thermostat")
+
 # The HVAC model
 hvac_sys = HVACSystem(
     clock.dt,
-    rc_sys.u,
+    thermostat.m_dot,
+    thermostat.Q_h,
+    thermostat.Q_c,
     T_out_sensor,
-    rc_sys.T_room_sensor,
-    occ_sys.T_sp,
     name="hvac_sys"
 )
+
+
+@make_function(u_t)
+def input_loads_from_hvac(u_apply=hvac_sys.u_apply):
+    return u_apply
 
 
 # The combined system
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys, hvac_sys, occ_sys, g_T_out_sensor]
+    nodes=[clock, weather_sys, rc_sys, thermostat,
+           hvac_sys, occ_sys, g_T_out_sensor,
+           input_loads_from_hvac]
 )
 print(sys)
 
 for i in range(100):
     sys.forward()
+    print(f"At step = {i:1.0f}")
     print(f"T_out = {weather_sys.Tout.value:1.2f}")
     print(f"T_out_noisy = {T_out_sensor.value:1.2f}")
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
     print(f"action = {occ_sys.action.value:1.0f}")
+    print(f"T_sp = {thermostat.T_sp.value:1.2f}")
     sys.transition()

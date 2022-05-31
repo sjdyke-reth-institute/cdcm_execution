@@ -3,16 +3,6 @@
 This model contains 4 models, PID controller, a fan model,
 a heating model and a chiller model.
 
-HVAC takes the setpoint temperature (T_sp) as the control signal,
-then transfer the T_sp into input loads by PID controller.
-
-e(t) =& T_{sp, t} - T_{room, t} \\
-u_t =& K_p e(t) + K_i \int^t_0 e(\tau)d\tau + K_d
-\frac{e(t)}{dt} \\
-\int^t_0 e(\tau)d\tau =& int^{t-1}_0 e(\tau)d\tau
-+ e(t) dt\\
-\frac{e(t)}{dt} =& \frac{e(t)-e(t-1)}{dt}
-
 Then calculate the energy consumption by a chiller, a heater,
 and a fan model.
 
@@ -22,6 +12,7 @@ Author:
 
 Date:
     5/4/2022
+    5/31/2022
 
 """
 
@@ -39,42 +30,21 @@ class HVACSystem(System):
     This is a demo of VAV system.
     Arguements:
     dt              --  The timestep to use (must be a node.)
-    u               --  Required input loads to the building/zone [W]
-    weather_system  --  A weather system that includes:
-                        Tout: outdoor air temperature
-    rc_system       --  A rc system that includes:
-                        T_room: The room air temperature [C]
-    T_sp            --  The setpoint temperature [C] from occupancy model
+    Tout            --  Outdoor air temperature [C]
+    m_dot           --  The required mass flow rate [kg/s]
+    Q_c             --  The required cooling load [W]
+    Q_h             --  The required heating load [W]
 
     States:
-    integral_past    --  Intergral storage of past time step
-    error_past       --  Portional storage of past time step
-
-
-    Variables:
-    error           --  Difference between setpoint and room temperature
-    integral        --  Intergral storage of the PID controller
-    derivative      --  The derivative of the error
-    energy          --  Consumed energy [W]
+    measured_energy  -- measured consumed energy [W]
 
     Function nodes:
-    f_error         --  Find difference between setpoint and room temperature.
-    f_error_past    --  Keeps track of the previous step error.
-    f_integral      --  Find the next value of integral.
-    f_integral_past --  Store the current value of the integral.
-    f_derivative    --  Find the derivative of the error.
     f_u             --  Calculate u to RC model and energy consumption
 
-    Parameters of PID controller:
-    Kp              --  proportional coefficient of PID controller
-    Ki              --  integral coefficient of PID controller
-    Kd              --  derivative coefficient of PID controller
     Parameters of air property:
     cp_air          --  specific heat of air [J/kg]
     rho_air         --  density of air [kg/m**3]
     Parameters of heatpump:
-    u_max_h         --  maximum heating loads [W]
-    u_max_c         --  maximum cooling loads [W]
     Tlvc            --  heatpump leaving water temperature [C]
     T_sup           --  supply air temperature [C]
     COPh            --  heatpump heating efficiency coefficient
@@ -82,117 +52,31 @@ class HVACSystem(System):
     Parameters of fan:
     c_FAN           --  fan efficiency coefficient
     m_design        --  fan design air mass flow rate[kg/s]
-    m_dot_max       --  maximum fan design air mass flow rate[kg/s]
-    m_dot_min       --  minimum fan design air mass flow rate[kg/s]
     dP              --  fan design pressure rise [kg/m/s**2]
     e_tot           --  fan total efficiency
     """
     def __init__(self,
                  dt: Parameter,
-                 u: Variable,
+                 m_dot: Variable,
+                 Q_h: Variable,
+                 Q_c: Variable,
                  T_out: Variable,
-                 T_room: Variable,
-                 T_sp: Variable,
                  **kwargs):
         super().__init__(**kwargs)
 
-        # TODO: Write decorator to simplify the following
-        error = Variable(
-            name="error",
-            units="degC",
-            value=0.0,
-            description="Difference between setpoint and room temperature"
-        )
-
-        @make_function(error)
-        def f_error(T_sp=T_sp, T_room=T_room):
-            """Find difference between setpoint and room temperature."""
-            return T_sp - T_room
-
-        error_past = State(
-            name="error_past",
-            value=0.0,
-            units="degC",
-            description="The error in the previous step."
-        )
-
-        @make_function(error_past)
-        def f_error_past(error_past=error_past, error=error):
-            """Keeps track of the previous step error."""
-            return error
-        # END OF TODO
-
-        # TODO: Write decorator to simplify the following
-        integral = Variable(
-            name="integral",
-            value=0.0,
-            units="degC * seconds",
-            description="Intergral storage of the PID controller"
-        )
-
-        integral_past = State(
-            name="integral_past",
-            value=0.0,
-            units="degC * seconds",
-            description="Keeps track of the intgral in the previous timestep"
-        )
-
-        @make_function(integral)
-        def f_integral(integral_past=integral_past, error=error, dt=dt):
-            """Find the next value of integral."""
-            return integral_past + error * dt
-
-        #@make_deterministic()
-        #def integral(integral_past=integral_past, error=error, dt=dt):
-        #    return integral_past + error * dt
-
-        #integral_past = StateWithMemory()
-
-        @make_function(integral_past)
-        def f_integral_past(integral_past=integral_past, integral=integral):
-            """Store the current value of the integral."""
-            return integral
-
-        derivative = Variable(
-            name="derivative",
-            value=0.0,
-            description="The derivative of the error",
-        )
-
-        @make_function(derivative)
-        def f_derivative(error_past=error_past, error=error, dt=dt):
-            """Find the derivative of the error."""
-            return (error - error_past) / dt
-        # END TODO
-
-        energy = Variable(
-            name="energy",
+        measured_energy = Variable(
+            name="measured_energy",
             value=0.0,
             units="W",
             track=True,
-            description="Consumed energy"
+            description="measured energy"
         )
 
-        Kp = Parameter(
-            name="Kp",
-            value=20,
-            units=None,
-            description="proportional coefficient of PID controller"
-        )
-
-        Ki = Parameter(
-            name="Ki",
-            value=0.1,
-            units=None,
-            description="integral coefficient of PID controller"
-        )
-
-        Kd = Parameter(
-            name="Kd",
+        u_apply = Variable(
+            name="u_apply",
             value=0.0,
-            units=None,
-            description="derivative coefficient of PID controller"
-        )
+            units="W",
+            description="applied u to the rc model")
 
         cp_air = Parameter(
             name="cp_air",
@@ -206,20 +90,6 @@ class HVACSystem(System):
             value=1.225,
             units="kg/m**3",
             description="density of air"
-        )
-
-        u_max_h = Parameter(
-            name="u_max_h",
-            value=1500,
-            units="W",
-            description="maximum heating loads"
-        )
-
-        u_max_c = Parameter(
-            name="u_max_c",
-            value=1500,
-            units="W",
-            description="maximum cooling loads"
         )
 
         Tlvc = Parameter(
@@ -268,20 +138,6 @@ class HVACSystem(System):
             description="fan design air mass flow rate"
         )
 
-        m_dot_max = Parameter(
-            name="m_dot_max",
-            value=0.080938984*550/140,
-            units="kg/s",
-            description="maximum fan design air mass flow rate"
-        )
-
-        m_dot_min = Parameter(
-            name="m_dot_min",
-            value=0.080938984,
-            units="kg/s",
-            description="minimum fan design air mass flow rate"
-        )
-
         dP = Parameter(
             name="dP",
             value=500,
@@ -296,55 +152,32 @@ class HVACSystem(System):
             description="fan total efficiency"
         )
 
-        @make_function(u, energy)
+        @make_function(measured_energy, u_apply)
         def f_u(
             dt=dt,
-            Tout_PID=T_out,
-            error=error,
-            integral=integral,
-            derivative=derivative,
-            Kp=Kp,
-            Ki=Ki,
-            Kd=Kd,
-            u_max_h=u_max_h,
-            u_max_c=u_max_c,
+            Tout=T_out,
+            Q_h=Q_h,
+            Q_c=Q_c,
             EFc=EFc,
             Tlvc=Tlvc,
-            m_dot_min=m_dot_min,
-            m_dot_max=m_dot_max,
             cp_air=cp_air,
             T_sup=T_sup,
-            T_room=T_room,
             COPh=COPh,
             m_design=m_design,
+            m_dot=m_dot,
             c_FAN=c_FAN,
             e_tot=e_tot,
             rho_air=rho_air,
             dP=dP
         ):
-            u = Kp * error + Ki * integral + Kd * derivative
-            # bound u_t by upper limit
-            if u > u_max_h:
-                u = u_max_h
-            elif u < u_max_c:
-                u = u_max_c
             COPc = (
-                EFc[0] + Tout_PID * EFc[1] + Tlvc * EFc[2]
-                + (Tout_PID ** 2) * EFc[3]
-                + (Tlvc ** 2) * EFc[4] + Tout_PID * Tlvc * EFc[5]
+                EFc[0] + Tout * EFc[1] + Tlvc * EFc[2]
+                + (Tout ** 2) * EFc[3]
+                + (Tlvc ** 2) * EFc[4] + Tout * Tlvc * EFc[5]
             )
-            if u <= 0:  # cooling case
-                dp = -u / 2000
-                m_fan = (m_dot_max - m_dot_min) * dp + m_dot_min
-                energy = -u / COPc / 1000 * (dt / 3600)
-            elif u > 0:  # heating case
-                u_c = m_dot_min * cp_air * (T_sup - T_room)
-                u_h = u
-                u = u_c + u_h
-                m_fan = m_dot_min
-                energy = (u_h / COPh + u_c / COPc) / 1000 * (dt / 3600)
+            energy = (Q_h / COPh + Q_c / COPc) / 1000 * (dt / 3600)
 
-            f_flow = m_fan / m_design
+            f_flow = m_dot / m_design
             f_pl = (c_FAN[0] + c_FAN[1] * f_flow +
                     c_FAN[2] * f_flow**2 + c_FAN[3] * f_flow**3
                     + c_FAN[4] * f_flow**4)
@@ -352,7 +185,7 @@ class HVACSystem(System):
 
             energy += Q_fan/1000*(dt/3600)
 
-            return u, energy
+            return energy, Q_h+Q_c
 
         # TODO: Find a way to detect nodes created within this
         # context and eliminate the need to list them one by one as
@@ -360,28 +193,17 @@ class HVACSystem(System):
 
         self.add_nodes(
             [
-                error,
-                error_past,
-                f_error_past,
-                integral,
-                integral_past,
-                f_integral_past,
-                derivative,
-                f_derivative,
-                energy,
-                Kp,
-                Ki,
-                Kd,
-                u_max_h,
-                u_max_c,
+                measured_energy,
+                u_apply,
                 EFc,
                 Tlvc,
-                m_dot_min,
-                m_dot_max,
+                T_sup,
                 COPh,
                 m_design,
+                dP,
                 c_FAN,
                 e_tot,
+                cp_air,
                 rho_air,
                 f_u
             ]

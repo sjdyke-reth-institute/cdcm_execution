@@ -13,6 +13,7 @@ Date:
 
 from rc_system import RCBuildingSystem
 from hvac_system import HVACSystem
+from smart_thermostat import SmartThermostat
 from cdcm import *
 import pandas as pd
 import numpy as np
@@ -38,6 +39,13 @@ Q_int = Variable(
     description="Sum of internal heat gain"
 )
 
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
+)
+
 T_cor = Variable(
     name="T_cor",
     units="degC",
@@ -50,6 +58,7 @@ T_cor = Variable(
 T_out_sensor = Variable(
     name="T_out_sensor",
     units="degC",
+    value=0.01,
     description="Measurement of external temperature."
 )
 T_out_sensor_sigma = Parameter(
@@ -58,10 +67,10 @@ T_out_sensor_sigma = Parameter(
     value=0.01
 )
 
-T_sp = Variable(
+T_sp_occ = Variable(
     name="T_sp",
     units="degC",
-    value=23
+    value=-1
 )
 
 
@@ -79,28 +88,43 @@ rc_sys = RCBuildingSystem(clock.dt,
                           weather_sys,
                           T_cor,
                           Q_int,
+                          u_t,
                           name="rc_sys")
+
+thermostat = SmartThermostat(
+    clock,
+    T_sp_occ,
+    rc_sys.T_room_sensor,
+    name="thermostat")
 
 # The HVAC model
 hvac_sys = HVACSystem(
     clock.dt,
+    thermostat.m_dot,
+    thermostat.Q_h,
+    thermostat.Q_c,
     T_out_sensor,
-    rc_sys.T_room_sensor,
-    rc_sys.u,
-    T_sp,
     name="hvac_sys"
 )
 
+
+@make_function(u_t)
+def input_loads_from_hvac(u_apply=hvac_sys.u_apply):
+    return u_apply
+
 # The combined system
+
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys, hvac_sys]
+    nodes=[clock, weather_sys, rc_sys, thermostat, hvac_sys,
+           input_loads_from_hvac]
 )
 print(sys)
 
-print("A should have shpae of :", np.shape(rc_sys.A.value))
-for i in range(100):
+for i in range(200):
     sys.forward()
+    print(f"T_sp = {thermostat.T_sp.value:1.2f}")
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
+    print(f"u_apply = {u_t.value:1.2f}")
     sys.transition()

@@ -12,6 +12,7 @@ Date:
 """
 
 from rc_system import RCBuildingSystem
+from smart_thermostat import SmartThermostat
 from hvac_system import HVACSystem
 from occupant_system import OccupantSystem
 from device_system import DeviceSystem
@@ -39,6 +40,13 @@ Q_int = Variable(
     units="W",
     value=150,
     description="Sum of internal heat gain"
+)
+
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
 )
 
 T_cor = Variable(
@@ -73,21 +81,28 @@ def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
 clock = make_clock(300)
 
 # The RC model
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, T_cor, name="rc_sys")
+rc_sys = RCBuildingSystem(clock.dt, weather_sys, T_cor, Q_int,
+                          u_t, name="rc_sys")
 
 # The occupancy behavior model
 occ_sys = OccupantSystem(
-    clock.dt,
+    clock,
     rc_sys.T_room_sensor
     )
+
+thermostat = SmartThermostat(
+    clock,
+    occ_sys.action,
+    rc_sys.T_room_sensor,
+    name="thermostat")
 
 # The HVAC model
 hvac_sys = HVACSystem(
     clock.dt,
-    rc_sys.u,
+    thermostat.m_dot,
+    thermostat.Q_h,
+    thermostat.Q_c,
     T_out_sensor,
-    rc_sys.T_room_sensor,
-    occ_sys.T_sp,
     name="hvac_sys"
 )
 
@@ -118,12 +133,18 @@ def cal_Q_int(IHG_occ=occ_sys.IHG_occ,
     return IHG
 
 
+@make_function(u_t)
+def input_loads_from_hvac(u_apply=hvac_sys.u_apply):
+    return u_apply
+
 # The combined system
+
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys, hvac_sys, occ_sys, lgt_sys, dev_sys,
-           g_T_out_sensor, cal_Q_int]
+    nodes=[clock, weather_sys, rc_sys, thermostat,
+           hvac_sys, occ_sys, lgt_sys, dev_sys,
+           g_T_out_sensor, cal_Q_int, input_loads_from_hvac]
 )
 print(sys)
 

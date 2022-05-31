@@ -33,6 +33,8 @@ class RCBuildingSystem(System):
                        can be replaced with sensor value in implemenation.
                        [C]
     Q_int           --  Internal heat gain calculated from other system
+    u               -- Control variable. Input heat loads to the system.
+                       [W]
 
     States:
     T_env           -- The surface temperature of envelope interior [C]
@@ -63,8 +65,6 @@ class RCBuildingSystem(System):
 
     Variables:
     T_room_sensor   -- A temperature sensor at the room[C]
-    u               -- Control variable. Input heat loads to the system.
-                       [W]
     A               -- Discritized State space A matrix
     B               -- Discritized State space B matrix
     """
@@ -73,6 +73,7 @@ class RCBuildingSystem(System):
                  weather_system: System,
                  T_cor: Variable,
                  Q_int: Variable,
+                 u: Variable,
                  **kwargs
                  ):
         super().__init__(**kwargs)
@@ -182,11 +183,11 @@ class RCBuildingSystem(System):
             description="The temperature of ground. "
         )
 
-        u = Variable(
-            name="u",
-            value=0.0,
-            description="Control of input loads to the system"
-        )
+        # u = Variable(
+        #     name="u",
+        #     value=0.0,
+        #     description="Control of input loads to the system"
+        # )
 
         A = Variable(
             name="A",
@@ -297,7 +298,7 @@ class RCBuildingSystem(System):
                 C_env, C_room, C_genv,
                 R_rc, R_oe, R_er, R_gr, R_ge,
                 a_sol_env, a_sol_room, a_IHG,
-                A, B, u, make_matrices,
+                A, B, make_matrices,
                 transition_room,
                 T_room_sensor,
                 T_room_sensor_sigma,

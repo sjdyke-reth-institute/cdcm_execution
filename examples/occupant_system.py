@@ -47,7 +47,6 @@ class OccupantSystem(System):
     T_p             --  actual preference temperature of the occupant[C]
     action_noise    --  action noise of the occupants
     sensitivity     --  occupancy sensitivity of the room temperature
-    time            --  temperary time holding place
 
     Function nodes:
     check_occ       --  check occupancy presence and turn on/off light
@@ -80,8 +79,7 @@ class OccupantSystem(System):
             name="action",
             value=0,
             units=None,
-            description="A boolean indicator of whether the\
-                         occupant changes the setpoint"
+            description="Setpoint occupant changed"
         )
 
         T_p = Parameter(
@@ -140,20 +138,6 @@ class OccupantSystem(System):
             description="The internal heat gain casud by occupant"
         )
 
-        # time = State(
-        #     name="time",
-        #     value=0.0,
-        #     units="s",
-        #     description="Current time in sec"
-        #     )
-
-        # @make_function(time)
-        # def move_time(time=time, dt=dt):
-        #     """
-        #     move time
-        #     """
-        #     return time + dt
-
         @make_function(Occ_t)
         def check_occ(time=clock.t):
             """
@@ -192,14 +176,12 @@ class OccupantSystem(System):
                 u = np.random.random()
                 theta = np.random.normal(loc=0.0, scale=action_noise)
                 if u <= p_action:
-                    T_sp = round((T_p + theta), 2)
+                    T_sp = round((T_p + theta), 0)
                     action = T_sp
                 else:
                     action = -1
             else:
-                occ_ihg = 0
                 action = -1
-                T_sp = T_sp
             return action, T_sp
 
         self.add_nodes(
