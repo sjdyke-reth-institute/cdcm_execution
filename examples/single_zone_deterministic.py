@@ -28,8 +28,8 @@ cf2 = Q(1, 'Btu inch / hr / foot^2 / degF').to('W / m / degC').magnitude
 cf3 = Q(1, 'lb / foot^3').to('kg / m^3').magnitude
 cf4 = Q(1, 'Btu / lb / degF').to('J / kg / degC').magnitude
 
-a = DeterministicParameter('m', 30)
-b = DeterministicParameter('m', 15)
+a = DeterministicParameter('m', 15.0)
+b = DeterministicParameter('m', 10.0)
 """
 Walls
 -----
