@@ -2,10 +2,11 @@
 
 Author:
     Ilias Bilionis
+    Sreehari Manikkan
 
 Date:
-    3/15/2022
     4/21/2022
+    2/06/2022
 
 """
 
@@ -138,8 +139,12 @@ class SimulationSaver(object):
 
         This a recursive function. The data are saved at index `count`.
         """
-        dset = self.file_handler[node.absname]
-        dset[self._count] = node.value
+        if self.file_handler is None:
+            dset = self.group[node.absname]
+            dset[self._count] = node.value
+        else:
+            dset = self.file_handler[node.absname]
+            dset[self._count] = node.value
 
     def save(self):
         """Save the current state of the system to the file."""
