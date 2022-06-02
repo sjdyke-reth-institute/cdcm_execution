@@ -51,39 +51,33 @@ def make_rc_of_cdcm(zone, neighbor):
     Area_list = []
     cp_air = 1006  # J/Kg-C
     rho_air = 1.2  # Kg/m^3
-    x = Q_(zone.edges[0].lx.value, zone.edges[0].lx.units)
-    z = Q_(zone.edges[0].ly.value, zone.edges[0].ly.units)
-    y = Q_(zone.edges[1].lx.value, zone.edges[1].lx.units)
-    V = (x*y*z)
-    Cp_room = (V*rho_air*cp_air).magnitude
+    x = zone.edges[0].lx.value
+    z = zone.edges[0].ly.value
+    y = zone.edges[1].lx.value
+    V = x*y*z
+    Cp_room = V*rho_air*cp_air
 
     for e in zone.edges:
-        lx = Q_(e.lx.value, e.lx.units)
-        lx.ito_base_units()
-        ly = Q_(e.ly.value, e.ly.units)
-        ly.ito_base_units()
+        lx = e.lx.value
+        ly = e.ly.value
         Area = lx * ly
-        Area_list.append(Area.magnitude)
+        Area_list.append(Area)
         U = 0
         C = 0
         sub_trans_list = []
 
         for seg in e.segments:
             area_ratio = seg.relative_area.value
-            # inidicator for whether the layer is transparent
+            # indicator for whether the layer is transparent
             solar_trans = 1
             r = 0
             c = 0
 
             for layer in seg.segment.layers:
-                thickness = Q_(layer.thickness.value,
-                               layer.thickness.units)
-                conductivity = Q_(layer.conductivity.value,
-                                  layer.conductivity.units)
-                density = Q_(layer.density.value,
-                             layer.density.units)
-                specific_heat = Q_(layer.specific_heat.value,
-                                   layer.specific_heat.units)
+                thickness = layer.thickness.value
+                conductivity = layer.conductivity.value
+                density = layer.density.value
+                specific_heat = layer.specific_heat.value
                 solar_transmittance = layer.solar_transmittance.value
                 # if one layer is not transparent,the segment is not
                 # transparent
@@ -96,8 +90,8 @@ def make_rc_of_cdcm(zone, neighbor):
             C += c * area_ratio * Area
             sub_trans_list.append(solar_trans)
 
-        R_list.append(1/U.magnitude)
-        C_list.append(C.magnitude)
+        R_list.append(1/U)
+        C_list.append(C)
         trans_list.append(sub_trans_list)
 
     # check nodal condition and return corresponding RC model
@@ -125,7 +119,7 @@ def make_rc_of_cdcm(zone, neighbor):
     R_rc = 0
 
     # By checking out, ground, cor, set RC model accordingly
-    if out is False:  # here R_oe = Cp_env = R_er = inf ??
+    if out is False:
         Cp_env = np.inf
         R_gr = np.inf
     else:
@@ -152,7 +146,7 @@ def make_rc_of_cdcm(zone, neighbor):
             if neighbor[i] != 0:
                 # add the R
                 R_rc += 1/R_list[i]
-                R_rc += 0.87*5.678/Area_list[i]  # film coefficeint
+                R_rc += 0.87*5.678/Area_list[i]  # film coefficeint.
         R_rc = 1 / R_rc
     else:
         R_rc = np.inf
@@ -187,10 +181,17 @@ def make_building_cdcm_system(building, weather_sys, clock):
             value=23,
             description="Corridor temperature"
         )
+        u_t = Variable(
+            name="u_t",
+            units="W",
+            value=0.0,
+            description="Input loads"
+        )
         zone_rc_sys = RCBuildingSystem(clock.dt,
                                        weather_sys,
                                        T_cor,
                                        Q_int,
+                                       u_t,
                                        name="zone_rc_system")
         Cp_room, Cp_env, Cp_genv, R_rc, R_oe, R_er, R_gr, R_ge = \
             make_rc_of_cdcm(z, n)
@@ -203,36 +204,9 @@ def make_building_cdcm_system(building, weather_sys, clock):
         zone_rc_sys.R_gr.value = R_gr
         zone_rc_sys.R_ge.value = R_ge
 
-        T_out_sensor = Variable(
-            name="T_out_sensor",
-            units="degC",
-            description="Measurement of external temperature."
-        )
-        T_out_sensor_sigma = Parameter(
-            name="T_out_sensor_sigma",
-            units="degC",
-            value=0.01
-        )
-        T_sp = Variable(
-            name="T_sp",
-            units="degC",
-            value=23
-        )
-
-        @make_function(T_out_sensor)
-        def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
-            """Sample the T_out sensor."""
-            return T_out + sigma * np.random.randn()
-
-        zone_hvac_sys = HVACSystem(clock.dt,
-                                   T_out_sensor,
-                                   zone_rc_sys.T_room_sensor,
-                                   zone_rc_sys.u,
-                                   T_sp,
-                                   name="zone_hvac_system")
         zone_cdcm_sys = System(
             name="zone_cdcm_system",
-            nodes=[clock, weather_sys, T_cor, zone_rc_sys, zone_hvac_sys]
+            nodes=[clock, weather_sys, zone_rc_sys]
         )
         building_cdcm_system.append(zone_cdcm_sys)
     return building_cdcm_system
