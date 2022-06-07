@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[18]:
 
 
 from cdcm import Node
@@ -21,7 +21,7 @@ from cdcm import Node
 
 # ### Creating a Node
 
-# In[2]:
+# In[19]:
 
 
 # A node n1 is created
@@ -42,7 +42,7 @@ n8 = Node(name="n8")
 
 # ### Adding a node as a child of another node
 
-# In[3]:
+# In[20]:
 
 
 # n2 is added as a child of n1. This action implies n2 depends on n1.
@@ -53,7 +53,7 @@ print(n2)
 
 # ### Adding a node as a parent of another node
 
-# In[4]:
+# In[21]:
 
 
 n3.add_parent(n1)
@@ -66,7 +66,7 @@ print(n4)
 
 # ### Adding multiple nodes as children of another node
 
-# In[5]:
+# In[22]:
 
 
 # First, adding just one
@@ -74,7 +74,7 @@ n4.add_children(n5)
 print(n4)
 
 
-# In[6]:
+# In[23]:
 
 
 # Add from a sequence
@@ -84,7 +84,7 @@ print(n4)
 
 # ### Adding multiple nodes as parents of another node
 
-# In[7]:
+# In[24]:
 
 
 n6.add_parents([n7, n8])
@@ -93,7 +93,7 @@ print(n6)
 
 # ### Removing a parent from a child node (equivalently removing child node from the parent node)
 
-# In[8]:
+# In[25]:
 
 
 print("Before removing parent n1 from n3:")
@@ -105,7 +105,7 @@ print(n1)
 print(n3)
 
 
-# In[9]:
+# In[26]:
 
 
 n3.remove_parent(n4)

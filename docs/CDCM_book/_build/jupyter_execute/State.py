@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[12]:
 
 
 from cdcm import *
@@ -16,7 +16,7 @@ from cdcm import *
 
 # ### Creating a state
 
-# In[2]:
+# In[13]:
 
 
 s = State(
@@ -28,19 +28,19 @@ s = State(
 print(s)
 
 
-# In[3]:
+# In[14]:
 
 
 print(f"The present value of the state is: {s._value}")
 
 
-# In[4]:
+# In[15]:
 
 
 print(f"The next value of the state is: {s._next_value}")
 
 
-# In[5]:
+# In[16]:
 
 
 s._next_value = 1.5
@@ -48,7 +48,7 @@ print("Changing the next value.")
 print(f"The next value of the state is: {s._next_value}")
 
 
-# In[6]:
+# In[17]:
 
 
 print("Swaping values.")
@@ -61,7 +61,7 @@ print(s)
 # ### Another way of creating a State
 # Syntax: **make_node**("S:name:value:unit")
 
-# In[7]:
+# In[18]:
 
 
 x = make_node("S:x:1:m")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import numpy as np
@@ -15,7 +15,7 @@ from cdcm import *
 # Let us consider how a doubly coupled system can be modelled and simulated using CDCM. Here we consider a combined system consisting of 3 systems:<br><br>
 # **system 0**: A clock system which keeps track of time. This system takes the time step $dt$ as input<br><br> 
 
-# In[2]:
+# In[3]:
 
 
 print('system 0: Clock system')
@@ -43,7 +43,7 @@ g
 # - Emission function of $x_1$:
 # $y_1 = g_1(x_1, s_1) = x_1 + s_1 * guassian\ noise$
 
-# In[3]:
+# In[5]:
 
 
 print('system 1')
@@ -87,7 +87,7 @@ g
 # - Emission function of $x_2$:
 # $y_2 = g_2(x_2, s_2) = x_2 + s_2 * guassian\ noise$
 
-# In[4]:
+# In[7]:
 
 
 print('system 2')
@@ -117,7 +117,7 @@ g
 
 # State of system 1 ```x1``` is dependent on system 2 state ```x2``` and vice versa. Hence we have a doubly coupled system here. Two systems are coupled via the coupling coefficients included in the corresponding transition functions. Shown below is the DAG of doubly coupled system.
 
-# In[5]:
+# In[8]:
 
 
 print('Doubly coupled system')
@@ -138,7 +138,7 @@ g
 # 
 # The nodes are declared initially. System is created by manually adding the nodes to the system.
 
-# In[6]:
+# In[3]:
 
 
 # ****************************
@@ -149,7 +149,7 @@ clock = make_clock(0.1)
 
 # While creating system 1 nodes, a variable called ```placeholder``` is created to use as the state variable ```x2``` while defining ```f2``` on a temporary basis as ```x2``` is not yet defined. Note that this placeholder variable is not added as a system node while creating system.
 
-# In[7]:
+# In[4]:
 
 
 # ****************************
@@ -186,7 +186,7 @@ sys1 = System(
 )
 
 
-# In[8]:
+# In[5]:
 
 
 # ****************************
@@ -221,7 +221,7 @@ sys2 = System(
 
 # As we have system 2 defined now, we no longer requires placeholder. Hence we replace placeholder with x2.
 
-# In[9]:
+# In[6]:
 
 
 # ****************************
@@ -230,7 +230,7 @@ sys2 = System(
 replace(placeholder, x2)
 
 
-# In[10]:
+# In[7]:
 
 
 # ****************************
@@ -245,7 +245,7 @@ sys = System(
 
 # printing the system will output a dictionary of yaml format.
 
-# In[11]:
+# In[8]:
 
 
 print(sys)
@@ -253,7 +253,7 @@ print(sys)
 
 # ### Simulating the system
 
-# In[12]:
+# In[9]:
 
 
 for i in range(10):
@@ -266,7 +266,7 @@ for i in range(10):
 # 
 # The nodes are created under the context of the system of which the nodes are part of. No need to manually add nodes to the system.
 
-# In[13]:
+# In[11]:
 
 
 with System(name="combined_system") as sys:
@@ -338,7 +338,7 @@ with System(name="combined_system") as sys:
 print(sys)
 
 
-# In[14]:
+# In[13]:
 
 
 for i in range(10):

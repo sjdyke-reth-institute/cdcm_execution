@@ -129,7 +129,7 @@ print(node_out)
 # 
 # Here we consider a function ```g``` which takes two input nodes ```n1 & n2```. The function evaluates the function expression using the input node values and assigns / updates the value to the output node ```n3```. The graph of this function is as shown below. Order of evaluation of this graph will be: ``` n1, n2, f, n3``` or ``` n2, n1, f, n3```.
 
-# In[9]:
+# In[20]:
 
 
 from graphviz import Digraph
@@ -145,7 +145,7 @@ g.edge('g', 'n3')
 g
 
 
-# In[10]:
+# In[9]:
 
 
 n1 = make_node("V:n1:0.6:m/s")
@@ -157,7 +157,7 @@ def g(x=n1, y=n2):
 print(g)
 
 
-# In[11]:
+# In[10]:
 
 
 print("Before we call forward:")
@@ -171,7 +171,7 @@ print(n3)
 # 
 # Here we consider a function ```g``` which takes two input nodes ```n1 & n2```. The function evaluates the function expression using the input node values and assigns / updates the value to the output nodes ```n3 & n4```. The graph of this function is as shown below. One of the order of evaluations of this graph will be: ``` n1, n2, f, n3, n4```. Order of evaluation of input nodes can be in any order. For egs, ```n1, n2``` and ```n2, n1``` order of evaluations are equivalent. Same concept applies for output nodes as well.
 
-# In[12]:
+# In[15]:
 
 
 from graphviz import Digraph
@@ -189,7 +189,7 @@ g.edge('g', 'n4')
 g
 
 
-# In[13]:
+# In[11]:
 
 
 n1 = make_node("V:n1:0.6:m")
@@ -202,7 +202,7 @@ def g(x=n1, y=n2):
 print(g)
 
 
-# In[14]:
+# In[12]:
 
 
 print("Before we call forward:")

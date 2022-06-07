@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[15]:
 
 
 import numpy as np
@@ -25,7 +25,7 @@ from cdcm import *
 
 # ### Creating a variable with floating point value
 
-# In[2]:
+# In[16]:
 
 
 q1 = Variable(
@@ -39,7 +39,7 @@ print(q1)
 
 # ### Creating a variable with integer value
 
-# In[3]:
+# In[17]:
 
 
 q2 = Variable(
@@ -54,7 +54,7 @@ print(q2)
 
 # ### Creating a variable with an array of values
 
-# In[4]:
+# In[18]:
 
 
 arr_float = np.array([1.34, 2.7923, 5.11])
@@ -71,7 +71,7 @@ print(q3)
 # ### Another way of creating a variable
 # Syntax is **make_node**("V:name:value:unit")
 
-# In[5]:
+# In[19]:
 
 
 q4 = make_node("V:q4:0.539:kg")

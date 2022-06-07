@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[20]:
 
 
 import numpy as np
@@ -16,7 +16,7 @@ from cdcm import *
 
 # **system 0**: A clock system which keeps track of time. This system takes the time step $dt$ as input<br><br>
 
-# In[2]:
+# In[5]:
 
 
 print('system 0: Clock system')
@@ -44,7 +44,7 @@ g
 # $y_1 = g_1(x_1, s_1) = x_1 + s_1 * guassian\ noise$
 # 
 
-# In[3]:
+# In[6]:
 
 
 print('system 1')
@@ -84,7 +84,7 @@ g
 # - Emission function of $x_2$:
 # $y_2 = g_2(x_2, s_2) = x_2 + s_2 * guassian\ noise$
 
-# In[4]:
+# In[8]:
 
 
 print('system 2')
@@ -114,7 +114,7 @@ g
 
 # State of system 2 ```x2``` is dependent on system 1 state ```x1``` but not vice versa. Hence we are considering a one way coupled system here. Shown below is the DAG of coupled system.
 
-# In[5]:
+# In[11]:
 
 
 print('Coupled system')
@@ -135,7 +135,7 @@ g
 # 
 # The nodes are declared initially. System is created by manually adding the nodes to the system.
 
-# In[6]:
+# In[21]:
 
 
 # ****************************
@@ -144,7 +144,7 @@ g
 clock = make_clock(0.1)
 
 
-# In[7]:
+# In[22]:
 
 
 # ****************************
@@ -175,7 +175,7 @@ sys1 = System(
 )
 
 
-# In[8]:
+# In[23]:
 
 
 # ****************************
@@ -208,7 +208,7 @@ sys2 = System(
 )
 
 
-# In[9]:
+# In[24]:
 
 
 # ****************************
@@ -223,7 +223,7 @@ sys = System(
 
 # printing the system will output a dictionary of yaml format.
 
-# In[10]:
+# In[25]:
 
 
 print(sys)
@@ -231,7 +231,7 @@ print(sys)
 
 # ### Simulating the system
 
-# In[11]:
+# In[26]:
 
 
 for i in range(10):
@@ -244,7 +244,7 @@ for i in range(10):
 # 
 # The nodes are created under the context of the system of which the nodes are part of. No need to manually add nodes to the system. Here we have wrapped nodes ``` s1, y1, g1``` in a separate system named ```sensor1```. Similarly we have wrapped nodes ``` s2, y2, g2``` in ```sensor2``` system.
 
-# In[12]:
+# In[27]:
 
 
 with System(name="combined_system") as sys:
@@ -292,7 +292,7 @@ with System(name="combined_system") as sys:
 print(sys.sys1.x1)
 
 
-# In[13]:
+# In[28]:
 
 
 for i in range(10):

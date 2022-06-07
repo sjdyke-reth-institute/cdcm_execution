@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[14]:
 
 
 from cdcm import *
@@ -20,7 +20,7 @@ from cdcm import *
 # 
 # Let us consider a transition function ```f``` which takes input nodes ```x, r, dt```. The function evaluates the function expression using the input node values and updates the next value of the state ```x```. The graph of this function is as shown below. Note the two way connection between the transition function ```f``` and the state ```x```. Order of evaluation of this graph will be: ``` x, r, dt, x```.
 
-# In[2]:
+# In[4]:
 
 
 from graphviz import Digraph
@@ -40,7 +40,7 @@ g
 # #### Using standard function defnition
 # Here the transition function is constructed separately and is passed as an argument while creating Transition object.
 
-# In[3]:
+# In[15]:
 
 
 def func(x, r, time_step):
@@ -58,7 +58,7 @@ f = Transition(
 )
 
 
-# In[4]:
+# In[16]:
 
 
 # Let us create some helper functions
@@ -81,13 +81,13 @@ def testing_transition(x):
     print(x)
 
 
-# In[5]:
+# In[17]:
 
 
 print_computational_graph(x, r, dt, f)
 
 
-# In[6]:
+# In[18]:
 
 
 testing_transition(x)
@@ -96,7 +96,7 @@ testing_transition(x)
 # #### Using lambda
 # Here Python's lambda function feature is used to create a Transition object. This is compact than the previously mentioned way of making a Transition object.
 
-# In[7]:
+# In[19]:
 
 
 x = make_node("S:x:1:m")
@@ -111,13 +111,13 @@ f = Transition(
 )
 
 
-# In[8]:
+# In[20]:
 
 
 print_computational_graph(x, r, dt, f)
 
 
-# In[9]:
+# In[21]:
 
 
 testing_transition(x)
@@ -126,7 +126,7 @@ testing_transition(x)
 # #### Using python decorator @make_function
 # The Transition object ```f``` is created under the decorator as shown below. The child node ```x``` is given as argument to ```@make_function```. The parent nodes ```x, r, dt``` are given as argument to the function ```f``` defined under the decorator. The function ```f``` evaluates the functional form and returns the value to be assigned to the child node.
 
-# In[10]:
+# In[22]:
 
 
 x = make_node("S:x:1:m")
@@ -138,13 +138,13 @@ def f(x=x, r=r, dt=dt):
     return x + r * dt
 
 
-# In[11]:
+# In[23]:
 
 
 print_computational_graph(x, r, dt, f)
 
 
-# In[12]:
+# In[24]:
 
 
 testing_transition(x)
@@ -154,7 +154,7 @@ testing_transition(x)
 # 
 # Here we consider a transition function ```g``` which takes input nodes ```x1, x2, r, dt```. The function evaluates the function expression using the input node values and updates the next value of the states ```x1 & x2```. The graph of this function is as shown below. Note the two way connections between the transition function ```g``` and the states ```x1 & x2```. One of the order of evaluations of this graph will be: ``` x1, r, dt, x2, x1, x2```.
 
-# In[13]:
+# In[5]:
 
 
 from graphviz import Digraph
@@ -174,7 +174,7 @@ g.edge('g', 'x2', color="red")
 g
 
 
-# In[14]:
+# In[25]:
 
 
 x1 = make_node("S:x1:1.0:m")
@@ -188,13 +188,13 @@ def g(x1=x1, x2=x2, r=r, dt=dt):
     )
 
 
-# In[15]:
+# In[26]:
 
 
 print_computational_graph(x1, x2, r, dt, g)
 
 
-# In[16]:
+# In[28]:
 
 
 print("State before:")
