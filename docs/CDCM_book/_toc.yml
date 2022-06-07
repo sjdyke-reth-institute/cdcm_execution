@@ -1,0 +1,17 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+chapters:
+- file: core_system
+  sections:
+  - file: Node
+  - file: Variable
+  - file: State
+  - file: Function
+  - file: Transition
+  - file: System
+    sections:
+    - file: Coupled system
+    - file: Doubly coupled systems

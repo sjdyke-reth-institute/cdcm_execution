@@ -1,0 +1,9 @@
+digraph Function {
+	n1 [label=<n<sub>1</sub>>]
+	n2 [label=<n<sub>2</sub>>]
+	n3 [label=<n<sub>3</sub>>]
+	g
+	n1 -> g
+	n2 -> g
+	g -> n3
+}
