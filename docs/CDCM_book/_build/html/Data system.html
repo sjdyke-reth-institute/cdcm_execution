@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Introduction &#8212; CDCM tutorial book</title>
+    <title>DataSystem &#8212; CDCM tutorial book</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -53,7 +53,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Core System" href="core_system.html" />
+    <link rel="next" title="Examples" href="Examples.html" />
+    <link rel="prev" title="SimulationSaver" href="Simulation%20saver.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -86,23 +87,23 @@ const thebe_selector_output = ".output, .cell_output"
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="nav bd-sidenav">
- <li class="toctree-l1 current">
-  <a class="reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
    Introduction
   </a>
  </li>
 </ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="core_system.html">
    Core System
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
+  <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="Node.html">
      Node
@@ -155,8 +156,8 @@ const thebe_selector_output = ".output, .cell_output"
      SimulationSaver
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Data%20system.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      DataSystem
     </a>
    </li>
@@ -220,9 +221,9 @@ const thebe_selector_output = ".output, .cell_output"
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="_sources/intro.md"><button type="button"
+        <a class="dropdown-buttons" href="_sources/Data system.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
+                data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
                 onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
@@ -240,6 +241,28 @@ const thebe_selector_output = ".output, .cell_output"
 
             <!-- Launch buttons -->
 
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/sjdyke-reth-institute/CDCM_reconfig/master?urlpath=lab/tree/docs/CDCM_book/Data system.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/sjdyke-reth-institute/CDCM_reconfig/blob/master/docs/CDCM_book/Data system.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
         </div>
 
         <!-- Table of contents -->
@@ -252,7 +275,7 @@ const thebe_selector_output = ".output, .cell_output"
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Introduction</h1>
+                <h1>DataSystem</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -263,16 +286,114 @@ const thebe_selector_output = ".output, .cell_output"
             
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>This is a tutorial of CDCM. The basic components of CDCM are discussed along
-with the examples of creating them. The application of CDCM
-is demonstrated using the examples of modelling various systems of a building.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core_system.html">Core System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
-</ul>
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">cdcm</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="datasystem">
+<h1>DataSystem<a class="headerlink" href="#datasystem" title="Permalink to this headline">¶</a></h1>
+<p>DataSystem class provides the functionality to read through a data sequence. We can access data from data system whenever required. A Data System object has following arguments:</p>
+<p><code class="docutils literal notranslate"><span class="pre">data</span></code>: A data sequence<br>
+<code class="docutils literal notranslate"><span class="pre">columns</span></code>: A sequence containing the names of each column. This will be string or sequence of string.<br>
+<code class="docutils literal notranslate"><span class="pre">column_units</span></code>: SI unit if any of each column quantities. This will be string or sequence of string.<br>
+<code class="docutils literal notranslate"><span class="pre">column_description</span></code>: Description for each column. This will be string or sequence of string.<br>
+<code class="docutils literal notranslate"><span class="pre">column_track</span></code>: Track options for columns. This can be boolean or sequence of boolean values.<br></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here are some random data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># And here is the system</span>
+<span class="n">random_sys</span> <span class="o">=</span> <span class="n">DataSystem</span><span class="p">(</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;random_sys&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A data system made from a pre-sampled random stream.&quot;</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;omega&quot;</span><span class="p">,</span>
+    <span class="n">column_units</span><span class="o">=</span><span class="s2">&quot;meters&quot;</span><span class="p">,</span>
+    <span class="n">column_desciptions</span><span class="o">=</span><span class="s2">&quot;Some random quantity.&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">random_sys</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;omega&#39;,) (&#39;meters&#39;,) (&#39;Some random quantity.&#39;,) (True,)
+random_sys:
+  description: A data system made from a pre-sampled random stream.
+  owner: &#39;&#39;
+  nodes:
+    omega:
+      description: Some random quantity.
+      owner: random_sys
+      parents: (&#39;read&#39;,)
+      children: ()
+      value: 1.154662114462068
+      units: meters
+      track: true
+    row:
+      description: The row of the data currently pointing to.
+      owner: random_sys
+      parents: (&#39;incrow&#39;,)
+      children: (&#39;incrow&#39;, &#39;read&#39;)
+      value: 0
+      units: &#39;&#39;
+      track: false
+    data_node:
+      description: A node storing the data.
+      owner: random_sys
+      parents: ()
+      children: (&#39;read&#39;,)
+      value: &quot;[ 1.15466211  0.62907416  0.15856474  0.02429891  1.29113284  1.08550325\n\
+        \ -0.31122806  0.36963519  0.39855308 -1.89054398]&quot;
+      units: &#39;&#39;
+      track: false
+    incrow:
+      description: Increases the row by one.
+      owner: random_sys
+      parents: (&#39;row&#39;,)
+      children: (&#39;row&#39;,)
+      func: !!python/name:cdcm.data_system.incrow &#39;&#39;
+    read:
+      description: Read the data of this row.
+      owner: random_sys
+      parents: (&#39;row&#39;, &#39;data_node&#39;)
+      children: (&#39;omega&#39;,)
+      func: !!python/name:cdcm.data_system.read &#39;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">random_sys</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;omega = </span><span class="si">{</span><span class="n">random_sys</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">1.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">random_sys</span><span class="o">.</span><span class="n">transition</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>omega = 1.15
+omega = 0.63
+omega = 0.16
+omega = 0.02
+omega = 1.29
+omega = 1.09
+omega = -0.31
+omega = 0.37
+omega = 0.40
+omega = -1.89
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -300,11 +421,18 @@ is demonstrated using the examples of modelling various systems of a building.</
               
             
                 <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='right-next' id="next-link" href="core_system.html" title="next page">
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="Simulation%20saver.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">SimulationSaver</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="Examples.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Core System</p>
+        <p class="prev-next-title">Examples</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

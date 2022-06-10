@@ -4,8 +4,8 @@ execute:
   execute_notebooks: "off"
 author: "Sreehari Manikkan"
 repository:
-  url: "https://github.com/sjdyke-reth-institute/CDCM_reconfig/tree/redesign/docs"
-  path_to_book: "CDCM_book"
+  url: "https://github.com/sjdyke-reth-institute/CDCM_reconfig/tree/redesign/"
+  path_to_book: "docs/CDCM_book"
 launch_buttons:
   notebook_interface: "jupyterlab"
   colab_url: "https://colab.research.google.com"
