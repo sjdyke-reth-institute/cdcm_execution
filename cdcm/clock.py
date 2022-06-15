@@ -26,14 +26,11 @@ def make_clock(
     clock_name="clock"
 ):
     """Make a clock system."""
-    pdt = make_node(f"P:{dt_name}:{dt}:{units}", description="The timestep.")
-    t = make_node(f"S:{t_name}:{t0}:{units}", description="The time.")
-    @make_function(t)
-    def tick(t=t, dt=pdt):
-        """Moves time forward by `dt`."""
-        return t + dt
-    return System(
-        name=clock_name,
-        nodes=[pdt, t, tick],
-        description=description
-    )
+    with System(name=clock_name, description=description) as clock:
+        pdt = make_node(f"P:{dt_name}:{dt}:{units}", description="The timestep.")
+        t = make_node(f"S:{t_name}:{t0}:{units}", description="The time.")
+        @make_function(t)
+        def tick(t=t, dt=pdt):
+            """Moves time forward by `dt`."""
+            return t + dt
+    return clock
