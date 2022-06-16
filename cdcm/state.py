@@ -30,7 +30,7 @@ class State(Variable):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._next_value = deepcopy(self.value)
+        self._next_value = deepcopy(self._value)
 
     def transition(self):
         """Writes `value` on `next_value`.
@@ -38,4 +38,5 @@ class State(Variable):
         Precondition:
         The `_next_value` has already been set.
         """
-        self._next_value, self._value = self._value, self._next_value
+        self._next_value, self.value = self._value, self._next_value
+        #self.tell_my_children_I_have_changed()
