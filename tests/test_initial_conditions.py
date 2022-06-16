@@ -1,8 +1,7 @@
-"""Tests the functionality of the System class for a simple isolated system.
+"""Tests initial conditions.
 
 Author:
     Ilias Bilionis
-    Murali Krishnan R
 
 Date:
     6/16/2022
