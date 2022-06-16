@@ -36,7 +36,7 @@ with System(name="exp_decay", description="A simple oscilator") as sys:
 
     # This sets the transition of the state
     omega = Parameter(name="omega", value=-1.3, units="m/sec",
-        description="Natural frequency")
+        description="Decay rate")
 
     @make_function(x)
     def f(x=x, omega=omega, dt=clock.dt):
