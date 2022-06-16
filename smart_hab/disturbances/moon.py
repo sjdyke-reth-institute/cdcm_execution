@@ -8,14 +8,16 @@ __all__ = ["make_moon"]
 
 
 from cdcm import *
+from . import make_dust_env_0
 from . import make_radiation_env_0
 from . import make_thermal_env_0
 
 
 def make_moon(
     clock,
+    make_dust_env=make_dust_env_0,
     make_radiation_env=make_radiation_env_0,
-    make_thermal_env=make_thermal_env_0
+    make_thermal_env=make_thermal_env_0,
     ):
     """
     Make a moon system.
@@ -39,7 +41,9 @@ def make_moon(
         # latitude =
         # height =
 
-        radiation  = make_radiation_env(clock, moon)
+        dust = make_dust_env(clock)
+
+        radiation = make_radiation_env(clock, moon)
 
         thermal = make_thermal_env(clock, moon)
 
