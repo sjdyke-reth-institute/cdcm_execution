@@ -42,6 +42,15 @@ with System(name="exp_decay", description="A simple oscilator") as sys:
         print("*** CALLING TRANSITION ***")
         return x - dt * omega * x
 
+    # Can we do this as follows?
+    # mu = Parameter()
+    # sigma = Parameter()
+    # clock = make_clock()
+    # with State("x") as x:
+    #     x[0] ~ N(mu, sigma)
+    #     x[t+1] = x[t] + clock.dt * omega * x[t]
+
+
 print(sys)
 
 # Simulate a trajectory
