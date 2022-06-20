@@ -24,31 +24,31 @@ def make_meteor_env_0(clock, moon, dome_specs):
             name="meteor_impacts_1",
             value=0.0,
             units="",
-            description="Meteor damage on Dome section 1"
+            description="Meteor impact on the location of Dome section 1"
         )
         meteor_impacts_2 = Variable(
             name="meteor_impacts_2",
             value=0.0,
             units="",
-            description="Meteor damage on Dome section 2"
+            description="Meteor impact on the location of Dome section 2"
         )
         meteor_impacts_3 = Variable(
             name="meteor_impacts_3",
             value=0.0,
             units="",
-            description="Meteor damage on Dome section 3"
+            description="Meteor impact on the location of Dome section 3"
         )
         meteor_impacts_4 = Variable(
             name="meteor_impacts_4",
             value=0.0,
             units="",
-            description="Meteor damage on Dome section 4"
+            description="Meteor impact on the location of Dome section 4"
         )
         meteor_impacts_5 = Variable(
             name="meteor_impacts_5",
             value=0.0,
             units="",
-            description="Meteor damage on Dome section 5"
+            description="Meteor impact on the location of Dome section 5"
         )
 
         print(type(moon), type(dome_specs))
