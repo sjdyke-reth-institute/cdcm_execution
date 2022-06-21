@@ -7,8 +7,8 @@ It is a System that provides access to the following variables:
         dust_rate = Variable(
             name="dust_rate",
             value=0.0,
-            units="1/sec",
-            description="Dust deposition rate"
+            units="1/sec/m^2",
+            description="Dust deposition rate per unit time and area on a horizontal surface."
         )
 
 We say that any `System` that has a `dust_rate` matching the above
@@ -32,6 +32,15 @@ A **constructor** is a function that makes `MoonDustEnvironment`s.
 A constructor for a `MoonDustEnvironment` is a function that
 requires an instance of a `Clock` and returns an instance of
 a `MoonDustEnvironment`.
+
+Suggestions for future?
+                                  clock :: Clock
+                                       | |
+                                        V
+                               _____________________
+(R) meteorite_impact_event -> |                     |
+(R) launch                 -> | MoonDustEnvironment |-> dust_rate :: UnitVector -> Variable
+                              |_____________________|
 
 """
 
