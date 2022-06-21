@@ -1,4 +1,10 @@
-"""A temperature model."""
+"""A MoonThermalEnvironment
+
+Clock           =>  |                        |
+                    | MoonThermalEnvironment | ->  surface_temperature
+MoonEnvironment =>  |                        |
+
+"""
 
 
 __all__ = ["make_thermal_env_0"]
