@@ -1,4 +1,39 @@
-"""A Dust deposition model."""
+"""Defines the concept of `MoonDustEnvironment`.
+
+What is a MoonDustEnvironment?
+
+It is a System that provides access to the following variables:
+       
+        dust_rate = Variable(
+            name="dust_rate",
+            value=0.0,
+            units="1/sec",
+            description="Dust deposition rate"
+        )
+
+We say that any `System` that has a `dust_rate` matching the above
+specification is an **instance** of the `MoonDustEnvironment`
+**interface**.
+
+Say that `moon_dust` is an instance of the `MoonDustEnvironment`
+interface. This means, that it has a variable `moon_dust.dust_rate`
+and that any system that interacts with it can only do so
+through that variable.
+
+ _____________________
+|                     |
+| MoonDustEnvironment |-> dust_rate
+|_____________________|
+
+There many implentations of a `MoonDustEnvironment`.
+Each one of these implementations has a **constructor**.
+A **constructor** is a function that makes `MoonDustEnvironment`s.
+
+A constructor for a `MoonDustEnvironment` is a function that
+requires an instance of a `Clock` and returns an instance of
+a `MoonDustEnvironment`.
+
+"""
 
 
 
@@ -12,6 +47,17 @@ import random
 
 def make_dust_env_0(clock):
     with System(name="dust", description="The dust environment") as dust:
+        # It absolutely essential to define this.
+        # Because this implements the interface:
+        dust_rate = Variable(
+            name="dust_rate",
+            value=0.0,
+            units="1/sec",
+            description="Dust deposition rate"
+        )
+        
+        # Whatever follows is particular to this implementation
+        # of the MoonDustEnvironment:
         mean_dust_rate = Parameter(
             name="mean_dust_rate",
             value=1.0,
@@ -25,12 +71,7 @@ def make_dust_env_0(clock):
             description="Standard deviation of dust deposition rate"
         )
 
-        dust_rate = Variable(
-            name="dust_rate",
-            value=0.0,
-            units="1/sec",
-            description="Dust deposition rate"
-        )
+
 
         @make_function(dust_rate)
         def f_dust_rate(
