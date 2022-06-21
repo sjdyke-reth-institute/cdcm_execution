@@ -1,9 +1,26 @@
-"""An irradiance model."""
+"""An MoonRadiationEnvironment.
+
+The notation "=>" means "input required for constructing."
+                    __________________________
+Clock           => |                          |
+                   | MoonRadiationEnvironment | -> irradiance
+MoonEnvironment => |__________________________|
+
+Specification of irradiance:
+        irradiance = Variable(
+            name="irradiance",
+            value=0.0,
+            units="W/m^2",
+            description="The horizontal total irradiance on moon surface."
+        )
+        
+A constructor must requires as inputs instances of `Clock` and `MoonEnvironment`.
+
+"""
 
 
 
 __all__ = ["make_radiation_env_0"]
-
 
 
 from cdcm import *
