@@ -8,24 +8,11 @@ variable :: TypeOfVariable
 
 (variable) = optional variable
 
-
-                      (sys1 :: System)
-                           | |
-                            V
-                           __________
-input1 :: Variable  ->    |          | -> output1 :: Variable
-                          |__________|
-                                               Moon    (InteriorEnv)
-                                                | |        | |
-                                                 V          V
                                                _________________
-           iradiance :: Variable           -> |                 | -> strucure_health :: Variable 
-           surface_temp :: Variable        -> |                 |
-disturbance        :: meteor model         => |    StructEnv    |
-Interior-Env       :: Interior-Env_temp    => |                 |
-Agents             :: Dome Repair          => |                 |
-Design             :: Dome design & specs  => |_________________| -> strucure_temp :: Variable
-
+moon             :: Moon                   => |                 | -> strucure_health :: Variable 
+(int_env)        :: InteriorEnv            => |    StructEnv    |
+agents           :: Agents                 => |                 |
+design           :: DomeSpec               => |_________________| -> strucure_temp :: Variable
 
 """
 
