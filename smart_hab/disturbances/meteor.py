@@ -1,5 +1,16 @@
-"""An METEOR model."""
-
+"""A METEOR model.
+                    __________________________
+                    |                        |
+MoonEnvironment =>  | MoonMeteorEnvironment  | ->  geographical locations, time, design of the dome   -> [meteor velocity, location, size] array
+                    |                        |
+                    __________________________
+                    __________________________
+Clock           =>  |                        |
+Time Step       =>  | MoonMeteorEnvironment  | ->  meteor impact on dome [array]
+MoonEnvironment =>  |                        |
+DomeSpecs       =>  |                        |
+                    __________________________
+"""
 
 
 __all__ = ["make_meteor_env_0"]
