@@ -3,13 +3,28 @@ Defines the struct interface/type/system/concept.
 
 A `structEnvironment` is `System` that exposes the following interface:
 
+
+variable :: TypeOfVariable
+
+(variable) = optional variable
+
+
+                      (sys1 :: System)
+                           | |
+                            V
+                           __________
+input1 :: Variable  ->    |          | -> output1 :: Variable
+                          |__________|
+                                               Moon    (InteriorEnv)
+                                                | |        | |
+                                                 V          V
                                                _________________
-disturbance        :: iradiance            => |                 | -> strucure_health           :: structure_health_env
-disturbance        :: surface temperature  => |                 |
+           iradiance :: Variable           -> |                 | -> strucure_health :: Variable 
+           surface_temp :: Variable        -> |                 |
 disturbance        :: meteor model         => |    StructEnv    |
 Interior-Env       :: Interior-Env_temp    => |                 |
 Agents             :: Dome Repair          => |                 |
-Design             :: Dome design & specs  => |_________________| -> strucure_temp             :: structure_temp_env
+Design             :: Dome design & specs  => |_________________| -> strucure_temp :: Variable
 
 
 """
