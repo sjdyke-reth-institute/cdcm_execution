@@ -26,16 +26,14 @@ with System(name="everything",
     dome_specs = make_dome_specs()
     # TODO: comment on decomposition
     moon = make_moon(path_data_files, clock, dome_specs)
-    struct = make_structure(moon,
-                            dome_specs,
-                            place_holder_0.place_holder_int_env_temp,
-                            place_holder_0.place_holder_agent_repair_struct)
-    energy = make_energy(clock,
-                         moon,
-                         place_holder_0.place_holder_power_cons,
-                         place_holder_0.place_holder_agent_clean_panel,
-                         place_holder_0.place_holder_agent_clean_plant,
-                         place_holder_0.place_holder_agent_cover_panel)
+    struct = make_structure(moon, dome_specs)
+    energy = make_energy(clock, moon)
+    # choice 1:
+    interior_env = make_interior(structure)
+    # choice 2:
+    # fix_interface(structure, interior_env)
+    #   replace(interior_env.struct_temp, structure.temperature)
+    #   replace(structure.int_env_temp, interior_env.temp)
 
     # place_holder_0.replace_place_holder()
 print(everything)
