@@ -17,8 +17,11 @@ import numpy as np
 
 def make_structure_temp_env_0(struct_health,
                               dome_specs, moon,
-                              int_env_temp):
+                              int_env_temp=None):
     with System(name="structure_temp", description="The structure_temp environment") as structure_temp:
+        if int_env_temp is None:
+          int_env_temp = Variable("int_env_temp", value=70, units="deegres F", description="Replace me.")
+        
         ext_str_temp = (make_node("S:ext_str_temp",
                                   value=100.0,
                                   units="",
