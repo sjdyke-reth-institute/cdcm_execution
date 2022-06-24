@@ -9,6 +9,9 @@ Date:
 """
 
 
+__all__ = ["Agenda"]
+
+
 from collections import deque as Queue
 
 
@@ -45,33 +48,16 @@ class Agenda(object):
 
         Precondition: There isn't such an item yet.
         """
-        self.todo[time] = {
-            "events": Queue(),
-            "model": Queue()
-        }
+        self.todo[time] = Queue()
 
-    def add_event(self, time : Float, task):
-        self.todo[time]["events"].appendleft(task)
-
-    def add_model(self, time : Float, task : Function):
-        self.todo[time]["model"].appendleft(task)
+    def add(self, time : Float, event):
+        if time not in self.todo:
+            self.make_new_todo()
+        self.todo[time].appendleft(event)
 
     def forward(self):
-        """Moves the simulation by one timestep.
-
-        Note that this is the finest timestep of the simulation.
-
-        Precondition: The todo is not empty.
-        """
-        current_todo = next(iter(self.todo.values()))
-        events_todo = current_todo["events"]
-        model_todo = current_todo["model"]
-        while events_todo:
-            events_todo.pop()(self)
-        while model_todo:
-            model_todo.pop()(self)
-
-    def simulate(self, time):
-        """Simulate until `time` is reached."""
-        while self.current_time <= time:
-            self.forward()
+        """Run all events in the current timestep."""
+        current_events = next(iter(self.todo.values()))
+        while current_events:
+            event = current_events.pop()
+            event(self)
