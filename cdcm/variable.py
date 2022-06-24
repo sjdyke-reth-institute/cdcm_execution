@@ -57,10 +57,10 @@ class Variable(Node):
         track : bool = True,
         **kwargs
     ):
+        super().__init__(**kwargs)
         self.value = value
         self.units = units
         self.track = track
-        super().__init__(**kwargs)
 
     @property
     def value(self) -> Any:
@@ -71,6 +71,7 @@ class Variable(Node):
     def value(self, new_value : Any):
         """Set the value of the object."""
         self._value = new_value
+        self.tell_my_children_I_have_changed()
 
     @property
     def units(self) -> str:

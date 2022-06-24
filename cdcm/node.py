@@ -75,6 +75,7 @@ class Node(object):
         self.owner = owner
         self._children : NodeSet = list()
         self._parents : NodeSet = list()
+        self._parents_changed = False
         self.add_children(children)
         self.add_parents(parents)
         if in_context():
@@ -89,6 +90,18 @@ class Node(object):
     def parents(self) -> NodeSet:
         return self._parents
 
+    @property
+    def parents_changed(self) -> bool:
+        return self._parents_changed
+
+    @parents_changed.setter
+    def parents_changed(self, value : bool):
+        self._parents_changed = value
+
+    def tell_my_children_I_have_changed(self):
+        for c in self.children:
+            c.parents_changed = True
+
     def add_child(self, obj : "Node", reflexive : bool = True):
         self._children.append(obj)
         if reflexive:
@@ -96,6 +109,7 @@ class Node(object):
 
     def add_parent(self, obj : "Node", reflexive : bool = True):
         self._parents.append(obj)
+        self.parents_changed = True
         if reflexive:
             obj.add_child(self, reflexive=False)
 
@@ -198,7 +212,7 @@ class Node(object):
 
     def forward(self):
         """This is provided for symmetry. To be overloaded by Factor."""
-        pass
+        self.parents_changed = False
 
     def transition(self):
         """This is provided for symmetry. To be overloaded by State."""
