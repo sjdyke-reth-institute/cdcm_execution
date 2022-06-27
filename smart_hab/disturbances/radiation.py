@@ -1,10 +1,9 @@
 """An MoonRadiationEnvironment.
 
-The notation "=>" means "input required for constructing."
-                    __________________________
-Clock           => |                          |
-                   | MoonRadiationEnvironment | -> irradiance
-MoonEnvironment => |__________________________|
+                    ___________________________
+                   |                           |
+clock :: Clock  => |  MoonRadiationEnvironment |-> irradiance :: Variable
+moon  :: Moon   => |___________________________|
 
 Specification of irradiance:
         irradiance = Variable(

@@ -1,10 +1,15 @@
 """A structure_temp model.
 
-                                                _________________________
-disturbance        :: iradiance             => |                        |
-Interior-En        :: Interior-Env_temp     => |   StructureTempEnv     | ->  structure internal wall temperature
-disturbance        :: surface temperature   => |                        |
-Design             :: Dome design & specs   => _________________________
+variable :: TypeOfVariable
+
+(variable) = optional variable
+
+                                               __________________
+moon             :: Moon                   => |                  |
+(int_env)        :: InteriorEnv            => | StructureTempEnv |  -> strucure_temp_innerside :: State
+                                              |                  |
+design           :: DomeSpec               => |__________________|
+
 
 """
 
@@ -17,10 +22,8 @@ import numpy as np
 
 def make_structure_temp_env_0(struct_health,
                               dome_specs, moon,
-                              int_env_temp=None):
+                              int_env_temp):
     with System(name="structure_temp", description="The structure_temp environment") as structure_temp:
-        if int_env_temp is None:
-          int_env_temp = Variable("int_env_temp", value=70, units="deegres F", description="Replace me.")
         
         ext_str_temp = (make_node("S:ext_str_temp",
                                   value=100.0,

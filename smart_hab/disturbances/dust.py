@@ -34,13 +34,11 @@ requires an instance of a `Clock` and returns an instance of
 a `MoonDustEnvironment`.
 
 Suggestions for future?
-                                  clock :: Clock
-                                       | |
-                                        V
-                               _____________________
-(R) meteorite_impact_event -> |                     |
-(R) launch                 -> | MoonDustEnvironment |-> dust_rate :: UnitVector -> Variable
-                              |_____________________|
+
+                     _______________________
+                    |                      |
+clock  :: Clock  => |  MoonDustEnvironment |-> dust_rate :: Variable
+                    |______________________|
 
 """
 

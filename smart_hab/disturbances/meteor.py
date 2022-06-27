@@ -1,15 +1,20 @@
 """A METEOR model.
-                    __________________________
-                    |                        |
-MoonEnvironment =>  | MoonMeteorEnvironment  | ->  geographical locations, time, design of the dome   -> [meteor velocity, location, size] array
-                    |                        |
-                    __________________________
-                    __________________________
-Clock           =>  |                        |
-Time Step       =>  | MoonMeteorEnvironment  | ->  meteor impact on dome [array]
-MoonEnvironment =>  |                        |
-DomeSpecs       =>  |                        |
-                    __________________________
+
+Generate a function
+                   ___________________________
+t    :: Clock  => |                           |
+moon :: Moon   => |   MoonMeteorEnvironment   |-> meteor impact :: Function (geographical locations, time, design of the dome)   -> [meteor velocity, location, size] array
+moon :: Moon   => |___________________________|
+
+OR
+
+Generate the impact
+                         ___________________________
+clock   :: Clock     => |                           |
+moon    :: Moon      => |   MoonMeteorEnvironment   |-> meteor_impact :: Variable[array]
+design  :: DomeSpec  => |___________________________|
+
+
 """
 
 
@@ -62,7 +67,6 @@ def make_meteor_env_0(clock, moon, dome_specs):
             description="Meteor impact on the location of Dome section 5"
         )
 
-        print(type(moon), type(dome_specs))
         @make_function(meteor_impacts_1,
                        meteor_impacts_2,
                        meteor_impacts_3,

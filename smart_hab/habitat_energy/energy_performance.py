@@ -1,11 +1,17 @@
-"""A structure_health model.
+"""A Energy performance model. This model's output specifies how much energy compared to nominal performance can be generated
 
 
-                                               _________________________
-Agents             :: cleaning             => |                        |
-                                              |   StructureHealthEnv   | ->  sperformance level of energy from solar and nuclear
-disturbance        :: dust                 => |                        |
-                                              _________________________
+
+variable :: TypeOfVariable
+
+(variable) = optional variable
+                                        ___________________________
+(cleaning_panel)      :: Agents    => |                           | ->  performance_cleannese_solar        :: State
+(cleaning_radiator)   :: Agents    => |                           |
+(covering_panel)      :: HM        => |   Energy_performanceEnv   | ->  performance_cleannese_nuclear      :: State
+clock                 :: Clock     => |                           |
+dust                  :: Moon      => |                           | ->  performance_being_functional_solar :: State
+                                       ___________________________
 
 """
 

@@ -1,11 +1,16 @@
 """A structure_health model.
 
+variable :: TypeOfVariable
 
-                                               _________________________
-Agents             :: Dome Repair          => |                        |
-                                              |   StructureHealthEnv   | ->  structure_health [for thermal/pressure isolation equations i.e. conduction & convection coefficents]
-disturbance        :: meteor model         => |                        |
-Design             :: Dome design & specs  => _________________________
+(variable) = optional variable
+
+                                               ____________________
+moon             :: Moon                   => |                    |
+                                              | StructureHealthEnv | -> strucure_health         :: State[array]
+agents           :: Agents                 => |                    |
+design           :: DomeSpec               => |____________________|
+
+
 
 """
 
@@ -39,12 +44,16 @@ def make_structure_health_env_0(moon, agent_repair_struct):
                                      value=1.0,
                                      units="",
                                      description="structure_sec_5"))
-        print(moon)
-        @make_function(structure_sec_1,
-                       structure_sec_2,
-                       structure_sec_3,
-                       structure_sec_4,
-                       structure_sec_5)
+        structure_secs = (make_node("S:structure_secs",
+                                     value=[1.0, 1.0, 1.0, 1.0, 1.0],
+                                     units="",
+                                     description="structure_secs"))
+        # @make_function(structure_sec_1,
+        #                structure_sec_2,
+        #                structure_sec_3,
+        #                structure_sec_4,
+        #                structure_sec_5)
+        @make_function(structure_secs)
         def f_struct_health(structure_sec_1=structure_sec_1,
                             structure_sec_2=structure_sec_2,
                             structure_sec_3=structure_sec_3,
@@ -108,10 +117,10 @@ def make_structure_health_env_0(moon, agent_repair_struct):
                 structure_sec_5_new = struct_5_T
             else:
                 structure_sec_5_new = struct_5_T.item()
-
-            return structure_sec_1_new, \
-                   structure_sec_2_new, \
-                   structure_sec_3_new, \
-                   structure_sec_4_new, \
-                   structure_sec_5_new
+            return structure_secs
+            # return structure_sec_1_new, \
+            #        structure_sec_2_new, \
+            #        structure_sec_3_new, \
+            #        structure_sec_4_new, \
+            #        structure_sec_5_new
     return structure_health

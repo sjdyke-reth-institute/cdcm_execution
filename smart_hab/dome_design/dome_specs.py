@@ -1,5 +1,14 @@
 """
-Makes the dome specs system with all its design parameters.
+Makes the dome specs system with all its design and fixed parameters.
+
+variable :: TypeOfVariable
+
+(variable) = optional variable
+
+ _________________
+|                 |
+|   DomeSpecsEnv  | -> design[A long list of parameters]
+|_________________|
 
 """
 
@@ -62,4 +71,33 @@ def make_dome_specs():
                                    value=1.0 * 25.0 * 2.0,
                                    units="W/(m^2*K)",
                                    description="int_conv_coef"))
+
+        efficiency_of_PM = (make_node("P:efficiency_of_PM",
+                                      value=31.25,
+                                      units="",
+                                      description="efficiency_of_PM"))
+        pres_capac_per_vol = (make_node("P:pres_capac_per_vol",
+                                        value=1.0035 * 1000,
+                                        units="J/atm",
+                                        description="pres_capac_per_vol"))
+        air_leak_coeficent = (make_node("P:air_leak_coeficent",
+                                        value=10.0 ** (-2),
+                                        units="atm/sec",
+                                        description="air_leak_coeficent"))
+
+        air_heat_capac = (make_node("P:air_heat_capac",
+                                    value=1.0035 * 1000,
+                                    units="J/(kg*K)",
+                                    description="air_heat_capac"))
+
+        efficiency_of_TM = (make_node("P:efficiency_of_TM",
+                                      value=12.5,
+                                      units="",
+                                      description="efficiency_of_TM"))
+
+        out_of_str_pres = (make_node("P:out_of_str_pres",
+                                     value=0.0,
+                                     units="atm",
+                                     description="out_of_str_pres"))
+
     return dome_specs

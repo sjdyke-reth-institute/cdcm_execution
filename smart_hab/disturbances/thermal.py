@@ -1,8 +1,9 @@
 """A MoonThermalEnvironment
 
-Clock           =>  |                        |
-                    | MoonThermalEnvironment | ->  surface_temperature
-MoonEnvironment =>  |                        |
+                    ___________________________
+                   |                           |
+clock :: Clock  => |  MoonRadiationEnvironment |-> surface_temperature :: Variable
+moon  :: Moon   => |___________________________|
 
 """
 
