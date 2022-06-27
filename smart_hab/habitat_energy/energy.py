@@ -24,6 +24,15 @@ design                :: DomeSpec  => |_________________| -> store_energy :: Sta
 __all__ = ["make_energy"]
 
 
+ENERGY_INTERFACE_DETAILS = {
+  "Clock": "clock",
+  "Moon": "moon",
+  "ECLSS": "used_energy",
+  "Agents":, ["cleaning_panel", "cleaning_radiator"],
+  "HM":, "covering_panel",
+  "DomeSpec": "design"
+}
+
 from cdcm import *
 from . import make_energy_performance_env_0
 from . import make_energy_generate_energy_env_0
