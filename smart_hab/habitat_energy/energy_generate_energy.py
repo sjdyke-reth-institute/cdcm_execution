@@ -28,33 +28,33 @@ def make_energy_generate_energy_env_0(clock, moon,
         solar_cell_energy_max = (make_node("P:solar_cell_energy_max",
                                      value=0.08645881805490926,
                                      units="J",
-                                     description="solar_cell_energy_max"))
+                                     description="Maximum energy solar power could generate in 1 second in maximum solar radiation with 100% efficiency"))
         solar_cell_capacity = (make_node("P:solar_cell_capacity",
                                          value=0.3,
                                          units="",
-                                         description="solar_cell_capacity"))
+                                         description="Efficiency of the solar panels"))
 
         nuclear_fuel_rate = (make_node("P:nuclear_fuel_rate",
-                                       value=1.0,
+                                       value=10**(-5),
                                        units="kg/sec",
-                                       description="nuclear_fuel_rate"))
+                                       description="Rate of nuclear fuel fed to the reactor"))
         nuclear_capacity = (make_node("P:nuclear_capacity",
-                                      value=2399.9999999432475,
+                                      value=2.4 * 10**(8),
                                       units="J/kg",
-                                      description="nuclear_capacity"))
-        
+                                      description="Amount of energy 1 kg nuclear fuel will free"))
+
         gen_energy_solar = (make_node("S:gen_energy_solar",
                                      value=0.0,
                                      units="J",
-                                     description="gen_energy_solar"))
+                                     description="Generated solar energy in this time step"))
         gen_energy_nuclear = (make_node("S:gen_energy_nuclear",
                                        value=0.0,
                                        units="J",
-                                       description="gen_energy_nuclear"))
+                                       description="Generated nuclear energy in this time step"))
         gen_energy_total = (make_node("S:gen_energy_total",
                                      value=0.0,
                                      units="J",
-                                     description="gen_energy_total"))
+                                     description="Total generated energy in this time step"))
 
         @make_function(gen_energy_solar)
         def f_gen_energy_solar(accum_dust_solar=energy_performance.accum_dust_solar,

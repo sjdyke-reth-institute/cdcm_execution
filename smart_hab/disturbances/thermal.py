@@ -21,21 +21,21 @@ def make_thermal_env_0(clock, moon):
             name="surface_temperature",
             value=0.0,
             units="K",
-            description="Temperature of the loonar surface."
+            description="Temperature of the lunar surface."
         )
 
         max_external_temp = Parameter(
             name="max_external_temp",
             value=400.0,
             units="K",
-            description="The maximum temperature on the loonar surface."
+            description="The maximum temperature on the lunar surface."
         )
 
         min_external_temp = Parameter(
             name="min_external_temp",
             value=100.0,
             units="K",
-            description="The minimum temperature on the loonar surface."
+            description="The minimum temperature on the lunar surface."
         )
 
         @make_function(surface_temperature)

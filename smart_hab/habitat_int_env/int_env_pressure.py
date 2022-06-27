@@ -4,19 +4,7 @@ variable :: TypeOfVariable
 
 (variable) = optional variable
 
-                                                    ___________________
-(eclss_used_energy_heat)    :: EClSS            => |                  |
-(eclss_needed_energy_heat)  :: EClSS            => |                  | -> int_env_temperature  ::  State
-(eclss_used_energy_pres)    :: EClSS            => |                  |
-(eclss_needed_energy_pres)  :: EClSS            => |                  |
-(strucure_health)           :: Struct           => |    int_envEnv    |
-(strucure_temp_innerside)   :: Struct           => |                  |
-(temperature setpoints)     :: HM               => |                  |
-(pressure setpoints)        :: HM               => |                  | -> int_env_pressure     ::  State
-design                      :: DomeSpec         => |__________________|
-
-
-                                              ________________________
+                                               ________________________
 design                    :: DomeSpec     => |                        |
 (eclss_used_energy_pres)    :: EClSS      => |                        | ->  energy needed for pressure control
 (eclss_needed_energy_pres)  :: EClSS      => |                        |
@@ -45,27 +33,27 @@ def make_int_env_pressure_env_0(dome_specs,
         int_env_pres = (make_node("S:int_env_pres",
                                   value=1.0,
                                   units="atm",
-                                  description="int_env_pres"))
+                                  description="Air pressure inside the habitat"))
         structure_sec_1 = (make_node("S:structure_sec_1",
                                      value=struct_health.value[0],
                                      units="",
-                                     description="structure_sec_1"))
+                                     description="health level of the dome section 1; 1 is the healthiest"))
         structure_sec_2 = (make_node("S:structure_sec_2",
                                      value=struct_health.value[1],
                                      units="",
-                                     description="structure_sec_2"))
+                                     description="health level of the dome section 2; 1 is the healthiest"))
         structure_sec_3 = (make_node("S:structure_sec_3",
                                      value=struct_health.value[2],
                                      units="",
-                                     description="structure_sec_3"))
+                                     description="health level of the dome section 3; 1 is the healthiest"))
         structure_sec_4 = (make_node("S:structure_sec_4",
                                      value=struct_health.value[3],
                                      units="",
-                                     description="structure_sec_4"))
+                                     description="health level of the dome section 4; 1 is the healthiest"))
         structure_sec_5 = (make_node("S:structure_sec_5",
                                      value=struct_health.value[4],
                                      units="",
-                                     description="structure_sec_5"))
+                                     description="health level of the dome section 5; 1 is the healthiest"))
 
         @make_function(int_env_pres)
         def f_interior_env_pres(lower_pressure_setpo=HM_pressure_lower_setpoint,

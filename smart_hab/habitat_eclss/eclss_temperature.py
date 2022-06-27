@@ -34,11 +34,11 @@ def make_eclss_temperature_env_0(clock, dome_specs,
         en_needed_heat = (make_node("S:en_needed_heat",
                                     value=0.0,
                                     units="J",
-                                    description="en_needed_heat"))
+                                    description="Energy needed to control temperature"))
         en_used_heat = (make_node("S:en_used_heat",
                                   value=0.0,
                                   units="J",
-                                  description="en_used_heat"))
+                                  description="Energy used to control temperature"))
 
         @make_function(en_needed_heat,
                        en_used_heat)

@@ -27,27 +27,27 @@ def make_structure_health_env_0(moon, agent_repair_struct):
         structure_sec_1 = (make_node("S:structure_sec_1",
                                      value=1.0,
                                      units="",
-                                     description="structure_sec_1"))
+                                     description="health level of the dome section 1; 1 is the healthiest"))
         structure_sec_2 = (make_node("S:structure_sec_2",
                                      value=1.0,
                                      units="",
-                                     description="structure_sec_2"))
+                                     description="health level of the dome section 2; 1 is the healthiest"))
         structure_sec_3 = (make_node("S:structure_sec_3",
                                      value=1.0,
                                      units="",
-                                     description="structure_sec_3"))
+                                     description="health level of the dome section 3; 1 is the healthiest"))
         structure_sec_4 = (make_node("S:structure_sec_4",
                                      value=1.0,
                                      units="",
-                                     description="structure_sec_4"))
+                                     description="health level of the dome section 4; 1 is the healthiest"))
         structure_sec_5 = (make_node("S:structure_sec_5",
                                      value=1.0,
                                      units="",
-                                     description="structure_sec_5"))
+                                     description="health level of the dome section 5; 1 is the healthiest"))
         structure_secs = (make_node("S:structure_secs",
                                      value=[1.0, 1.0, 1.0, 1.0, 1.0],
                                      units="",
-                                     description="structure_secs"))
+                                     description="health level of All dome sections; 1 is the healthiest"))
         # @make_function(structure_sec_1,
         #                structure_sec_2,
         #                structure_sec_3,

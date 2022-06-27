@@ -32,7 +32,7 @@ def make_int_env_temperature_env_0(en_used_heat,
         int_env_temp = (make_node("S:int_env_temp",
                                   value=298.0,
                                   units="K",
-                                  description="int_env_temp"))
+                                  description="Air temperature inside the habitat"))
 
         @make_function(int_env_temp)
         def f_interior_env_heat(en_used_heat=en_used_heat,

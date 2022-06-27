@@ -26,7 +26,6 @@ with System(name="everything",
     clock = make_clock(3600.0)
 
     dome_specs = make_dome_specs()
-    # TODO: comment on decomposition
     moon = make_moon(path_data_files, clock, dome_specs)
     # energy = make_energy(clock,
     #                      moon,

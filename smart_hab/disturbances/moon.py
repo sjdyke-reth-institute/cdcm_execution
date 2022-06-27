@@ -6,14 +6,6 @@ variable :: TypeOfVariable
 
 (variable) = optional variable
 
-OLD:                                      _________________ -> half_day_light :: Parameter
-clock            :: Clock            => |                 | -> dust           :: MoonDustEnv
-make_dust        :: ConstMoonDustEnv => | MoonEnvironment | -> thermal        :: MoonThermalEnv
-make_thermal     ...                 => |                 | -> radiation      :: MoonRadiationEnv
-path_data_file   :: String           => |_________________| -> meteorite      :: MoonMeteoriteEnv
-
-
-UPDATED:
                                         _________________ -> half_day_light :: Parameter
 clock            :: Clock          => |                 | -> dust           :: Variable
                                       | MoonEnvironment | -> thermal        :: Variable
