@@ -25,14 +25,14 @@ def make_energy_store_energy_env_0(energy_generate,
     with System(name="energy_store_energy", description="The energy_store_energy environment") as energy_store_energy:
         battery_capacity_0 = 7200000.0
 
-        battery_capacity = (make_node("P:battery_capacity",
+        battery_capacity = Parameter(name="battery_capacity",
                                       value=battery_capacity_0,
                                       units="J",
-                                      description="battery capacity for saving energy"))
-        available_en = (make_node("S:available_en",
+                                      description="battery capacity for saving energy")
+        available_en = State(name="available_en",
                                   value=battery_capacity_0,
                                   units="J",
-                                  description="Current energy stored in batteries"))
+                                  description="Current energy stored in batteries")
 
         @make_function(available_en)
         def f_available_en(available_en=available_en,

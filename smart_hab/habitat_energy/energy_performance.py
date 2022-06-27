@@ -24,18 +24,18 @@ from cdcm import *
 
 def make_energy_performance_env_0(clock, moon, clean_panel, clean_plant, cover_panel):
     with System(name="energy_performance", description="The structure_health environment") as energy_performance:
-        accum_dust_solar = (make_node("S:accum_dust_solar",
+        accum_dust_solar = State(name="accum_dust_solar",
                                       value=1.0,
                                       units="",
-                                      description="cleanness of the solar panel; 1 is the cleanest"))
-        accum_dust_nuclear = (make_node("S:accum_dust_nuclear",
+                                      description="cleanness of the solar panel; 1 is the cleanest")
+        accum_dust_nuclear = State(name="accum_dust_nuclear",
                                         value=1.0,
                                         units="",
-                                        description="cleanness of the nuclear radiators; 1 is the cleanest"))
-        functional_covered = (make_node("S:functional_covered",
+                                        description="cleanness of the nuclear radiators; 1 is the cleanest")
+        functional_covered = State(name="functional_covered",
                                         value=1.0,
                                         units="",
-                                        description="functionality of the solar panel; 1 is functional, 0 is covered"))
+                                        description="functionality of the solar panel; 1 is functional, 0 is covered")
 
         @make_function(accum_dust_solar,
                        accum_dust_nuclear, 

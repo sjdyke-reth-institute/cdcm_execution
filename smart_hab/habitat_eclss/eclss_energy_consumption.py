@@ -23,10 +23,10 @@ def make_eclss_energy_consumption_env_0(available_en,
                                   eclss_pressure,
                                   eclss_temperature):
     with System(name="eclss_energy_consumption", description="The eclss_energy_consumption environment") as eclss_energy_consumption:
-        energy_cons = (make_node("S:energy_cons",
+        energy_cons = State(name="energy_cons",
                                 value=0.0,
                                 units="J",
-                                description="Total energy used by ECLSS for pressure and temperature control"))
+                                description="Total energy used by ECLSS for pressure and temperature control")
 
         @make_function(energy_cons)
         def f_energy_consumption(en_used_heat=eclss_temperature.en_used_heat,

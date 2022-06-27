@@ -25,14 +25,14 @@ def make_structure_temp_env_0(struct_health,
                               int_env_temp):
     with System(name="structure_temp", description="The structure_temp environment") as structure_temp:
         
-        ext_str_temp = (make_node("S:ext_str_temp",
+        ext_str_temp = State(name="ext_str_temp",
                                   value=100.0,
                                   units="",
-                                  description="Temperature of the outer side of the dome wall"))
-        int_str_temp = (make_node("S:int_str_temp",
+                                  description="Temperature of the outer side of the dome wall")
+        int_str_temp = State(name="int_str_temp",
                                   value=320.0,
                                   units="",
-                                  description="Temperature of the inner side of the dome wall"))
+                                  description="Temperature of the inner side of the dome wall")
         @make_function(ext_str_temp, int_str_temp)
         def f_struct_temp(ext_str_temp=ext_str_temp,
                           int_str_temp=int_str_temp,

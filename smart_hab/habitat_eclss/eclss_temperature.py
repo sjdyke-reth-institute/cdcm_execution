@@ -31,14 +31,14 @@ def make_eclss_temperature_env_0(clock, dome_specs,
                                  HM_temperature_lower_setpoint,
                                  HM_temperature_upper_setpoint,):
     with System(name="eclss_temperature", description="The eclss_temperature environment") as eclss_temperature:
-        en_needed_heat = (make_node("S:en_needed_heat",
+        en_needed_heat = State(name="en_needed_heat",
                                     value=0.0,
                                     units="J",
-                                    description="Energy needed to control temperature"))
-        en_used_heat = (make_node("S:en_used_heat",
+                                    description="Energy needed to control temperature")
+        en_used_heat = State(name="en_used_heat",
                                   value=0.0,
                                   units="J",
-                                  description="Energy used to control temperature"))
+                                  description="Energy used to control temperature")
 
         @make_function(en_needed_heat,
                        en_used_heat)

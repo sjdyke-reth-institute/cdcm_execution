@@ -29,10 +29,10 @@ def make_int_env_temperature_env_0(en_used_heat,
                                    HM_temperature_upper_setpoint
                                    ):
     with System(name="int_env_temperature", description="The int_env_temperature environment") as int_env_temperature:
-        int_env_temp = (make_node("S:int_env_temp",
+        int_env_temp = State(name="int_env_temp",
                                   value=298.0,
                                   units="K",
-                                  description="Air temperature inside the habitat"))
+                                  description="Air temperature inside the habitat")
 
         @make_function(int_env_temp)
         def f_interior_env_heat(en_used_heat=en_used_heat,
