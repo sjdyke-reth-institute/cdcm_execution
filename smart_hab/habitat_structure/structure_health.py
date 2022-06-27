@@ -59,7 +59,7 @@ def make_structure_health_env_0(moon, agent_repair_struct):
                             structure_sec_3=structure_sec_3,
                             structure_sec_4=structure_sec_4,
                             structure_sec_5=structure_sec_5,
-                            fix_structure_sec=agent_repair_struct,
+                            agent_repair_struct=agent_repair_struct,
                             meteor_impacts_1=moon.meteor.meteor_impacts_1,
                             meteor_impacts_2=moon.meteor.meteor_impacts_2,
                             meteor_impacts_3=moon.meteor.meteor_impacts_3,
