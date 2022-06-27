@@ -21,6 +21,7 @@ with System(name="everything",
     clock = make_clock(3600.0)
 
     dome_specs = make_dome_specs()
+    
     moon = make_moon(path_data_files, clock, dome_specs)
 
     energy = make_energy(clock, moon)
@@ -32,5 +33,6 @@ with System(name="everything",
     int_env = make_int_env(dome_specs)
     
     # Code that ensures correct coupling if needed
+    # in one line
     
 print(everything)
