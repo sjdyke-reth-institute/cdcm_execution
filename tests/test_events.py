@@ -49,24 +49,22 @@ def random_change_x(t=sys.clock.t):
 # also in a completly ad hoc manner, i.e., without using the graph
 # of CDCM
 # Change omega to a given value
-def set_omega_to_minus_one():
+def set_omega_to_minus_one(*args, **kwargs):
     print("*** Event (set_omega_to_minus_one ***)")
     sys.omega.value = -1.0
 
 # You can event define event constructors
 def change_omega_to(new_value):
-    def event():
+    def event(*args, **kwargs):
         print(f"*** Event (change_omega_to({new_value:1.2f})) ***")
         sys.omega.value = new_value
     return event
 
-# It won't do anything, unless you assign it to a specific timestep
-# Let's have it run at the first time step
+# Here is how you can add these events at different timesteps
 simulator.add_event(0, random_change_x)
 
 simulator.add_event(0.03, set_omega_to_minus_one)
 
-# And also at timestep 10
 simulator.add_event(0.05, random_change_x)
 
 simulator.add_event(0.1, change_omega_to(-2.0))

@@ -103,9 +103,8 @@ class Function(Node):
             self._update_children(result, self._child_attr_to_update)
 
     def __call__(self):
-        """Runs self.forward."""
+        """Runs self.forward()."""
         self.forward()
-
 
 class Transition(Function):
     """A class representing a transition function.
