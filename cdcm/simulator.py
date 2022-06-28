@@ -12,6 +12,9 @@ Date:
 __all__ = ["Simulator"]
 
 
+from typing import Callable
+
+
 from . import System
 from . import Agenda
 
@@ -25,13 +28,11 @@ class Simulator(object):
     agenda -- An agenda for handling events.
     """
 
-    def __init__(self, system : System, agenda : Agenda = None):
-        assert (hasttr(system, "clock") and
-                hasttr(system.clock, "time"),
+    def __init__(self, system : System, agenda : Agenda = Agenda()):
+        assert (hasattr(system, "clock") and
+                hasattr(system.clock, "t"),
                 "I need a clock to run a simulation with events.")
         self._system = system
-        if agenda is None:
-            agenda = Agenda()
         self._agenda = agenda
 
     @property
@@ -42,9 +43,13 @@ class Simulator(object):
     def agenda(self) -> Agenda:
         return self._agenda
 
+    def add_event(self, time : float, event : Callable):
+        self.agenda.add(time, event)
+
     def forward(self):
         """Simulate one timestep."""
-        if self.system.clock.time == self.agenda.current_time:
+        if (not self.agenda.empty() and
+            self.system.clock.t.value >= self.agenda.current_time):
             self.agenda.forward()
         self.system.forward()
 

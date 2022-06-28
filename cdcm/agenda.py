@@ -12,6 +12,7 @@ Date:
 __all__ = ["Agenda"]
 
 
+from typing import Callable
 from collections import deque as Queue
 
 
@@ -27,7 +28,7 @@ class Agenda(object):
         self._todo = {}
 
     @property
-    def current_time(self) -> Float:
+    def current_time(self) -> float:
         """Get the current time.
 
         Precondition: The todo is not empty.
@@ -35,11 +36,11 @@ class Agenda(object):
         return next(iter(self.todo.keys()))
 
     @property
-    def todo(self) -> Dict:
+    def todo(self) -> dict:
         """Get the todo dictionary."""
         return self._todo
 
-    def empty(self) -> Bool:
+    def empty(self) -> bool:
         """Check if the todo is empty."""
         return not self.todo
 
@@ -50,14 +51,16 @@ class Agenda(object):
         """
         self.todo[time] = Queue()
 
-    def add(self, time : Float, event):
+    def add(self, time : float, event : Callable):
         if time not in self.todo:
-            self.make_new_todo()
+            self.make_new_todo(time)
         self.todo[time].appendleft(event)
 
     def forward(self):
         """Run all events in the current timestep."""
+        ct = self.current_time
         current_events = next(iter(self.todo.values()))
         while current_events:
             event = current_events.pop()
-            event(self)
+            event()
+        del self.todo[ct]
