@@ -49,6 +49,8 @@ class Node(object):
     name        -- The name of the object. The user must definitely
                    provide a name.
     description -- The description of the object. Optional.
+
+    Extra keyword arguments are ignored.
     """
 
     _TYPE_DICTS = {
@@ -68,7 +70,8 @@ class Node(object):
         description : str = "",
         children : NodeSet = list(),
         parents : NodeSet = list(),
-        owner : Any = None
+        owner : Any = None,
+        **kwargs
     ):
         self.name = name
         self.description = description
@@ -131,7 +134,7 @@ class Node(object):
     def owner(self):
         """Get the owner of this object."""
         return self._owner
-    
+
     @owner.setter
     def owner(self, new_owner : Any):
         """Set the owner of this object."""
@@ -207,7 +210,7 @@ class Node(object):
 
 def replace(
     old_node : Node,
-    new_node : Node, 
+    new_node : Node,
     keep_old_owner : bool = False
 ):
     """Replace an old node with a new node.

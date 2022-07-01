@@ -17,7 +17,7 @@ y = np.random.randn(10)
 
 # And here is the system
 rnd_sys = DataSystem(
-    y,
+    data=y,
     name="random_sys",
     description="A data system made from a pre-sampled random stream.",
     columns="omega",

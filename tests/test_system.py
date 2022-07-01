@@ -38,10 +38,3 @@ print(sys.states)
 print(sys.x1)
 print(sys.x2)
 print(sys.dt)
-
-
-dg = sys.dag
-print(dg)
-print(sys.evaluation_order)
-nx.draw(dg, with_labels=True)
-plt.show()

@@ -92,7 +92,7 @@ class System(Node, AbstractContextManager):
         self.add_nodes(nodes)
 
         with self:
-            self.define_internal_nodes()
+            self.define_internal_nodes(**kwargs)
 
     def __enter__(self) -> "System":
         """Enter the context of the system to begin variable definitions."""
@@ -118,7 +118,7 @@ class System(Node, AbstractContextManager):
         """Get the context stack."""
         return System._contexts
 
-    def define_internal_nodes(self):
+    def define_internal_nodes(self, **kwargs):
         """Define the internal nodes of the system.
 
         Overload this when defining a new system by inheriting from

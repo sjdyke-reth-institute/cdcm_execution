@@ -15,7 +15,7 @@ from rc_system import RCBuildingSystem
 import pandas as pd
 
 # df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
-df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
+df = pd.read_csv("examples/rc_system_data/weather_data_2017_pandas.csv")
 
 weather_sys = make_data_system(
     df[["Tout", "Qsg"]],
