@@ -43,28 +43,30 @@ T_cor = Variable(
 
 clock = make_clock(1800)
 
-rc_sys = RCBuildingSystem(clock.dt,
-                          weather_sys,
-                          T_cor,
-                          Q_int,
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
+)
+
+rc_sys = RCBuildingSystem(dt=clock.dt,
+                          weather_system=weather_sys,
+                          T_cor=T_cor,
+                          Q_int=Q_int,
+                          u=u_t,
                           name="rc_sys_1")
 
-rc_sys2 = RCBuildingSystem(clock.dt,
-                           weather_sys,
-                           T_cor,
-                           Q_int,
+rc_sys2 = RCBuildingSystem(dt=clock.dt,
+                           weather_system=weather_sys,
+                           T_cor=T_cor,
+                           Q_int=Q_int,
+                           u=u_t,
                            name="rc_sys_2")
 
 sys = System(
     name="everything",
-    nodes=[clock, weather_sys, rc_sys, rc_sys2]
-)
-
-sys = System(
-    name="everything",
-    nodes=[clock, weather_sys, rc_sys]
-)
-
+    nodes=[clock, weather_sys, rc_sys, rc_sys2])
 
 print(sys)
 

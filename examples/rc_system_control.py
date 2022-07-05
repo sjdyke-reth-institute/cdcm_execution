@@ -71,7 +71,7 @@ weather_sys = make_data_system(
     ]
 )
 
-clock = make_clock(300)
+clock = make_clock(1800)
 
 Q_int = Variable(
     name="Q_int",
@@ -80,7 +80,26 @@ Q_int = Variable(
     description="Sum of internal heat gain"
 )
 
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, Q_int, name="rc_sys")
+T_cor = Variable(
+    name="T_cor",
+    units="degC",
+    value=23,
+    description="Corridor temperature"
+)
+
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
+)
+
+rc_sys = RCBuildingSystem(dt=clock.dt,
+                          weather_system=weather_sys,
+                          T_cor=T_cor,
+                          Q_int=Q_int,
+                          u=u_t,
+                          name="rc_sys")
 
 sys = System(
     name="everything",
@@ -116,7 +135,6 @@ for i in range(100):
     energy_list.append(energy)
     T_room.append(T_room_t)
     T_out.append(T_out_t)
-    sys.rc_sys.u.value = u_t
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
     sys.transition()
 

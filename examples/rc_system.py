@@ -1,4 +1,6 @@
 """An RC model for a single zone.
+Please see the complete documentation here:
+https://github.com/nsf-cps-purdue/documentation/blob/main/systems/RC_model.ipynb
 
 Author:
     Ilias Bilionis
@@ -7,6 +9,7 @@ Author:
 Date:
     4/21/2022
     5/24/2022
+    7/05/2022
 
 """
 
@@ -68,15 +71,15 @@ class RCBuildingSystem(System):
     A               -- Discritized State space A matrix
     B               -- Discritized State space B matrix
     """
-    def __init__(self,
-                 dt: Parameter,
-                 weather_system: System,
-                 T_cor: Variable,
-                 Q_int: Variable,
-                 u: Variable,
-                 **kwargs
-                 ):
-        super().__init__(**kwargs)
+    def define_internal_nodes(self,
+                              dt=None,
+                              weather_system=None,
+                              T_cor=None,
+                              Q_int=None,
+                              u=None,
+                              **kwargs
+                              ):
+        # super().__init__(**kwargs)
 
         T_env = State(
             name="T_env",
@@ -292,16 +295,3 @@ class RCBuildingSystem(System):
         ):
             """Get a sensor measurement."""
             return T_room + T_room_sensor_sigma * np.random.randn()
-
-        self.add_nodes([
-                T_env, T_room, T_genv,
-                C_env, C_room, C_genv,
-                R_rc, R_oe, R_er, R_gr, R_ge,
-                a_sol_env, a_sol_room, a_IHG,
-                A, B, make_matrices,
-                transition_room,
-                T_room_sensor,
-                T_room_sensor_sigma,
-                g_T_room_sensor
-            ]
-        )

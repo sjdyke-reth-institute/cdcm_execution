@@ -50,18 +50,27 @@ T_cor2 = Variable(
     description="Measured corridor temperature for zone 2."
 )
 
+u_t = Variable(
+    name="u_t",
+    units="W",
+    value=0.0,
+    description="Input loads"
+)
+
 clock = make_clock(1800)
 
-rc_sys = RCBuildingSystem(clock.dt,
-                          weather_sys,
-                          T_cor1,
-                          Q_int,
+rc_sys = RCBuildingSystem(dt=clock.dt,
+                          weather_system=weather_sys,
+                          T_cor=T_cor1,
+                          Q_int=Q_int,
+                          u=u_t,
                           name="rc_sys_1")
 
-rc_sys2 = RCBuildingSystem(clock.dt,
-                           weather_sys,
-                           T_cor2,
-                           Q_int,
+rc_sys2 = RCBuildingSystem(dt=clock.dt,
+                           weather_system=weather_sys,
+                           T_cor=T_cor2,
+                           Q_int=Q_int,
+                           u=u_t,
                            name="rc_sys_2")
 
 T_room_sensor_sigma = Parameter(
