@@ -291,8 +291,44 @@ floor_type = EnvelopeSegment(
                     DeterministicParameter(None, 1.)
 )
 floor = Envelope(a, a, floor_type)
+<<<<<<< Updated upstream
 zone = Zone(wall1, wall3, wall2, wall4,
             roof, floor
+=======
+T_p = UniformRandomParameter("degC", [25, 27], "Tp")
+action_noise = DeterministicParameter("degC", 1, "action noise")
+sensitivity = NormalRandomParameter(
+    None, [0, 1], "occupancy sensitivity of the room temperature"
+)
+occ_ihg_base = UniformRandomParameter(
+    "W", [300, 400], "The base internal heat gain casud by occupant"
+)
+occupant1 = Occupant(
+    T_p=T_p,
+    action_noise=action_noise,
+    sensitivity=sensitivity,
+    occ_ihg_base=occ_ihg_base,
+    description="Occupancy object",
+)
+T_p = UniformRandomParameter("degC", [23, 25], "Tp")
+action_noise = DeterministicParameter("degC", 0, "action noise")
+sensitivity = NormalRandomParameter(
+    None, [0.5, 1], "occupancy sensitivity of the room temperature"
+)
+occ_ihg_base = UniformRandomParameter(
+    "W", [350, 400], "The base internal heat gain casud by occupant"
+)
+occupant2 = Occupant(
+    T_p=T_p,
+    action_noise=action_noise,
+    sensitivity=sensitivity,
+    occ_ihg_base=occ_ihg_base,
+    description="Occupancy object",
+)
+occupants = [occupant1, occupant2]
+zone = Zone(wall1, wall3, wall2, wall4,
+            roof, floor, occupants
+>>>>>>> Stashed changes
             )
 lat = DeterministicParameter(units='deg', value=40.42)
 lon = DeterministicParameter(units='deg', value=-86.91)
