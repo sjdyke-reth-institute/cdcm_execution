@@ -8,6 +8,7 @@ Author:
 
 Date:
     5/18/2022
+    7/06/2022
 
 """
 
@@ -81,30 +82,29 @@ def g_T_out_sensor(T_out=weather_sys.Tout, sigma=T_out_sensor_sigma):
 clock = make_clock(300)
 
 # The RC model
-rc_sys = RCBuildingSystem(clock.dt, weather_sys, T_cor, Q_int,
-                          u_t, name="rc_sys")
+rc_sys = RCBuildingSystem(dt=clock.dt,
+                          weather_system=weather_sys,
+                          T_cor=T_cor,
+                          Q_int=Q_int,
+                          u=u_t,
+                          name="rc_sys")
 
 # The occupancy behavior model
-occ_sys = OccupantSystem(
-    clock,
-    rc_sys.T_room_sensor
-    )
+occ_sys = OccupantSystem(clock=clock,
+                         T_room=rc_sys.T_room_sensor)
 
-thermostat = SmartThermostat(
-    clock,
-    occ_sys.action,
-    rc_sys.T_room_sensor,
-    name="thermostat")
+thermostat = SmartThermostat(clock=clock,
+                             T_sp_occ=occ_sys.action,
+                             T_room_sensor=rc_sys.T_room_sensor,
+                             name="thermostat")
 
 # The HVAC model
-hvac_sys = HVACSystem(
-    clock.dt,
-    thermostat.m_dot,
-    thermostat.Q_h,
-    thermostat.Q_c,
-    T_out_sensor,
-    name="hvac_sys"
-)
+hvac_sys = HVACSystem(dt=clock.dt,
+                      m_dot=thermostat.m_dot,
+                      Q_h=thermostat.Q_h,
+                      Q_c=thermostat.Q_c,
+                      T_out=T_out_sensor,
+                      name="hvac_sys")
 
 lgt_sys = LightingSystem(
     clock.dt,

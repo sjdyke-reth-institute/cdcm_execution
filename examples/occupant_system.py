@@ -3,7 +3,8 @@ This is a simple occupancy model with 1 occupant
 that interact with rc system and hvac.
 If the current room temperature is out of occupancy endurability,
 there is a chace that occupant may override the setpoint temperature.
-# TODO: ADD Equations here and change the code
+Please find the complete documentation here:
+https://github.com/nsf-cps-purdue/documentation/blob/main/systems/Occupant_model.ipynb
 In this system, we will return the action of setpoint, on/off of
 lighting and devices system.
 
@@ -13,6 +14,7 @@ Author:
 Date:
     5/5/2022
     5/18/2022
+    7/06/2022
 
 """
 
@@ -21,6 +23,7 @@ __all__ = ["OccupantSystem"]
 
 from cdcm import *
 import numpy as np
+import scipy.stats as st
 
 
 class OccupantSystem(System):
@@ -46,7 +49,11 @@ class OccupantSystem(System):
     Parameters:
     T_p             --  actual preference temperature of the occupant[C]
     action_noise    --  action noise of the occupants
-    sensitivity     --  occupancy sensitivity of the room temperature
+    gamma           --  occupancy sensitivity of the room temperature
+    mu_heat         --  heating mode action parameter of occupants
+    mu_cool         --  cooling mode action parameter of occupants
+    T_sp_ub         --  upper bound of thermal control
+    T_sp_lb         --  lower bound of thermal control
 
     Function nodes:
     check_occ       --  check occupancy presence and turn on/off light
@@ -55,11 +62,10 @@ class OccupantSystem(System):
     occ_tansition   --  Determine the next state
 
     """
-    def __init__(self,
-                 clock: System,
-                 T_room: Variable,
-                 **kwargs):
-        super().__init__(**kwargs)
+    def define_internal_nodes(self,
+                              clock=None,
+                              T_room=None,
+                              **kwargs):
 
         T_sp = State(
             name="T_sp",
@@ -84,7 +90,7 @@ class OccupantSystem(System):
 
         T_p = Parameter(
             name="T_p",
-            value=20,
+            value=20.0,
             units="degC",
             description="Actual preference temperature of the occupant"
         )
@@ -96,11 +102,39 @@ class OccupantSystem(System):
             description="action noise of the occupants"
         )
 
-        sensitivity = Parameter(
-            name="sensitivity",
+        gamma = Parameter(
+            name="gamma",
             value=0.5,
             units=None,
             description="occupancy sensitivity of the room temperature"
+        )
+
+        mu_heat = Parameter(
+            name="mu_heat",
+            value=2.0,
+            units=None,
+            description="heating mode action parameter of occupant"
+        )
+
+        mu_cool = Parameter(
+            name="mu_cool",
+            value=1.5,
+            units=None,
+            description="cooling mode action parameter of occupant"
+        )
+
+        T_sp_ub = Parameter(
+            name="T_sp_ub",
+            value=28.0,
+            units="degC",
+            description="upper bound of thermal control"
+        )
+
+        T_sp_lb = Parameter(
+            name="T_sp_lb",
+            value=18.0,
+            units="degC",
+            description="lower bound of thermal control"
         )
 
         p_action = Variable(
@@ -124,8 +158,8 @@ class OccupantSystem(System):
             description="The use percentage of devices"
         )
 
-        occ_ihg_base = Variable(
-            name="occ_ihg_base",
+        ihg_occ_base = Variable(
+            name="ihg_occ_base",
             value=350.0,
             units="W",
             description="The base internal heat gain casud by occupant"
@@ -143,62 +177,57 @@ class OccupantSystem(System):
             """
             Calculate if occupancy is in the office by clock time
             """
-            # print(time)
             hour = time/3600 % 24
             occ = 0
             if (hour >= 8) and (hour <= 17):
+                # This part can be replace with occupancy schedule
                 occ = 1
             return occ
 
         @make_function(p_action)
-        def cal_act_prob(T_room=T_room, T_p=T_p, sensitivity=sensitivity):
+        def cal_act_prob(T_room=T_room, T_p=T_p, gamma=gamma):
             """
             Determine probability to act or not by temperature difference
             and a sigmoid function.
 
             """
-            x = sensitivity*(T_room - T_p)**2
+            x = gamma*(T_room - T_p)**2
             return 1/(1 + np.exp(-x))
 
         @make_function(lgt_on, dev_on, IHG_occ)
-        def turnONOFF(Occ_t=Occ_t, occ_ihg_base=occ_ihg_base):
-            occ_ihg = np.random.normal(loc=occ_ihg_base, scale=occ_ihg_base/4)
+        def turnONOFF(Occ_t=Occ_t, ihg_occ_base=ihg_occ_base):
+            # This part can be replace with other control type
+            occ_ihg = np.random.normal(loc=ihg_occ_base, scale=ihg_occ_base/4)
             return Occ_t, Occ_t, occ_ihg
 
-        @make_function(action, T_sp)
+        @make_function(action)
         def occ_tansition(Occ_t=Occ_t,
+                          T_room=T_room,
                           T_p=T_p,
                           T_sp=T_sp,
                           p_action=p_action,
+                          mu_cool=mu_cool,
+                          mu_heat=mu_heat,
+                          T_sp_ub=T_sp_ub,
+                          T_sp_lb=T_sp_lb,
                           action_noise=action_noise):
             """Determine the setpoint that changed by the occupant"""
             if Occ_t == 1:
                 u = np.random.random()
-                theta = np.random.normal(loc=0.0, scale=action_noise)
                 if u <= p_action:
-                    T_sp = round((T_p + theta), 0)
-                    action = T_sp
+                    rv_cool = st.poisson(mu_cool)
+                    rv_heat = st.poisson(mu_heat)
+                    action = T_room
+                    if T_room > T_p:
+                        # want to cool down
+                        action = T_sp - rv_cool.rvs()
+                    elif T_room < T_p:
+                        # want to heat up
+                        action = T_sp + rv_heat.rvs()
+                    # Add clip function here
+                    action = np.clip(action, T_sp_lb, T_sp_ub)
                 else:
                     action = -1
             else:
                 action = -1
-            return action, T_sp
-
-        self.add_nodes(
-            [
-                T_sp,
-                Occ_t,
-                action,
-                lgt_on,
-                dev_on,
-                IHG_occ,
-                occ_ihg_base,
-                T_p,
-                action_noise,
-                sensitivity,
-                check_occ,
-                cal_act_prob,
-                turnONOFF,
-                occ_tansition
-            ]
-        )
+            return action

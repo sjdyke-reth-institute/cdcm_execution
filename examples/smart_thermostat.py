@@ -4,6 +4,7 @@ including a setpoint schedule, PID controller and control logic.
 
 Theromstat takes the setpoint temperature (T_sp) as the control signal,
 then transfer the T_sp into input loads by PID controller.
+#TODO: add documentation here
 
 e(t) =& T_{sp, t} - T_{room, t} \\
 u_t =& K_p e(t) + K_i \int^t_0 e(\tau)d\tau + K_d
@@ -17,6 +18,7 @@ Author:
 
 Date:
     5/31/2022
+    7/06/2022
 """
 
 __all__ = ["SmartThermostat"]
@@ -70,12 +72,11 @@ class SmartThermostat(System):
     control_logic   --  Calculate m_dot, Q_c, Q_h to the HVAC system
 
     """
-    def __init__(self,
-                 clock: System,
-                 T_sp_occ: Variable,
-                 T_room_sensor: Variable,
-                 **kwargs):
-        super().__init__(**kwargs)
+    def define_internal_nodes(self,
+                              clock=None,
+                              T_sp_occ=None,
+                              T_room_sensor=None,
+                              **kwargs):
 
         T_sp = Variable(
             name="T_sp",
@@ -280,35 +281,3 @@ class SmartThermostat(System):
                 u_h = u_ideal
                 m_fan = m_dot_min
             return m_fan, u_h, u_c
-
-        self.add_nodes(
-                    [
-                        T_sp,
-                        setpoint_schedule,
-                        error,
-                        f_error,
-                        error_past,
-                        f_error_past,
-                        integral,
-                        f_integral,
-                        integral_past,
-                        f_integral_past,
-                        derivative,
-                        f_derivative,
-                        Kp,
-                        Ki,
-                        Kd,
-                        u_max_h,
-                        u_max_c,
-                        m_dot_min,
-                        m_dot_max,
-                        T_sup,
-                        cp_air,
-                        u_ideal,
-                        m_dot,
-                        Q_h,
-                        Q_c,
-                        PID,
-                        control_logic
-                    ]
-                )

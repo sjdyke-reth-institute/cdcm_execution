@@ -1,5 +1,5 @@
 """A HVAC model with PID controller for a single zone.
-# TODO: ADD Equations here:
+# TODO: REVISE this
 This model contains 4 models, PID controller, a fan model,
 a heating model and a chiller model.
 
@@ -11,8 +11,9 @@ Author:
     Ting-Chun Kuo
 
 Date:
-    5/4/2022
+    5/04/2022
     5/31/2022
+    7/06/2022
 
 """
 
@@ -55,14 +56,13 @@ class HVACSystem(System):
     dP              --  fan design pressure rise [kg/m/s**2]
     e_tot           --  fan total efficiency
     """
-    def __init__(self,
-                 dt: Parameter,
-                 m_dot: Variable,
-                 Q_h: Variable,
-                 Q_c: Variable,
-                 T_out: Variable,
-                 **kwargs):
-        super().__init__(**kwargs)
+    def define_internal_nodes(self,
+                              dt=None,
+                              m_dot=None,
+                              Q_h=None,
+                              Q_c=None,
+                              T_out=None,
+                              **kwargs):
 
         measured_energy = Variable(
             name="measured_energy",
@@ -187,24 +187,3 @@ class HVACSystem(System):
 
             return energy, Q_h+Q_c
 
-        # TODO: Find a way to detect nodes created within this
-        # context and eliminate the need to list them one by one as
-        # done below
-
-        self.add_nodes(
-            [
-                measured_energy,
-                u_apply,
-                EFc,
-                Tlvc,
-                T_sup,
-                COPh,
-                m_design,
-                dP,
-                c_FAN,
-                e_tot,
-                cp_air,
-                rho_air,
-                f_u
-            ]
-        )
