@@ -253,18 +253,6 @@ G02 = Layer(
     description='5/8 in. plywood'
 )
 floor_seg = Segment([M02, I02, G02, F03])
-<<<<<<< Updated upstream
-floor_type = EnvelopeSegment(
-                    floor_seg,
-                    DeterministicParameter(None, 1.)
-)
-floor = Envelope(a, a, floor_type)
-zone = Zone(wall1, wall3, wall2, wall4, roof, floor)
-lat = DeterministicParameter(units='deg', value=40.42)
-lon = DeterministicParameter(units='deg', value=-86.91)
-alt = DeterministicParameter(units='m', value=186.0)
-orientation = DeterministicParameter(units='deg', value=0)
-=======
 floor_type = EnvelopeSegment(floor_seg, DeterministicParameter(None, 1.0))
 floor = Envelope(a, a, floor_type)
 """
@@ -307,5 +295,4 @@ lat = DeterministicParameter(units="deg", value=40.42)
 lon = DeterministicParameter(units="deg", value=-86.91)
 alt = DeterministicParameter(units="m", value=186.0)
 orientation = DeterministicParameter(units="deg", value=0)
->>>>>>> Stashed changes
 single_zone_building = Building(lat, lon, alt, zone, orientation)

@@ -1,13 +1,15 @@
 """
 This is a simple model of ON/OFF lighting system.
 
-$$IHG_{lgt} = lgt_{on} * lgt_{base}$$
+$$IHG_{light} = light_{on} * light_{base}$$
 
 Author:
     Ting-Chun Kuo
+    Sreehari Manikkan
 
 Date:
     5/17/2022
+    07/07/2022
 
 """
 
@@ -23,52 +25,45 @@ class LightingSystem(System):
 
     Arguements:
     dt              --  The timestep to use (must be a node.)
-    lgt_on          --  The ON/OFF indicator of lighting
+    light_on          --  The ON/OFF indicator of lighting
 
     States:
-    IHG_lgt         --  Internal heat gain at the time step [W]
+    IHG_light         --  Internal heat gain at the time step [W]
 
     Parameters:
-    lgt_base        --  Base internal heat gain created by
+    light_base        --  Base internal heat gain created by
                         lighting when fully on
 
     Function nodes:
-    cal_IHG_lgt     --  calculate internal heat gain
+    cal_IHG_light     --  calculate internal heat gain
 
 
     """
-    def __init__(self,
-                 dt: Parameter,
-                 lgt_on: Variable,
+    def define_internal_nodes(self,
+                 clock: System,
+                 light_on: Variable,
                  **kwargs):
-        super().__init__(**kwargs)
-
-        IHG_lgt = State(
-            name="IHG_lgt",
+    
+        IHG_light = State(
+            name="IHG_light",
             value=0.0,
             units="W",
             description="Internal heat gain at the time step"
         )
 
-        lgt_base = Parameter(
-            name="lgt_base",
+        light_base = Parameter(
+            name="light_base",
             value=110,
             units="W",
-            description="Base internal heat gain created by \
-                         lighting when fully on"
+            description="""Base internal heat gain created by
+                         lighting when fully on"""
         )
 
-        @make_function(IHG_lgt)
-        def cal_IHG_lgt(lgt_on=lgt_on,
-                        lgt_base=lgt_base):
+        @make_function(IHG_light)
+        def cal_IHG_lgt(light_on=light_on,
+                        light_base=light_base):
             """
             Calculate lighting internal heat gain.
 
             """
-            return lgt_on * lgt_base
-
-        self.add_nodes([
-                IHG_lgt,
-                lgt_base,
-                cal_IHG_lgt
-            ])
+            return light_on * light_base

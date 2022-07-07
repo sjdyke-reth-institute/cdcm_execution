@@ -107,14 +107,14 @@ hvac_sys = HVACSystem(dt=clock.dt,
                       name="hvac_sys")
 
 lgt_sys = LightingSystem(
-    clock.dt,
-    occ_sys.lgt_on,
+    clock=clock,
+    light_on=occ_sys.lgt_on,
     name="lgt_sys"
     )
 
 dev_sys = DeviceSystem(
-    clock.dt,
-    occ_sys.dev_on,
+    clock=clock,
+    device_on=occ_sys.dev_on,
     name="dev_sys"
     )
 
@@ -128,8 +128,8 @@ IHG_noise = Parameter(
 
 @make_function(Q_int)
 def cal_Q_int(IHG_occ=occ_sys.IHG_occ,
-              IHG_lgt=lgt_sys.IHG_lgt,
-              IHG_dev=dev_sys.IHG_dev,
+              IHG_lgt=lgt_sys.IHG_light,
+              IHG_dev=dev_sys.IHG_device,
               sigma=IHG_noise):
     IHG = IHG_occ + IHG_lgt + IHG_dev + sigma * np.random.randn()
     return IHG
