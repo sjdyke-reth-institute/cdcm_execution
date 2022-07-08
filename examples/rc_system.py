@@ -14,7 +14,7 @@ Date:
 """
 
 
-__all__ = ["RCBuildingSystem"]
+__all__ = ["RCBuildingSystem", "make_rc_of_cdcm"]
 
 
 from cdcm import *
@@ -72,6 +72,7 @@ class RCBuildingSystem(System):
     B               -- Discritized State space B matrix
     """
     def define_internal_nodes(self,
+                              *,
                               dt=None,
                               weather_system=None,
                               T_cor=None,
@@ -426,33 +427,25 @@ def make_rc_of_cdcm(zone, neighbor, dt, weather_sys, T_cor, Q_int, u_t, name):
     else:
         R_rc = np.inf
 
-    '''with RCBuildingSystem(
+    with RCBuildingSystem(
         dt=dt,
         weather_sys=weather_sys,
         T_cor=T_cor,
         Q_int=Q_int,
         u=u_t,
         name=name,
-    ) as zone_rc_sys:'''
-    zone_rc_sys = RCBuildingSystem(
-        dt=dt,
-        weather_sys=weather_sys,
-        T_cor=T_cor,
-        Q_int=Q_int,
-        u=u_t,
-        name=name,
-    )
-    """
-    we parse the information from YABML to CDCM system by setting
-    the values of C and R parameters of CDCM RC system with the values
-    we obtained.
-    """
-    zone_rc_sys.C_room.value = Cp_room
-    zone_rc_sys.C_env.value = Cp_env
-    zone_rc_sys.C_genv.value = Cp_genv
-    zone_rc_sys.R_rc.value = R_rc
-    zone_rc_sys.R_oe.value = R_oe
-    zone_rc_sys.R_er.value = R_er
-    zone_rc_sys.R_gr.value = R_gr
-    zone_rc_sys.R_ge.value = R_ge
-    return zone_rc_sys
+    ) as zone_rc_sys:
+        """
+        we parse the information from YABML to CDCM system by setting
+        the values of C and R parameters of CDCM RC system with the values
+        we obtained.
+        """
+        zone_rc_sys.C_room.value = Cp_room
+        zone_rc_sys.C_env.value = Cp_env
+        zone_rc_sys.C_genv.value = Cp_genv
+        zone_rc_sys.R_rc.value = R_rc
+        zone_rc_sys.R_oe.value = R_oe
+        zone_rc_sys.R_er.value = R_er
+        zone_rc_sys.R_gr.value = R_gr
+        zone_rc_sys.R_ge.value = R_ge
+        return zone_rc_sys
