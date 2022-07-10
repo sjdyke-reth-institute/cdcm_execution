@@ -1,4 +1,10 @@
-"""A METEOR model.
+"""
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+A METEOR model.
 
 Generate a function
                    ___________________________
@@ -17,14 +23,15 @@ design  :: DomeSpec  => |___________________________|
 
 """
 
-
-__all__ = ["make_meteor_env_0"]
-
-
+from cdcm import *
+import math
+import numpy as np
 
 from cdcm import *
 import math
 import numpy as np
+
+__all__ = ["make_meteor_env_0"]
 
 
 def make_meteor_env_0(clock, moon, dome_specs):
@@ -41,31 +48,31 @@ def make_meteor_env_0(clock, moon, dome_specs):
             value=0.0,
             units="",
             description="Meteor impact on the location of Dome section 1"
-        )
+        )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_2 = Variable(
             name="meteor_impacts_2",
             value=0.0,
             units="",
             description="Meteor impact on the location of Dome section 2"
-        )
+        )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_3 = Variable(
             name="meteor_impacts_3",
             value=0.0,
             units="",
             description="Meteor impact on the location of Dome section 3"
-        )
+        )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_4 = Variable(
             name="meteor_impacts_4",
             value=0.0,
             units="",
             description="Meteor impact on the location of Dome section 4"
-        )
+        )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_5 = Variable(
             name="meteor_impacts_5",
             value=0.0,
             units="",
             description="Meteor impact on the location of Dome section 5"
-        )
+        )  # was Variable; Change it to State for consistency if you want
 
         @make_function(meteor_impacts_1,
                        meteor_impacts_2,
@@ -81,8 +88,10 @@ def make_meteor_env_0(clock, moon, dome_specs):
             meteor_impacts_new = ([0.0, 0.0, 0.0, 0.0, 0.0])
             P_collide_based_on_dome_size = min(max(dome_surface_area /
                                                    (2 * math.pi *
-                                                    math.power(20, 2)), 0.5), 1)
+                                                    math.pow(20, 2)), 0.5), 1)
+            # np.random.seed(101)
             p_hit = np.random.random()
+            print('random', np.random.random())
             if p_hit < meteor_hit_rate * P_collide_based_on_dome_size * dt:
                 p_choice = np.random.randint(10000)
                 location_hit = int(meteor_samp_location[p_choice] + 1)
@@ -90,9 +99,9 @@ def make_meteor_env_0(clock, moon, dome_specs):
                     meteor_samp_impact[p_choice]
 
             return meteor_impacts_new[0], \
-                   meteor_impacts_new[1], \
-                   meteor_impacts_new[2], \
-                   meteor_impacts_new[3], \
-                   meteor_impacts_new[4]
+                meteor_impacts_new[1], \
+                meteor_impacts_new[2], \
+                meteor_impacts_new[3], \
+                meteor_impacts_new[4]
 
     return meteor

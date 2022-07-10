@@ -2,27 +2,28 @@
 
                     ___________________________
                    |                           |
-clock :: Clock  => |  MoonRadiationEnvironment |-> surface_temperature :: Variable
+clock :: Clock  => |   MoonThermalEnvironment  |-> surface_temperature :: Variable
 moon  :: Moon   => |___________________________|
 
 """
 
-
-__all__ = ["make_thermal_env_0"]
-
-
 from cdcm import *
 from . import is_loonar_day
+
+import math
+
+
+__all__ = ["make_thermal_env_0"]
 
 
 def make_thermal_env_0(clock, moon):
     with System(name="thermal") as thermal:
         surface_temperature = Variable(
             name="surface_temperature",
-            value=0.0,
+            value=100.0,
             units="K",
             description="Temperature of the lunar surface."
-        )
+        )  # was Variable; Change it to State for consistency if you want
 
         max_external_temp = Parameter(
             name="max_external_temp",
@@ -53,3 +54,4 @@ def make_thermal_env_0(clock, moon):
                 return ((max_external_temp - min_external_temp) *
                         math.sin(math.pi * t / half_day_light) +
                         min_external_temp)
+    return thermal

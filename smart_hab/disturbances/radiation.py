@@ -1,4 +1,10 @@
-"""An MoonRadiationEnvironment.
+"""
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+An MoonRadiationEnvironment.
 
                     ___________________________
                    |                           |
@@ -12,23 +18,29 @@ Specification of irradiance:
             units="W/m^2",
             description="The horizontal total irradiance on moon surface."
         )
-        
+
 A constructor must requires as inputs instances of `Clock` and `MoonEnvironment`.
 
 """
-
-
-
-__all__ = ["make_radiation_env_0"]
-
 
 from cdcm import *
 from . import is_loonar_day
 import math
 
 
+__all__ = ["make_radiation_env_0"]
+
+
 def make_radiation_env_0(clock, moon):
-    with System(name="radiation", description="The irradiance environment") as radiation:
+    with System(name="radiation",
+                description="The irradiance environment") as radiation:
+        irradiance = Variable(
+            name="irradiance",
+            value=0.0,
+            units="W/m^2",
+            description="The horizontal total irradiance on moon surface."
+        )   # was Variable; Change it to State for consistency if you want
+
         irradiance_max = Parameter(
             name="irradiation_max",
             value=1450.0,
@@ -36,13 +48,6 @@ def make_radiation_env_0(clock, moon):
             description="The maximum solar irradiance. Power."
             + "Note: This ignores the rotation of the Earth arround the sun."
             + "The real value is actualy +- 7% this over the course of a year."
-        )
-
-        irradiance = Variable(
-            name="irradiance",
-            value=0.0,
-            units="W/m^2",
-            description="The horizontal total irradiance on moon surface."
         )
 
         @make_function(irradiance)

@@ -1,4 +1,10 @@
 """
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+
 Makes the dome specs system with all its design and fixed parameters.
 
 variable :: TypeOfVariable
@@ -7,29 +13,31 @@ variable :: TypeOfVariable
 
  _________________
 |                 |
-|   DomeSpecsEnv  | -> design[A long list of parameters]
+|   DomeSpecsEnv  | -> dome_specs  :: DomeSpecs
 |_________________|
+
 
 """
 
-
-__all__ = ["make_dome_specs"]
-
 import math
+import numpy as np
 
 from cdcm import *
 
+__all__ = ["make_dome_specs"]
 
 
 def make_dome_specs():
     """
-    Make a dome specs system.
+    Make a dome specs system. design[A long list of parameters] + All other physical constants that may affect multiple systems.
 
     Arguments
+    - NULL
 
     """
 
-    with System(name="dome_specs", description="The dome_specs system") as dome_specs:
+    with System(name="dome_specs",
+                description="The dome_specs system") as dome_specs:
         dome_radius = Parameter(
             name="dome_radius",
             value=2.9,
@@ -39,7 +47,7 @@ def make_dome_specs():
 
         dome_surface_area = Parameter(
             name="dome_surface_area",
-            value=math.pi * dome_radius.value **2,
+            value=math.pi * dome_radius.value ** 2,
             units="m^2",
             description="surface area of dome of the habitat"
         )
@@ -70,7 +78,7 @@ def make_dome_specs():
             description="Emission coefficient for radiation from dome")
         stefan_boltzmann_constant = Parameter(
             name="stefan_boltzmann_constant",
-            value=5.67 * math.pow(10, -8),
+            value=5.67 * np.float_power(10, -8),
             units="W/K^4",
             description="Stefan–Boltzmann constant")
         int_conv_coef = Parameter(

@@ -1,4 +1,10 @@
-"""Some utility functions."""
+"""
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+Some utility functions."""
 
 
 __all__ = ["is_loonar_day"]

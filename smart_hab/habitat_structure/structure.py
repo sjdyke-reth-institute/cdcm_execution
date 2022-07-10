@@ -1,4 +1,10 @@
 """
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+
 Defines the struct interface/type/system/concept.
 
 A `structEnvironment` is `System` that exposes the following interface:
@@ -16,24 +22,28 @@ design           :: DomeSpec               => |_________________| -> strucure_te
 
 """
 
+from cdcm import *
+from . import make_struct_health_env_0
+from . import make_struct_temp_env_0
+
+from dome_design import *
 
 
 __all__ = ["make_structure"]
 
 
-from cdcm import *
-from . import make_structure_health_env_0
-from . import make_structure_temp_env_0
-
-from dome_design import *
-
-
-def make_structure(moon,
-                   dome_specs,
+def make_structure(dome_specs,
+                   irradiance,
+                   surface_temperature,
+                   meteor_impacts_1,
+                   meteor_impacts_2,
+                   meteor_impacts_3,
+                   meteor_impacts_4,
+                   meteor_impacts_5,
                    interior_environment_int_env_temp=None,
                    agent_repair_struct=None,
-                   make_struct_health_env=make_structure_health_env_0,
-                   make_struct_temp_env=make_structure_temp_env_0,
+                   make_struct_health_env=make_struct_health_env_0,
+                   make_struct_temp_env=make_struct_temp_env_0,
                    ):
     """
     Make a struct system.
@@ -45,17 +55,37 @@ def make_structure(moon,
     agent_dome_repair
 
     """
-    with System(name="struct", description="The struct system") as struct:
+    with System(name="struct",
+                description="The struct system") as struct:
         if interior_environment_int_env_temp is None:
-            interior_environment_int_env_temp = Variable(name="int_env_temp", value=280.0, units="K", description="Interior Environment Temperature")
+            interior_environment_int_env_temp = Variable(
+                name="place_holder_int_env_temp",
+                units="K",
+                value=280.0,
+                description="Temparature of the interior environment")
         if agent_repair_struct is None:
-            agent_repair_struct = Variable(name="agent_repair_struct", value=[0.0, 0.0, 0.0, 0.0, 0.0], units="", description="Agent's given health improvment for each dome section")
-        struct_health = make_struct_health_env(moon, agent_repair_struct)
+            agent_repair_struct = Variable(
+                name="place_holder_agent_repair_struct",
+                units="",
+                value=[
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0],
+                description="The array of how much repair is given to each dome section in unit of time step")
+        struct_health = make_struct_health_env(meteor_impacts_1,
+                                               meteor_impacts_2,
+                                               meteor_impacts_3,
+                                               meteor_impacts_4,
+                                               meteor_impacts_5,
+                                               agent_repair_struct)
 
-        struct_temp = make_struct_temp_env(struct_health,
-                                           dome_specs, moon,
-                                           interior_environment_int_env_temp
+        struct_temp = make_struct_temp_env(dome_specs,
+                                           irradiance,
+                                           surface_temperature,
+                                           struct_health,
+                                           interior_environment_int_env_temp,
                                            )
 
     return struct
-

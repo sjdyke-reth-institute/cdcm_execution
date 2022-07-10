@@ -1,9 +1,15 @@
-"""Defines the concept of `MoonDustEnvironment`.
+"""
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+Defines the concept of `MoonDustEnvironment`.
 
 What is a MoonDustEnvironment?
 
 It is a System that provides access to the following variables:
-       
+
         dust_rate = Variable(
             name="dust_rate",
             value=0.0,
@@ -42,14 +48,13 @@ clock  :: Clock  => |  MoonDustEnvironment |-> dust_rate :: Variable
 
 """
 
+from cdcm import *
+
+import random
+import numpy as np
 
 
 __all__ = ["make_dust_env_0"]
-
-
-
-from cdcm import *
-import random
 
 
 def make_dust_env_0(clock):
@@ -61,8 +66,8 @@ def make_dust_env_0(clock):
             value=0.0,
             units="1/sec",
             description="Dust deposition rate"
-        )
-        
+        )  # was Variable; Change it to State for consistency if you want
+
         # Whatever follows is particular to this implementation
         # of the MoonDustEnvironment:
         mean_dust_rate = Parameter(
@@ -78,8 +83,6 @@ def make_dust_env_0(clock):
             description="Standard deviation of dust deposition rate"
         )
 
-
-
         @make_function(dust_rate)
         def f_dust_rate(
             mean_dust_rate=mean_dust_rate,
@@ -90,6 +93,7 @@ def make_dust_env_0(clock):
             if t == 0.0:
                 return 0.0
             else:
-                return 0.1 * 0.2 * 0.005 * random.normal(mean_dust_rate, std_dust_rate)
+                return 0.1 * 0.2 * 0.005 * \
+                    (mean_dust_rate + np.random.random() * std_dust_rate)
 
     return dust

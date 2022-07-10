@@ -1,4 +1,10 @@
-"""An eclss_pressure model.
+"""
+Author: Amir Behjat
+
+Date:
+    7/08/2022
+
+An eclss_pressure model.
 
 variable :: TypeOfVariable
 
@@ -14,43 +20,34 @@ design                    :: DomeSpec                  =>  |                    
 
 """
 
+from cdcm import *
 
 __all__ = ["make_eclss_pressure_env_0"]
 
 
+def make_eclss_pressure_env_0(dome_specs,
+                              energy_available_energy,
+                              structure_sec_1,
+                              structure_sec_2,
+                              structure_sec_3,
+                              structure_sec_4,
+                              structure_sec_5,
+                              int_env_pres,
+                              HM_pressure_lower_setpoint,
+                              HM_pressure_upper_setpoint):
 
-from cdcm import *
-
-def make_eclss_pressure_env_0(dome_specs, energy_available_energy, struct_health, int_env_pres, HM_pressure_lower_setpoint, HM_pressure_upper_setpoint):
-    with System(name="eclss_pressure", description="The eclss_pressure environment") as eclss_pressure:
-        en_needed_pres = State(name="en_needed_pres",
-                                    value=0.0,
-                                    units="J",
-                                    description="Energy needed to control pressure")
-        en_used_pres = State(name="en_used_pres",
-                                  value=0.0,
-                                  units="J",
-                                  description="Energy used to control pressure")
-        structure_sec_1 = Variable(name="structure_sec_1",
-                                     value=struct_health.value[0],
-                                     units="",
-                                     description="health level of the dome section 1; 1 is the healthiest")
-        structure_sec_2 = Variable(name="S:structure_sec_2",
-                                     value=struct_health.value[1],
-                                     units="",
-                                     description="health level of the dome section 2; 1 is the healthiest")
-        structure_sec_3 = Variable(name="S:structure_sec_3",
-                                     value=struct_health.value[2],
-                                     units="",
-                                     description="health level of the dome section 3; 1 is the healthiest")
-        structure_sec_4 = Variable(name="S:structure_sec_4",
-                                     value=struct_health.value[3],
-                                     units="",
-                                     description="health level of the dome section 4; 1 is the healthiest")
-        structure_sec_5 = Variable(name="S:structure_sec_5",
-                                     value=struct_health.value[4],
-                                     units="",
-                                     description="health level of the dome section 5; 1 is the healthiest")
+    with System(name="eclss_pressure",
+                description="The eclss_pressure environment") as eclss_pressure:
+        en_needed_pres = State(
+            name="en_needed_pres",
+            value=0.0,
+            units="J",
+            description="Energy needed to control pressure")
+        en_used_pres = State(
+            name="en_used_pres",
+            value=0.0,
+            units="J",
+            description="Energy used to control pressure")
 
         @make_function(en_needed_pres,
                        en_used_pres)
@@ -66,23 +63,25 @@ def make_eclss_pressure_env_0(dome_specs, energy_available_energy, struct_health
                          structure_sec_3=structure_sec_3,
                          structure_sec_4=structure_sec_4,
                          structure_sec_5=structure_sec_5,
-                         int_env_pres=int_env_pres):
-            """Transition function for ECLSS heat"""
+                         int_env_pres=int_env_pres,
+                         ):
+
             latenet_structure_eclss = (structure_sec_1 +
                                        structure_sec_2 +
                                        structure_sec_3 +
                                        structure_sec_4 +
                                        structure_sec_5) / 5
             en_needed_pres_new = max(0.0, ((lower_pressure_setpo +
-                                              upper_pressure_setpo) / 2 -
-                                             int_env_pres) *
-                                       pres_capac_per_vol + int_env_pres *
-                                       air_leak_coeficent *
-                                       ((1 - latenet_structure_eclss) + 0) /
-                                       efficiency_of_PM)
+                                            upper_pressure_setpo) / 2 -
+                                           int_env_pres) *
+                                     pres_capac_per_vol + int_env_pres *
+                                     air_leak_coeficent *
+                                     ((1 - latenet_structure_eclss) + 0) /
+                                     efficiency_of_PM)
             en_used_pres_new = max(0.0, min(available_en,
-                                              en_needed_pres))
+                                            en_needed_pres))
+
             return en_needed_pres_new, \
-                   en_used_pres_new
-        
+                en_used_pres_new
+
     return eclss_pressure
