@@ -261,32 +261,48 @@ Occupant system
 """
 T_p = DeterministicParameter("degC", 25, "Tp")
 action_noise = DeterministicParameter("degC", 1, "action noise")
-sensitivity = DeterministicParameter(
-    None, 0.5, "occupancy sensitivity of the room temperature"
-)
-occ_ihg_base = DeterministicParameter(
+IHG_base = DeterministicParameter(
     "W", 350, "The base internal heat gain casud by occupant"
 )
+gamma = DeterministicParameter(
+    None, 0.5, "occupancy sensitivity of the room temperature"
+)
+mu_heat = DeterministicParameter(None, 2, "mu_heat")
+mu_cool = DeterministicParameter(None, 1.5, "mu_cool")
+T_sp_ub = DeterministicParameter("degC", 28, "T_sp_ub")
+T_sp_lb = DeterministicParameter("degC", 18, "T_sp_lb")
 occupant1 = Occupant(
     T_p=T_p,
     action_noise=action_noise,
-    sensitivity=sensitivity,
-    occ_ihg_base=occ_ihg_base,
-    description="Occupancy object",
+    IHG_base=IHG_base,
+    gamma=gamma,
+    mu_heat=mu_heat,
+    mu_cool=mu_cool,
+    T_sp_ub=T_sp_ub,
+    T_sp_lb=T_sp_lb,
+    description="Occupant 1 object",
 )
-T_p = DeterministicParameter("degC", 23.5, "Tp")
+T_p = DeterministicParameter("degC", 24, "Tp")
 action_noise = DeterministicParameter("degC", 0, "action noise")
-sensitivity = DeterministicParameter(
+IHG_base = DeterministicParameter(
+    "W", 300, "The base internal heat gain casud by occupant"
+)
+gamma = DeterministicParameter(
     None, 0.7, "occupancy sensitivity of the room temperature"
 )
-occ_ihg_base = DeterministicParameter(
-    "W", 320, "The base internal heat gain casud by occupant"
-)
+mu_heat = DeterministicParameter(None, 2.8, "mu_heat")
+mu_cool = DeterministicParameter(None, 1.4, "mu_cool")
+T_sp_ub = DeterministicParameter("degC", 26, "T_sp_ub")
+T_sp_lb = DeterministicParameter("degC", 20, "T_sp_lb")
 occupant2 = Occupant(
     T_p=T_p,
     action_noise=action_noise,
-    sensitivity=sensitivity,
-    occ_ihg_base=occ_ihg_base,
+    IHG_base=IHG_base,
+    gamma=gamma,
+    mu_heat=mu_heat,
+    mu_cool=mu_cool,
+    T_sp_ub=T_sp_ub,
+    T_sp_lb=T_sp_lb,
     description="Occupancy object",
 )
 occupants = [occupant1, occupant2]

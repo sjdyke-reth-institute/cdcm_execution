@@ -291,35 +291,63 @@ floor_type = EnvelopeSegment(
                     DeterministicParameter(None, 1.)
 )
 floor = Envelope(a, a, floor_type)
+"""
+Occupant system
+---------------
+"""
 T_p = UniformRandomParameter("degC", [25, 27], "Tp")
 action_noise = DeterministicParameter("degC", 1, "action noise")
-sensitivity = NormalRandomParameter(
-    None, [0, 1], "occupancy sensitivity of the room temperature"
-)
-occ_ihg_base = UniformRandomParameter(
+IHG_base = UniformRandomParameter(
     "W", [300, 400], "The base internal heat gain casud by occupant"
 )
+gamma = NormalRandomParameter(
+    None, [0, 0.1], "occupancy sensitivity of the room temperature"
+)
+mu_heat = UniformRandomParameter(
+    "W", [1, 2], "The heating mode action parameter"
+)
+mu_cool = NormalRandomParameter(
+    "W", [1.5, 0.01], "The cooling mode action parameter"
+)
+T_sp_ub = UniformRandomParameter("degC", [28, 30], "T_sp_ub")
+T_sp_lb = UniformRandomParameter("degC", [18, 20], "T_sp_lb")
 occupant1 = Occupant(
     T_p=T_p,
     action_noise=action_noise,
-    sensitivity=sensitivity,
-    occ_ihg_base=occ_ihg_base,
-    description="Occupancy object",
+    IHG_base=IHG_base,
+    gamma=gamma,
+    mu_heat=mu_heat,
+    mu_cool=mu_cool,
+    T_sp_ub=T_sp_ub,
+    T_sp_lb=T_sp_lb,
+    description="Occupant 1 object",
 )
-T_p = UniformRandomParameter("degC", [23, 25], "Tp")
+T_p = UniformRandomParameter("degC", [23, 26], "Tp")
 action_noise = DeterministicParameter("degC", 0, "action noise")
-sensitivity = NormalRandomParameter(
-    None, [0.5, 1], "occupancy sensitivity of the room temperature"
-)
-occ_ihg_base = UniformRandomParameter(
+IHG_base = UniformRandomParameter(
     "W", [350, 400], "The base internal heat gain casud by occupant"
 )
+gamma = NormalRandomParameter(
+    None, [0, 0.3], "occupancy sensitivity of the room temperature"
+)
+mu_heat = UniformRandomParameter(
+    "W", [1.5, 3], "The heating mode action parameter"
+)
+mu_cool = NormalRandomParameter(
+    "W", [2, 0.01], "The cooling mode action parameter"
+)
+T_sp_ub = UniformRandomParameter("degC", [29, 30.5], "T_sp_ub")
+T_sp_lb = UniformRandomParameter("degC", [19, 21], "T_sp_lb")
 occupant2 = Occupant(
     T_p=T_p,
     action_noise=action_noise,
-    sensitivity=sensitivity,
-    occ_ihg_base=occ_ihg_base,
-    description="Occupancy object",
+    IHG_base=IHG_base,
+    gamma=gamma,
+    mu_heat=mu_heat,
+    mu_cool=mu_cool,
+    T_sp_ub=T_sp_ub,
+    T_sp_lb=T_sp_lb,
+    description="Occupant 2 object",
 )
 occupants = [occupant1, occupant2]
 zone = Zone(wall1, wall3, wall2, wall4,
