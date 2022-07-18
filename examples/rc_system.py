@@ -81,7 +81,6 @@ class RCBuildingSystem(System):
                               **kwargs
                               ):
         # super().__init__(**kwargs)
-
         T_env = State(
             name="T_env",
             value=20.0,
@@ -298,7 +297,7 @@ class RCBuildingSystem(System):
             return T_room + T_room_sensor_sigma * np.random.randn()
 
 
-def make_rc_of_cdcm(zone, neighbor, dt, weather_sys, T_cor, Q_int, u_t, name):
+def make_rc_of_cdcm(zone, neighbor, zone_rc_sys):
     """
     Makes an RC CDCM system corresponding to the YABML zone given.
 
@@ -306,19 +305,7 @@ def make_rc_of_cdcm(zone, neighbor, dt, weather_sys, T_cor, Q_int, u_t, name):
         zone    --  A zone object of the building. Its an instance of the Zone
                     class in YABML.
         neighbor    --  neighbor list of the zone provided. Its a list.
-        dt  --  The timestep to use (must be a node.)
-        weather_system  --  A weather system that includes:
-                            Tout: outdoor air temperature
-                            Qsg:  solar irradiance
-                            T_gd: ground temperature
-        T_cor   -- The temperature of corridor. Typically constant. It
-                        can be replaced with sensor value in implemenation.
-                        [C]
-        Q_int   --  Internal heat gain calculated from other system
-        u_t     -- Control variable. Input heat loads to the system.
-                        [W]
-        name    -- name of the RCBuildingSystem object to be created. It is a
-                string. 
+        zone_rc_sys -- RCBuildingSystem object corresponding to the zone.
 
     """
     R_list = []
@@ -426,26 +413,17 @@ def make_rc_of_cdcm(zone, neighbor, dt, weather_sys, T_cor, Q_int, u_t, name):
         R_rc = 1 / R_rc
     else:
         R_rc = np.inf
-
-    with RCBuildingSystem(
-        dt=dt,
-        weather_sys=weather_sys,
-        T_cor=T_cor,
-        Q_int=Q_int,
-        u=u_t,
-        name=name,
-    ) as zone_rc_sys:
-        """
-        we parse the information from YABML to CDCM system by setting
-        the values of C and R parameters of CDCM RC system with the values
-        we obtained.
-        """
-        zone_rc_sys.C_room.value = Cp_room
-        zone_rc_sys.C_env.value = Cp_env
-        zone_rc_sys.C_genv.value = Cp_genv
-        zone_rc_sys.R_rc.value = R_rc
-        zone_rc_sys.R_oe.value = R_oe
-        zone_rc_sys.R_er.value = R_er
-        zone_rc_sys.R_gr.value = R_gr
-        zone_rc_sys.R_ge.value = R_ge
-        return zone_rc_sys
+    """
+    we parse the information from YABML to CDCM system by setting
+    the values of C and R parameters of CDCM RC system with the values
+    we obtained.
+    """
+    zone_rc_sys.C_room.value = Cp_room
+    zone_rc_sys.C_env.value = Cp_env
+    zone_rc_sys.C_genv.value = Cp_genv
+    zone_rc_sys.R_rc.value = R_rc
+    zone_rc_sys.R_oe.value = R_oe
+    zone_rc_sys.R_er.value = R_er
+    zone_rc_sys.R_gr.value = R_gr
+    zone_rc_sys.R_ge.value = R_ge
+    return zone_rc_sys

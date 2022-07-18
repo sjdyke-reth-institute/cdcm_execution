@@ -19,28 +19,27 @@ def make_rc_of_cdcm(dt, weather_sys, T_cor, Q_int, u_t, name):
     """
     modified make_rc_of_cdcm function for bug testing purpose.
     """
-    with RCBuildingSystem(
+    zone_rc_sys = RCBuildingSystem(
             dt=dt,
             weather_sys=weather_sys,
             T_cor=T_cor,
             Q_int=Q_int,
             u=u_t,
-            name=name,
-        ) as zone_rc_sys:
-            """
-            we parse the information from YABML to CDCM system by setting
-            the values of C and R parameters of CDCM RC system with the values
-            we obtained.
-            """
-            zone_rc_sys.C_room.value = 10**5
-            zone_rc_sys.C_env.value = 200
-            zone_rc_sys.C_genv.value = 3.8*10**4
-            zone_rc_sys.R_rc.value = 0.001
-            zone_rc_sys.R_oe.value = 0.0023
-            zone_rc_sys.R_er.value = 0.0087
-            zone_rc_sys.R_gr.value = 0.1
-            zone_rc_sys.R_ge.value = np.inf
-            return zone_rc_sys
+            name=name)
+    """
+    we parse the information from YABML to CDCM system by setting
+    the values of C and R parameters of CDCM RC system with the values
+    we obtained.
+    """
+    zone_rc_sys.C_room.value = 10**5
+    zone_rc_sys.C_env.value = 200
+    zone_rc_sys.C_genv.value = 3.8*10**4
+    zone_rc_sys.R_rc.value = 0.001
+    zone_rc_sys.R_oe.value = 0.0023
+    zone_rc_sys.R_er.value = 0.0087
+    zone_rc_sys.R_gr.value = 0.1
+    zone_rc_sys.R_ge.value = np.inf
+    return zone_rc_sys
 
 df = pd.read_csv("./rc_system_data/weather_data_2017_pandas.csv")
 
@@ -75,7 +74,6 @@ T_cor = Variable(
 u_t = Variable(
     name="u_t", units="W", value=0.0, description="Input loads"
 )
-
 "We create a CDCM system consisiting of clock, weather system and RC system"
 with System(name="zone_sys_det") as zone_sys_det:
     

@@ -10,6 +10,7 @@ Date:
 
 """
 
+import os
 
 from cdcm import *
 from rc_system import RCBuildingSystem
@@ -64,8 +65,18 @@ sys = System(
 )
 
 print(sys)
+max_steps = 1000
+file_name = "test_make_rc_of_cdcm_det.h5"
 
+if os.path.exists(file_name):
+        os.remove(file_name)
+
+test_saver_det = SimulationSaver(file_name,
+                            sys,
+                            max_steps=max_steps
+)
 for i in range(100):
     sys.forward()
     print(f"T_room = {rc_sys.T_room.value:1.2f}")
+    test_saver_det.save()
     sys.transition()
