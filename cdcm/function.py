@@ -89,7 +89,7 @@ class Function(Node):
 
     def _update_children(self, result, attr):
         """Writes `result` on `attr` of the children."""
-        if not isinstance(result, Iterable):
+        if not isinstance(result, tuple):
             result = (result, )
         for new_value, child in zip(result, self.children):
             setattr(child, attr, new_value)
