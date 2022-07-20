@@ -1,8 +1,82 @@
+"""This is a version one of the power system.
+
+Author:
+    Rashi
+
+Date:
+    7/20/2022
+
+Notes:
+    - Read PEP8.
+    - Read about context managers.
+"""
+
 import numpy as np
 from cdcm import *
 
+with System(name="everything",
+    description="A system that contains everything.") as everything:
+
+    clock = make_clock(dt=0.5, units="hrs")
+
+    with System(name="moon",
+        description = "Most lunar characteristics.") as moon:
+
+        lunar_day = Parameter(
+            value=655.7208,
+            units="hrs",
+            name="lunar_day",
+            track=False,
+            description=
+                "The length of a day (sunlight + darkness) on the lunar surface."
+        )
+
+        solar_irradiance_constant = Parameter(
+            value=1361.0,
+            units="W/m^2",
+            name="solar_irradiance_constant",
+            track=False,
+            description="solar irradiance constant"
+        )
+
+        solar_irradiance = Variable(
+            value=0.0,
+            units="W/m^2",
+            name="solar_irradiance",
+            track=True,
+            description="The solar irradiance at a time instant."
+        )
+
+        @make_function(solar_irradiance)
+        def calculate_solar_irradiance(t=clock.t,
+                                       Imax=solar_irradiance_constant,
+                                       T=lunar_day):
+            half_T = T / 2
+            if int(t / half_T) % 2 == 0:
+                # It is day
+                return Imax * np.sin(2 * np.pi * t / T)
+            else:
+                return 0.0
+
+    with System(name="power", description="write me") as power:
+        with System(name="pv") as pv:
+            pass
+            # You write code here
+
+        with System(name="nuclear") as nc:
+            pass
+
+print(everything)
+
+for i in range(50):
+    everything.forward()
+    print(f"t = {everything.clock.t.value:1.1f}, I(t) = {everything.moon.solar_irradiance.value:1.2f}")
+    everything.transition()
+
+quit()
+
 ########################### Describing Moon ####################################
-moon = Node(name = "moon", description = "most lunar characteristics")
+#moon = Node(name = "moon", description = "most lunar characteristics")
 
 # Source: nssdc.gfsc.nasa.gov/planetary/factsheet/moonfact.html
 
