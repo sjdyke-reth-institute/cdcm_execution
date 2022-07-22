@@ -121,3 +121,11 @@ if __name__ == "__main__":
         energy = Variable(name="energy", value=0.0)
 
     print(solar)
+
+    # solar2 = make_power_generator(
+    #     make_flamable(
+    #         make_physical_system("solar", description="Solar panels.")
+    #     )
+    # )
+    # with solar:
+    #     energy = Variable(name="energy", value=0.0)
