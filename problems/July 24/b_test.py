@@ -24,7 +24,7 @@ with System(name="combined_system") as sys:
 
         # This is a placeholder node useed to establish the connection between
         # the two systems:
-        placeholder =Variable(name="placeholder", value=21221.3323432423423434, units="meters", description="State of sys1.")
+        placeholder = Variable(name="placeholder", value=21221.3323432423423434, units="meters", description="State of sys1.")
 
         @make_function(x1)
         def f1(x1=x1, x2=placeholder, r1=r1, c1=c1):
@@ -56,7 +56,7 @@ with System(name="combined_system") as sys:
     # ****************************
     replace(placeholder, x2)
 
+print(sys)
 
 sys.forward()
 sys.transition()
-
