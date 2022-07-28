@@ -1,3 +1,11 @@
+"""
+
+Author: Rashi Jain
+
+This was the first attempt at coding inpower system.
+I had a wrong understnading here, of parent, child relationship. 
+Owners within a code.
+"""
 import numpy as np
 from cdcm import *
 

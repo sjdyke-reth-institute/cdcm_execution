@@ -12,7 +12,6 @@ Notes:
 Code Comment:
     Code begins on Line 21.
     This is the version 2 of Power Systems.
-    A more complete model following this shall be ready by Monday.
 """
 
 ## Installing dictionaries
@@ -157,7 +156,7 @@ with System(name="everything",
                             name="z",
                             track=False,
                             description="z coordinate of solar arrays"
-                        )
+                        ) # not required.
 
                         length=Parameter(
                             value=0.0,
