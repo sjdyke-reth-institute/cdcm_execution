@@ -218,14 +218,16 @@ def replace(
     Keyword Arguments:
     keep_old_owner -- If True new_node.owner becomes old_node.owner.
     """
-    parents = old_node.parents.copy()
-    children = old_node.children.copy()
-    for p in parents:
-        old_node.remove_parent(p)
-    for c in children:
-        old_node.remove_child(c)
-    new_node.add_parents(parents)
-    new_node.add_children(children)
+    for p in old_node.parents:
+        i = p.children.index(old_node)
+        p.children[i] = new_node
+        new_node.add_parent(p, reflexive=False)
+    old_node.parents.clear()
+    for c in old_node.children:
+        i = c.parents.index(old_node)
+        c.parents[i] = new_node
+        new_node.add_child(c, reflexive=False)
+    old_node.children.clear()
     old_owner = old_node.owner
     if old_owner is not None:
         old_owner.remove_node(old_node)
