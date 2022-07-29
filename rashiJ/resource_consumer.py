@@ -3,22 +3,21 @@ Write me.
 """
 
 
+__all__ = ["make_resource_consumer"]
+
+
 from cdcm import *
 from typing import Union
+
+from common import maybe_make_system
 
 
 def make_resource_consumer(name_or_system : Union[str,System],
                            resource_name : str,
                            resource_units : str,
-                           resource_default_value : float = 0.0):
-    if isinstance(name_or_system, str):
-            # I am making a new system
-        sys = System(name=name_or_system, **kwargs)
-    elif isinstance(name_or_system, System):
-            # I am just adding variables to an existing system
-        sys = name_or_system
-    else:
-        raise ValueError(f"I do not know what to do with {type(name_or_system)}!")
+                           resource_default_value : float = 0.0,
+                           **kwargs):
+    sys = maybe_make_system(name_or_system, **kwargs)
     with sys:
         resource_supplied = Variable(name=resource_name + "_supplied",
                                      value=resource_default_value,

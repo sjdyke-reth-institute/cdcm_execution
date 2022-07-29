@@ -46,19 +46,19 @@ __all__ = ["make_physical_system"]
 
 from cdcm import *
 from typing import Union
-
+from common import maybe_make_system
 
 
 def make_physical_system(name_or_system : Union[str,System],
-                         x=0.0 : float,
-                         y=0.0 : float,
-                         m=1.0 : float,
-                         rho=None : Union[NoneType, float],
-                         length_x=1.0 : float,
-                         length_y=1.0 : float,
-                         height=1.0 : float,
-                         mass_units="kg" : str,
-                         length_units="m" : str,
+                         x : float = 0.0,
+                         y : float = 0.0,
+                         m : float = 0.0,
+                         rho : Union[None, float] = None,
+                         length_x : float = 1.0,
+                         length_y : float = 1.0,
+                         height : float = 1.0 ,
+                         mass_units : str = "kg" ,
+                         length_units : str = "m",
                          **kwargs):
     """A factory of physical objects.
 
@@ -68,14 +68,7 @@ def make_physical_system(name_or_system : Union[str,System],
 
     The **kwargs can be any arguments that a System takes.
     """
-    if isinstance(name_or_system, str):
-        # I am making a new system
-        sys = System(name=name_or_system, **kwargs)
-    elif isinstance(name_or_system, System):
-        # I am just adding variables to an existing system
-        sys = name_or_system
-    else:
-        raise ValueError(f"I do not know what to do with {type(name_or_system)}!")
+    sys = maybe_make_system(name_or_system, **kwargs)
 
     with sys:
         x = Variable(name="x", value=x, units=length_units)
