@@ -27,55 +27,55 @@ __all__ = ["make_resource_consumer"]
 
 from cdcm import *
 from typing import Union
+from ..common import *
 
 
 def make_resource_consumer(name_or_system : Union[str,System],
                            in_resource_name : str,
                            in_resource_units : str,
                            in_resource_value : float = 0.0,
-                           switch            : str,
                            resource_req      : float = 0.0):
 
     sys = maybe_make_system(name_or_system, **kwargs)
     with sys:
+        resource_req = Parameter(name=in_resource_name + "_required",
+                                 value=resource_req,
+                                 units=in_resource_units)
 
-        if resource_supplied < resource_req:
-            switch = "off"
+        resource_supplied = Variable(name=in_resource_name + "_supplied",
+                                     value=in_resource_value,
+                                     units=in_resource_units)
 
-        # Specify resource switch as "on" or "off"
-        if switch == "on":
-            # If switch is on, use values specified.
-            resource_supplied = Variable(name=in_resource_name + "_supplied",
-                                         value=in_resource_value,
-                                         units=in_resource_units)
+        switch = Variable(name="switch", value=1, units="",
+                          description="The switch is on (value=1) if there is"
+                                      + " enough power supplied. Otherwise it is"
+                                      + " off (value=0).")
 
-            resource_consumed = Variable(name=resource_name + "_consumed",
-                                         value=resource_req,
-                                         units=resource_units)
+        resource_consumed = Variable(name=resource_name + "_consumed",
+                                     value=resource_req,
+                                     units=resource_units)
 
-            @make_function(power_dissipated)
-            def calculate_power_dissipated:
-                return resource_supplied.value - resource_consumed.value
+        @make_function(resource_consumed)
+        def calculate_consumed_resource(s=switch,
+                                        r_req=resource_req,
+                                        r_in=resource_supplied):
+            if s == 0:
+                return 0.0
+            else:
+                if r_in > r_req:
+                    return r_req
+                else:
+                    return 0.0
 
-            power_dissipated = Variable(name="power_dissipated",
-                                        value=power_dissipated,
-                                        units=resource_units)
-        else:
-            resource_supplied = Variable(name=in_resource_name + "_supplied",
-                                         value=0,
-                                         units=in_resource_units)
 
-            resource_consumed = Variable(name=in_resource_name + "_consumed",
-                                         value=0,
-                                         units=in_resource_units)
-
-            power_dissipated = Variable(name="power_dissipated",
-                                        value=0,
-                                        units=in_resource_units)
 
     return sys
 
 
 if __name__ == "__main__":
     energy_consumer = make_resource_consumer("solar", "energy", "W")
-    oxygen_consumer = make_resource_consumer("human", "oxygen", "kg/m^3")
+    energy_consumer.switch.value = 0
+    print(energy_consumer)
+    energy_consumer.switch.value = 1
+    print(energy_consumer)
+    #oxygen_consumer = make_resource_consumer("human", "oxygen", "kg/m^3")
