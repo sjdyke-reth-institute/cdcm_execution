@@ -78,7 +78,7 @@ class System(Node, AbstractContextManager):
         if "children" in kwargs:
             raise ValueError(CHLD_INFERRED_MSG)
         if "parents" in kwargs:
-            raise ValueError(PRTNS_INFERRED_MSG)
+            raise ValueError(PRNTS_INFERRED_MSG)
         self._nodes = list()
 
         self.add_child = replace_chld_with_raise_value_error
