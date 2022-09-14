@@ -35,17 +35,18 @@ from dome_design import *
 __all__ = ["make_energy"]
 
 
-def make_energy(clock,
-                dust_rate,
-                irradiance,
-                ecless_energy_cons=None,
-                agent_clean_panel=None,
-                agent_clean_plant=None,
-                HM_cover_panel=None,
-                make_energy_performance_env=make_energy_performance_env_0,
-                make_energy_generate_env=make_energy_generate_env_0,
-                make_energy_store_env=make_energy_store_env_0,
-                ):
+def make_energy(
+    clock,
+    dust_rate,
+    irradiance,
+    ecless_energy_cons=None,
+    agent_clean_panel=None,
+    agent_clean_plant=None,
+    HM_cover_panel=None,
+    make_energy_performance_env=make_energy_performance_env_0,
+    make_energy_generate_env=make_energy_generate_env_0,
+    make_energy_store_env=make_energy_store_env_0,
+):
     """
     Make a struct system.
 
@@ -62,37 +63,38 @@ def make_energy(clock,
                 name="place_holder_energy_cons",
                 units="J",
                 value=0.0,
-                description="Total energy consumption in ECLSS")
+                description="Total energy consumption in ECLSS",
+            )
         if agent_clean_panel is None:
             agent_clean_panel = Variable(
                 name="place_holder_agent_clean_panel",
                 units="",
                 value=0.0,
-                description="Cleaning the panel value in one time step")
+                description="Cleaning the panel value in one time step",
+            )
         if agent_clean_plant is None:
             agent_clean_plant = Variable(
                 name="place_holder_agent_clean_plant",
                 units="",
                 value=0.0,
-                description="Cleaning the nuclear plant radiator value in one time step")
+                description="Cleaning the nuclear plant radiator value in one time step",
+            )
         if HM_cover_panel is None:
             HM_cover_panel = Variable(
                 name="place_holder_HM_cover_panel",
                 units="",
                 value=True,
-                description="1= Solar panel is functional, 0= solar panel is covered against dust")
+                description="1= Solar panel is functional, 0= solar panel is covered against dust",
+            )
 
-        energy_performance = make_energy_performance_env(clock,
-                                                         dust_rate,
-                                                         agent_clean_panel,
-                                                         agent_clean_plant,
-                                                         HM_cover_panel)
+        energy_performance = make_energy_performance_env(
+            clock, dust_rate, agent_clean_panel, agent_clean_plant, HM_cover_panel
+        )
 
-        energy_generate = make_energy_generate_env(clock,
-                                                   irradiance,
-                                                   energy_performance)
+        energy_generate = make_energy_generate_env(
+            clock, irradiance, energy_performance
+        )
 
-        energy_store = make_energy_store_env(energy_generate,
-                                             ecless_energy_cons)
+        energy_store = make_energy_store_env(energy_generate, ecless_energy_cons)
 
     return energy

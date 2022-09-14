@@ -22,12 +22,14 @@ import copy
 
 from placeholder_handelers.place_holder_handeler import place_holders
 
-class habitat_simulator_together_sys():
-    def __init__(self):
-        path_data_files = './data_files/'
 
-        with System(name="everything",
-            description="Everything that goes in the simulation") as everything:
+class habitat_simulator_together_sys:
+    def __init__(self):
+        path_data_files = "./data_files/"
+
+        with System(
+            name="everything", description="Everything that goes in the simulation"
+        ) as everything:
 
             place_holder_0 = place_holders()
             place_holder_0.define_place_holder()
@@ -37,49 +39,56 @@ class habitat_simulator_together_sys():
 
             dome_specs = make_dome_specs()
             moon = make_moon(path_data_files, clock, dome_specs)
-            energy = make_energy(clock,
-                                 moon,
-                                 place_holder_0.place_holder_energy_cons,
-                                 place_holder_0.place_holder_agent_clean_panel,
-                                 place_holder_0.place_holder_agent_clean_plant,
-                                 place_holder_0.place_holder_HM_cover_panel)
+            energy = make_energy(
+                clock,
+                moon,
+                place_holder_0.place_holder_energy_cons,
+                place_holder_0.place_holder_agent_clean_panel,
+                place_holder_0.place_holder_agent_clean_plant,
+                place_holder_0.place_holder_HM_cover_panel,
+            )
             # # energy = make_energy(clock, moon)
             # # print(place_holder_0.place_holder_struct_health)
-            eclss = make_eclss(clock,
-                               dome_specs,
-                               energy_available_energy=place_holder_0.place_holder_available_en,
-                               struct_health=place_holder_0.place_holder_struct_health,
-                               struct_inside_temperature=place_holder_0.place_holder_int_str_temp,
-                               interior_env_temperature=place_holder_0.place_holder_int_env_temp,
-                               int_env_pres=place_holder_0.place_holder_int_env_pres,
-                               HM_temperature_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
-                               HM_temperature_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
-                               HM_pressure_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
-                               HM_pressure_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint)
+            eclss = make_eclss(
+                clock,
+                dome_specs,
+                energy_available_energy=place_holder_0.place_holder_available_en,
+                struct_health=place_holder_0.place_holder_struct_health,
+                struct_inside_temperature=place_holder_0.place_holder_int_str_temp,
+                interior_env_temperature=place_holder_0.place_holder_int_env_temp,
+                int_env_pres=place_holder_0.place_holder_int_env_pres,
+                HM_temperature_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
+                HM_temperature_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
+                HM_pressure_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
+                HM_pressure_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
+            )
             # # eclss = make_eclss(clock, dome_specs)
-            struct = make_structure(moon,
-                                    dome_specs,
-                                    place_holder_0.place_holder_int_env_temp,
-                                    place_holder_0.place_holder_agent_repair_struct)
+            struct = make_structure(
+                moon,
+                dome_specs,
+                place_holder_0.place_holder_int_env_temp,
+                place_holder_0.place_holder_agent_repair_struct,
+            )
             # # struct = make_structure(moon, dome_specs)
-            int_env = make_int_env(dome_specs,
-                                   eclss_en_used_heat=place_holder_0.place_holder_en_used_heat,
-                                   eclss_en_needed_heat=place_holder_0.place_holder_en_needed_heat,
-                                   eclss_en_used_pres=place_holder_0.place_holder_en_used_pres,
-                                   eclss_en_needed_pres=place_holder_0.place_holder_en_needed_pres,
-                                   struct_health=place_holder_0.place_holder_struct_health,
-                                   struct_inside_temperature=place_holder_0.place_holder_int_str_temp,
-                                   HM_temperature_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
-                                   HM_temperature_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
-                                   HM_pressure_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
-                                   HM_pressure_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint)
+            int_env = make_int_env(
+                dome_specs,
+                eclss_en_used_heat=place_holder_0.place_holder_en_used_heat,
+                eclss_en_needed_heat=place_holder_0.place_holder_en_needed_heat,
+                eclss_en_used_pres=place_holder_0.place_holder_en_used_pres,
+                eclss_en_needed_pres=place_holder_0.place_holder_en_needed_pres,
+                struct_health=place_holder_0.place_holder_struct_health,
+                struct_inside_temperature=place_holder_0.place_holder_int_str_temp,
+                HM_temperature_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
+                HM_temperature_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
+                HM_pressure_lower_setpoint=place_holder_0.place_holder_HM_pressure_lower_setpoint,
+                HM_pressure_upper_setpoint=place_holder_0.place_holder_HM_pressure_upper_setpoint,
+            )
             # int_env = make_int_env(dome_specs)
         # input('placeholdings')
         everything = place_holder_0.replace_place_holder(everything)
         self.hab_sys = everything
         print(everything)
         # asda
-
 
     def show_graph(self):
         hab_sys = self.hab_sys
@@ -89,34 +98,32 @@ class habitat_simulator_together_sys():
         list_to_add_nodes = []
         list_to_add_edges = []
         for v in g.nodes:
-            if not(isinstance(v, str)):
-                if not('place_holder' in v.name):
+            if not (isinstance(v, str)):
+                if not ("place_holder" in v.name):
                     list_to_add_nodes.append(v.name)
                     for e in g.edges(v):
-                        if not(isinstance(e[0], str)):
+                        if not (isinstance(e[0], str)):
                             name_node_e_0 = e[0].name
                         else:
                             name_node_e_0 = e[0]
-                        if not(isinstance(e[1], str)):
+                        if not (isinstance(e[1], str)):
                             name_node_e_1 = e[1].name
                         else:
                             name_node_e_1 = e[1]
-                        list_to_add_edges.append((name_node_e_0,
-                                                  name_node_e_1))
+                        list_to_add_edges.append((name_node_e_0, name_node_e_1))
             else:
-                if not('place_holder' in v):
+                if not ("place_holder" in v):
                     list_to_add_nodes.append(v)
                     for e in g.edges(v):
-                        if not(isinstance(e[0], str)):
+                        if not (isinstance(e[0], str)):
                             name_node_e_0 = e[0].name
                         else:
                             name_node_e_0 = e[0]
-                        if not(isinstance(e[1], str)):
+                        if not (isinstance(e[1], str)):
                             name_node_e_1 = e[1].name
                         else:
                             name_node_e_1 = e[1]
-                        list_to_add_edges.append((name_node_e_0,
-                                                  name_node_e_1))
+                        list_to_add_edges.append((name_node_e_0, name_node_e_1))
 
         for v in list_to_add_nodes:
             g_clean.add_node(v)
@@ -144,103 +151,125 @@ class habitat_simulator_together_sys():
             hab_sys.transition()
             data_to_plot[idx_time] = dict()
             if print_it:
-                print(2 * '\n')
-                print('Time:')
-                print('t=', t_now)
-                data_to_plot[idx_time]['time'] =hab_sys.clock.t.value
+                print(2 * "\n")
+                print("Time:")
+                print("t=", t_now)
+                data_to_plot[idx_time]["time"] = hab_sys.clock.t.value
 
-                print(f"sim_time: "
-                      f"{data_to_plot[idx_time]['time']:1.5f}")
+                print(f"sim_time: " f"{data_to_plot[idx_time]['time']:1.5f}")
 
-                print('Disturbances:')
-                data_to_plot[idx_time]['dust'] =\
-                    hab_sys.moon.dust.dust_rate.value
-                data_to_plot[idx_time]['irradiation'] =\
-                    hab_sys.moon.radiation.irradiance.value
-                data_to_plot[idx_time]['external_temp'] =\
-                    hab_sys.moon.thermal.surface_temperature.value
-                data_to_plot[idx_time]['meteor_impacts_1'] =\
-                    hab_sys.moon.meteor.meteor_impacts_1.value
-                data_to_plot[idx_time]['meteor_impacts_2'] = \
-                    hab_sys.moon.meteor.meteor_impacts_2.value
-                data_to_plot[idx_time]['meteor_impacts_3'] = \
-                    hab_sys.moon.meteor.meteor_impacts_3.value
-                data_to_plot[idx_time]['meteor_impacts_4'] = \
-                    hab_sys.moon.meteor.meteor_impacts_4.value
-                data_to_plot[idx_time]['meteor_impacts_5'] = \
-                    hab_sys.moon.meteor.meteor_impacts_5.value
+                print("Disturbances:")
+                data_to_plot[idx_time]["dust"] = hab_sys.moon.dust.dust_rate.value
+                data_to_plot[idx_time][
+                    "irradiation"
+                ] = hab_sys.moon.radiation.irradiance.value
+                data_to_plot[idx_time][
+                    "external_temp"
+                ] = hab_sys.moon.thermal.surface_temperature.value
+                data_to_plot[idx_time][
+                    "meteor_impacts_1"
+                ] = hab_sys.moon.meteor.meteor_impacts_1.value
+                data_to_plot[idx_time][
+                    "meteor_impacts_2"
+                ] = hab_sys.moon.meteor.meteor_impacts_2.value
+                data_to_plot[idx_time][
+                    "meteor_impacts_3"
+                ] = hab_sys.moon.meteor.meteor_impacts_3.value
+                data_to_plot[idx_time][
+                    "meteor_impacts_4"
+                ] = hab_sys.moon.meteor.meteor_impacts_4.value
+                data_to_plot[idx_time][
+                    "meteor_impacts_5"
+                ] = hab_sys.moon.meteor.meteor_impacts_5.value
 
-                print(f"dust_rate: "
-                      f"{data_to_plot[idx_time]['dust']:1.5f},"
-                      f" irradiation: "
-                      f"{data_to_plot[idx_time]['irradiation']:1.5f},"
-                      f" external_temp :"
-                      f"{data_to_plot[idx_time]['external_temp']:1.5f},"
-                      f"meteor_impacts_1: "
-                      f"{data_to_plot[idx_time]['meteor_impacts_1']:1.5f},"
-                      f" meteor_impacts_2: "
-                      f"{data_to_plot[idx_time]['meteor_impacts_2']:1.5f},"
-                      f" meteor_impacts_3: "
-                      f"{data_to_plot[idx_time]['meteor_impacts_3']:1.5f},"
-                      f" meteor_impacts_4: "
-                      f"{data_to_plot[idx_time]['meteor_impacts_4']:1.5f},"
-                      f" meteor_impacts_5: "
-                      f"{data_to_plot[idx_time]['meteor_impacts_5']:1.5f}"
-                      )
+                print(
+                    f"dust_rate: "
+                    f"{data_to_plot[idx_time]['dust']:1.5f},"
+                    f" irradiation: "
+                    f"{data_to_plot[idx_time]['irradiation']:1.5f},"
+                    f" external_temp :"
+                    f"{data_to_plot[idx_time]['external_temp']:1.5f},"
+                    f"meteor_impacts_1: "
+                    f"{data_to_plot[idx_time]['meteor_impacts_1']:1.5f},"
+                    f" meteor_impacts_2: "
+                    f"{data_to_plot[idx_time]['meteor_impacts_2']:1.5f},"
+                    f" meteor_impacts_3: "
+                    f"{data_to_plot[idx_time]['meteor_impacts_3']:1.5f},"
+                    f" meteor_impacts_4: "
+                    f"{data_to_plot[idx_time]['meteor_impacts_4']:1.5f},"
+                    f" meteor_impacts_5: "
+                    f"{data_to_plot[idx_time]['meteor_impacts_5']:1.5f}"
+                )
 
-                print('Energies:')
-                data_to_plot[idx_time]['accum_dust_solar'] =\
-                    hab_sys.energy.energy_performance.accum_dust_solar.value
-                data_to_plot[idx_time]['accum_dust_nuclear'] =\
-                    hab_sys.energy.energy_performance.accum_dust_nuclear.value
-                data_to_plot[idx_time]['functional_covered'] =\
-                    hab_sys.energy.energy_performance.functional_covered.value
-                data_to_plot[idx_time]['gen_power_solar'] =\
-                    hab_sys.energy.energy_generate.gen_energy_solar.value
-                data_to_plot[idx_time]['gen_power_nuclear'] =\
-                    hab_sys.energy.energy_generate.gen_energy_nuclear.value
-                data_to_plot[idx_time]['gen_power_total'] =\
-                    hab_sys.energy.energy_generate.gen_energy_total.value
-                data_to_plot[idx_time]['available_en'] = \
-                    hab_sys.energy.energy_store.available_en.value
+                print("Energies:")
+                data_to_plot[idx_time][
+                    "accum_dust_solar"
+                ] = hab_sys.energy.energy_performance.accum_dust_solar.value
+                data_to_plot[idx_time][
+                    "accum_dust_nuclear"
+                ] = hab_sys.energy.energy_performance.accum_dust_nuclear.value
+                data_to_plot[idx_time][
+                    "functional_covered"
+                ] = hab_sys.energy.energy_performance.functional_covered.value
+                data_to_plot[idx_time][
+                    "gen_power_solar"
+                ] = hab_sys.energy.energy_generate.gen_energy_solar.value
+                data_to_plot[idx_time][
+                    "gen_power_nuclear"
+                ] = hab_sys.energy.energy_generate.gen_energy_nuclear.value
+                data_to_plot[idx_time][
+                    "gen_power_total"
+                ] = hab_sys.energy.energy_generate.gen_energy_total.value
+                data_to_plot[idx_time][
+                    "available_en"
+                ] = hab_sys.energy.energy_store.available_en.value
 
-                print(f"accum_dust_solar:"
-                      f"{data_to_plot[idx_time]['accum_dust_solar']:1.5f},"
-                      f"accum_dust_nuclear:"
-                      f"{data_to_plot[idx_time]['accum_dust_nuclear']:1.5f},"
-                      f"functional_covered:"
-                      f"{data_to_plot[idx_time]['functional_covered']:1.5f},"
-                      f"gen_power_solar:"
-                      f"{data_to_plot[idx_time]['gen_power_solar']:1.5f},"
-                      f"gen_power_nuclear:"
-                      f"{data_to_plot[idx_time]['gen_power_nuclear']:1.5f},"
-                      f"gen_power_total:"
-                      f"{data_to_plot[idx_time]['gen_power_total']:1.5f},"
-                      f"available_en:"
-                      f"{data_to_plot[idx_time]['available_en']:1.5f},")
+                print(
+                    f"accum_dust_solar:"
+                    f"{data_to_plot[idx_time]['accum_dust_solar']:1.5f},"
+                    f"accum_dust_nuclear:"
+                    f"{data_to_plot[idx_time]['accum_dust_nuclear']:1.5f},"
+                    f"functional_covered:"
+                    f"{data_to_plot[idx_time]['functional_covered']:1.5f},"
+                    f"gen_power_solar:"
+                    f"{data_to_plot[idx_time]['gen_power_solar']:1.5f},"
+                    f"gen_power_nuclear:"
+                    f"{data_to_plot[idx_time]['gen_power_nuclear']:1.5f},"
+                    f"gen_power_total:"
+                    f"{data_to_plot[idx_time]['gen_power_total']:1.5f},"
+                    f"available_en:"
+                    f"{data_to_plot[idx_time]['available_en']:1.5f},"
+                )
 
-                print('ECLSS:')
-                data_to_plot[idx_time]['en_needed_heat'] =\
-                    hab_sys.eclss.eclss_temperature.en_needed_heat.value
-                data_to_plot[idx_time]['en_used_heat'] = \
-                    hab_sys.eclss.eclss_temperature.en_used_heat.value
-                data_to_plot[idx_time]['en_needed_pres'] =\
-                    hab_sys.eclss.eclss_pressure.en_needed_pres.value
-                data_to_plot[idx_time]['en_used_pres'] =\
-                    hab_sys.eclss.eclss_pressure.en_used_pres.value
-                data_to_plot[idx_time]['power_cons'] =\
-                    hab_sys.eclss.eclss_energy_consumption.energy_cons.value
+                print("ECLSS:")
+                data_to_plot[idx_time][
+                    "en_needed_heat"
+                ] = hab_sys.eclss.eclss_temperature.en_needed_heat.value
+                data_to_plot[idx_time][
+                    "en_used_heat"
+                ] = hab_sys.eclss.eclss_temperature.en_used_heat.value
+                data_to_plot[idx_time][
+                    "en_needed_pres"
+                ] = hab_sys.eclss.eclss_pressure.en_needed_pres.value
+                data_to_plot[idx_time][
+                    "en_used_pres"
+                ] = hab_sys.eclss.eclss_pressure.en_used_pres.value
+                data_to_plot[idx_time][
+                    "power_cons"
+                ] = hab_sys.eclss.eclss_energy_consumption.energy_cons.value
 
-                print(f"en_needed_heat:"
-                      f"{data_to_plot[idx_time]['en_needed_heat']:1.5f},"
-                      f"en_used_heat:"
-                      f"{data_to_plot[idx_time]['en_used_heat']:1.5f},"
-                      f"en_needed_pres:"
-                      f"{data_to_plot[idx_time]['en_needed_pres']:1.5f},"
-                      f"en_used_pres:"
-                      f"{data_to_plot[idx_time]['en_used_pres']:1.5f},"
-                      f"power_cons:"
-                      f"{data_to_plot[idx_time]['power_cons']:1.5f},")
+                print(
+                    f"en_needed_heat:"
+                    f"{data_to_plot[idx_time]['en_needed_heat']:1.5f},"
+                    f"en_used_heat:"
+                    f"{data_to_plot[idx_time]['en_used_heat']:1.5f},"
+                    f"en_needed_pres:"
+                    f"{data_to_plot[idx_time]['en_needed_pres']:1.5f},"
+                    f"en_used_pres:"
+                    f"{data_to_plot[idx_time]['en_used_pres']:1.5f},"
+                    f"power_cons:"
+                    f"{data_to_plot[idx_time]['power_cons']:1.5f},"
+                )
 
                 # print('Struct:')
                 # print('hab_sys.struct.struct_health', hab_sys.struct.struct_health)
@@ -301,4 +330,4 @@ class habitat_simulator_together_sys():
 hab_sys = habitat_simulator_together_sys()
 # hab_sys.show_graph()
 hab_sys.simulate()
-print('GG-S')
+print("GG-S")

@@ -43,9 +43,7 @@ clock  :: Clock  => |  MoonDustEnvironment |-> dust_rate :: Variable
 """
 
 
-
 __all__ = ["make_dust_env_0"]
-
 
 
 from cdcm import *
@@ -60,31 +58,27 @@ def make_dust_env_0(clock):
             name="dust_rate",
             value=0.0,
             units="1/sec",
-            description="Dust deposition rate"
+            description="Dust deposition rate",
         )
-        
+
         # Whatever follows is particular to this implementation
         # of the MoonDustEnvironment:
         mean_dust_rate = Parameter(
             name="mean_dust_rate",
             value=1.0,
             units="1/sec",
-            description="Average dust deposition rate"
+            description="Average dust deposition rate",
         )
         std_dust_rate = Parameter(
             name="std_dust_rate",
             value=0.25,
             units="1/sec",
-            description="Standard deviation of dust deposition rate"
+            description="Standard deviation of dust deposition rate",
         )
-
-
 
         @make_function(dust_rate)
         def f_dust_rate(
-            mean_dust_rate=mean_dust_rate,
-            std_dust_rate=std_dust_rate,
-            t=clock.t
+            mean_dust_rate=mean_dust_rate, std_dust_rate=std_dust_rate, t=clock.t
         ):
             """Calculate the dust rate"""
             if t == 0.0:

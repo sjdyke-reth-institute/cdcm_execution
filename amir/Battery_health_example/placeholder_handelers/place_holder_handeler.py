@@ -18,7 +18,7 @@ from cdcm import *
 import inspect
 
 
-class PlaceHolders():
+class PlaceHolders:
     """
     Arguments
      -NULL
@@ -31,7 +31,7 @@ class PlaceHolders():
 
     def define_place_holder(self):
         """
-            add the placeholders
+        add the placeholders
 
         """
         # self.place_holder_available_en = Variable(name="place_holder_available_en", units="J", value=7200000.0, description=" Total available energy in batteries") # Cleaner but not robust
@@ -46,22 +46,26 @@ class PlaceHolders():
             name="place_holder_energy_cons",
             units="J",
             value=0.0,
-            description="Total energy consumption in ECLSS")
+            description="Total energy consumption in ECLSS",
+        )
         self.place_holder_int_str_temp = Variable(
             name="place_holder_int_str_temp",
             units="K",
             value=300.0,
-            description="Temparature of the inner side of the structure")
+            description="Temparature of the inner side of the structure",
+        )
         self.place_holder_int_env_temp = Variable(
             name="place_holder_int_env_temp",
             units="K",
             value=280.0,
-            description="Temparature of the interior environment")
+            description="Temparature of the interior environment",
+        )
         self.place_holder_int_env_pres = Variable(
             name="place_holder_int_env_pres",
             units="atm",
             value=1.0,
-            description="Pressure of the interior environment")
+            description="Pressure of the interior environment",
+        )
 
         # self.place_holder_structure_secs =
         # Variable(name="place_holder_structure_secs", value=[1.0, 1.0, 1.0,
@@ -71,82 +75,90 @@ class PlaceHolders():
             name="place_holder_structure_sec_1",
             value=1.0,
             units="",
-            description="how much healthy is dome section 1")
+            description="how much healthy is dome section 1",
+        )
         self.place_holder_structure_sec_2 = Variable(
             name="place_holder_structure_sec_2",
             value=1.0,
             units="",
-            description="how much healthy is dome section 2")
+            description="how much healthy is dome section 2",
+        )
         self.place_holder_structure_sec_3 = Variable(
             name="place_holder_structure_sec_3",
             value=1.0,
             units="",
-            description="how much healthy is dome section 3")
+            description="how much healthy is dome section 3",
+        )
         self.place_holder_structure_sec_4 = Variable(
             name="place_holder_structure_sec_4",
             value=1.0,
             units="",
-            description="how much healthy is dome section 4")
+            description="how much healthy is dome section 4",
+        )
         self.place_holder_structure_sec_5 = Variable(
             name="place_holder_structure_sec_5",
             value=1.0,
             units="",
-            description="how much healthy is dome section 5")
+            description="how much healthy is dome section 5",
+        )
 
         self.place_holder_agent_repair_struct = Variable(
             name="place_holder_agent_repair_struct",
             units="",
-            value=[
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0],
-            description="The array of how much repair is given to each dome section in unit of time step")
+            value=[0.0, 0.0, 0.0, 0.0, 0.0],
+            description="The array of how much repair is given to each dome section in unit of time step",
+        )
         self.place_holder_agent_clean_panel = Variable(
             name="place_holder_agent_clean_panel",
             units="",
             value=0.0,
-            description="Cleaning the panel value in one time step")
+            description="Cleaning the panel value in one time step",
+        )
         self.place_holder_agent_clean_plant = Variable(
             name="place_holder_agent_clean_plant",
             units="",
             value=0.0,
-            description="Cleaning the nuclear plant radiator value in one time step")
+            description="Cleaning the nuclear plant radiator value in one time step",
+        )
 
         self.place_holder_HM_cover_panel = Variable(
             name="place_holder_HM_cover_panel",
             units="",
             value=True,
-            description="1 = Solar panel is functional, 0 = solar panel is covered against dust")
+            description="1 = Solar panel is functional, 0 = solar panel is covered against dust",
+        )
         self.place_holder_HM_temperature_lower_setpoint = Variable(
             name="place_holder_HM_lower_temparature_setpoint",
             units="",
             value=297.0,
-            description="The lower temperature set point from HM to ECLSS")
+            description="The lower temperature set point from HM to ECLSS",
+        )
         self.place_holder_HM_temperature_upper_setpoint = Variable(
             name="place_holder_HM_upper_temparature_setpoint",
             units="",
             value=303.0,
-            description="The upper temperature set point from HM to ECLSS")
+            description="The upper temperature set point from HM to ECLSS",
+        )
         self.place_holder_HM_pressure_lower_setpoint = Variable(
             name="place_holder_HM_lower_pressure_setpoint",
             units="",
             value=0.95,
-            description="The lower pressure set point from HM to ECLSS")
+            description="The lower pressure set point from HM to ECLSS",
+        )
         self.place_holder_HM_pressure_upper_setpoint = Variable(
             name="place_holder_HM_upper_pressure_setpoint",
             units="",
             value=1.05,
-            description="The upper pressure set point from HM to ECLSS")
+            description="The upper pressure set point from HM to ECLSS",
+        )
 
         return
 
     def replace_place_holder(self, everything):
         """
-            Replace Placeholders
-            Argument
-                everything -- The habitat system which will get states replaced
+        Replace Placeholders
+        Argument
+            everything -- The habitat system which will get states replaced
         """
 
         # replace(everything.place_holder_available_en, everything.energy.energy_store.available_en) # Cleaner but not robust
@@ -156,26 +168,44 @@ class PlaceHolders():
         # replace(everything.place_holder_en_needed_pres,
         # everything.eclss.eclss_pressure.en_needed_pres) # Cleaner but not
         # robust
-        replace(everything.place_holder_energy_cons,
-                everything.eclss.eclss_energy_consumption.energy_cons)
+        replace(
+            everything.place_holder_energy_cons,
+            everything.eclss.eclss_energy_consumption.energy_cons,
+        )
         # replace(everything.place_holder_structure_secs,
         # everything.struct.struct_health.structure_secs) # Cleaner but not
         # robust
-        replace(everything.place_holder_structure_sec_1,
-                everything.struct.struct_health.structure_sec_1)
-        replace(everything.place_holder_structure_sec_2,
-                everything.struct.struct_health.structure_sec_2)
-        replace(everything.place_holder_structure_sec_3,
-                everything.struct.struct_health.structure_sec_3)
-        replace(everything.place_holder_structure_sec_4,
-                everything.struct.struct_health.structure_sec_4)
-        replace(everything.place_holder_structure_sec_5,
-                everything.struct.struct_health.structure_sec_5)
-        replace(everything.place_holder_int_str_temp,
-                everything.struct.struct_temp.int_str_temp)
-        replace(everything.place_holder_int_env_temp,
-                everything.int_env.int_env_temperature.int_env_temp)
-        replace(everything.place_holder_int_env_pres,
-                everything.int_env.int_env_pressure.int_env_pres)
+        replace(
+            everything.place_holder_structure_sec_1,
+            everything.struct.struct_health.structure_sec_1,
+        )
+        replace(
+            everything.place_holder_structure_sec_2,
+            everything.struct.struct_health.structure_sec_2,
+        )
+        replace(
+            everything.place_holder_structure_sec_3,
+            everything.struct.struct_health.structure_sec_3,
+        )
+        replace(
+            everything.place_holder_structure_sec_4,
+            everything.struct.struct_health.structure_sec_4,
+        )
+        replace(
+            everything.place_holder_structure_sec_5,
+            everything.struct.struct_health.structure_sec_5,
+        )
+        replace(
+            everything.place_holder_int_str_temp,
+            everything.struct.struct_temp.int_str_temp,
+        )
+        replace(
+            everything.place_holder_int_env_temp,
+            everything.int_env.int_env_temperature.int_env_temp,
+        )
+        replace(
+            everything.place_holder_int_env_pres,
+            everything.int_env.int_env_pressure.int_env_pres,
+        )
 
         return everything

@@ -22,7 +22,6 @@ design        :: DomeSpec             => |_________________| -> pressurre_set_po
 """
 
 
-
 __all__ = ["make_eclss"]
 
 
@@ -31,18 +30,20 @@ from . import make_health_managment_detection_env_0
 from . import make_health_managment_cyber_env_0
 from . import make_health_managment_physical_env_0
 
-def make_eclss(clock,
-               dome_specs,
-               moon,
-               energy,
-               eclss,
-               struct,
-               interior_env,
-               agents,
-               make_health_managment_detection_env=make_health_managment_physical_env_0,
-               make_health_managment_cyber_env=make_health_managment_cyber_env_0,
-               make_health_managment_physical_env=make_health_managment_physical_env_0
-              ):
+
+def make_eclss(
+    clock,
+    dome_specs,
+    moon,
+    energy,
+    eclss,
+    struct,
+    interior_env,
+    agents,
+    make_health_managment_detection_env=make_health_managment_physical_env_0,
+    make_health_managment_cyber_env=make_health_managment_cyber_env_0,
+    make_health_managment_physical_env=make_health_managment_physical_env_0,
+):
     """
     Make an HM system.
 
@@ -58,13 +59,38 @@ def make_eclss(clock,
     """
     with System(name="HM", description="The HM system") as HM:
         if energy_available_energy is None:
-            energy_available_energy = Variable(name="place_holder_available_en", value=0.0, units="J", description="Available battery")
+            energy_available_energy = Variable(
+                name="place_holder_available_en",
+                value=0.0,
+                units="J",
+                description="Available battery",
+            )
 
-        health_managment_detection = make_health_managment_detection_env(clock, dome_specs, moon, energy, eclss, struct, interior_env)
+        health_managment_detection = make_health_managment_detection_env(
+            clock, dome_specs, moon, energy, eclss, struct, interior_env
+        )
 
-        health_managment_cyber = make_health_managment_cyber_env(clock, dome_specs, moon, energy, eclss, struct, interior_env, health_managment_detection)
+        health_managment_cyber = make_health_managment_cyber_env(
+            clock,
+            dome_specs,
+            moon,
+            energy,
+            eclss,
+            struct,
+            interior_env,
+            health_managment_detection,
+        )
 
-        health_managment_physical = make_health_managment_physical_env(clock, dome_specs, moon, energy, eclss, struct, interior_env, health_managment_detection, agents)
+        health_managment_physical = make_health_managment_physical_env(
+            clock,
+            dome_specs,
+            moon,
+            energy,
+            eclss,
+            struct,
+            interior_env,
+            health_managment_detection,
+            agents,
+        )
 
     return HM
-

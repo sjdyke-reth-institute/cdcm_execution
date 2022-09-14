@@ -35,24 +35,25 @@ from dome_design import *
 __all__ = ["make_int_env"]
 
 
-def make_int_env(dome_specs,
-                 eclss_en_used_heat,
-                 eclss_en_needed_heat,
-                 eclss_en_used_pres,
-                 eclss_en_needed_pres,
-                 structure_sec_1,
-                 structure_sec_2,
-                 structure_sec_3,
-                 structure_sec_4,
-                 structure_sec_5,
-                 struct_inside_temperature,
-                 HM_temperature_lower_setpoint=None,
-                 HM_temperature_upper_setpoint=None,
-                 HM_pressure_lower_setpoint=None,
-                 HM_pressure_upper_setpoint=None,
-                 make_int_env_pressure_env=make_int_env_pressure_env_0,
-                 make_int_env_temperature_env=make_int_env_temperature_env_0
-                 ):
+def make_int_env(
+    dome_specs,
+    eclss_en_used_heat,
+    eclss_en_needed_heat,
+    eclss_en_used_pres,
+    eclss_en_needed_pres,
+    structure_sec_1,
+    structure_sec_2,
+    structure_sec_3,
+    structure_sec_4,
+    structure_sec_5,
+    struct_inside_temperature,
+    HM_temperature_lower_setpoint=None,
+    HM_temperature_upper_setpoint=None,
+    HM_pressure_lower_setpoint=None,
+    HM_pressure_upper_setpoint=None,
+    make_int_env_pressure_env=make_int_env_pressure_env_0,
+    make_int_env_temperature_env=make_int_env_temperature_env_0,
+):
     """
     Make an interior environment system.
 
@@ -69,25 +70,29 @@ def make_int_env(dome_specs,
                 name="place_holder_HM_lower_temparature_setpoint",
                 units="",
                 value=297.0,
-                description="The lower temperature set point from HM to ECLSS")
+                description="The lower temperature set point from HM to ECLSS",
+            )
         if HM_temperature_upper_setpoint is None:
             HM_temperature_upper_setpoint = Variable(
                 name="place_holder_HM_upper_temparature_setpoint",
                 units="",
                 value=303.0,
-                description="The upper temperature set point from HM to ECLSS")
+                description="The upper temperature set point from HM to ECLSS",
+            )
         if HM_pressure_lower_setpoint is None:
             HM_pressure_lower_setpoint = Variable(
                 name="place_holder_HM_lower_pressure_setpoint",
                 units="",
                 value=0.95,
-                description="The lower pressure set point from HM to ECLSS")
+                description="The lower pressure set point from HM to ECLSS",
+            )
         if HM_pressure_upper_setpoint is None:
             HM_pressure_upper_setpoint = Variable(
                 name="place_holder_HM_upper_pressure_setpoint",
                 units="",
                 value=1.05,
-                description="The upper pressure set point from HM to ECLSS")
+                description="The upper pressure set point from HM to ECLSS",
+            )
 
         int_env_pressure = make_int_env_pressure_env(
             dome_specs,
@@ -99,13 +104,15 @@ def make_int_env(dome_specs,
             structure_sec_4,
             structure_sec_5,
             HM_pressure_lower_setpoint,
-            HM_pressure_upper_setpoint)
+            HM_pressure_upper_setpoint,
+        )
 
         int_env_temperature = make_int_env_temperature_env(
             eclss_en_used_heat,
             eclss_en_needed_heat,
             struct_inside_temperature,
             HM_temperature_lower_setpoint,
-            HM_temperature_upper_setpoint)
+            HM_temperature_upper_setpoint,
+        )
 
     return int_env

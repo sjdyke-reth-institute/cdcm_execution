@@ -20,7 +20,6 @@ design                :: DomeSpec  => |_________________| -> store_energy :: Sta
 """
 
 
-
 __all__ = ["make_energy"]
 
 
@@ -33,16 +32,17 @@ from . import make_energy_store_env_0
 from dome_design import *
 
 
-def make_energy(clock,
-                moon,
-                ecless_energy_cons=None,
-                agent_clean_panel=None,
-                agent_clean_plant=None,
-                HM_cover_panel=None,
-                make_energy_performance_env=make_energy_performance_env_0,
-                make_energy_generate_env=make_energy_generate_env_0,
-                make_energy_store_env=make_energy_store_env_0,
-                ):
+def make_energy(
+    clock,
+    moon,
+    ecless_energy_cons=None,
+    agent_clean_panel=None,
+    agent_clean_plant=None,
+    HM_cover_panel=None,
+    make_energy_performance_env=make_energy_performance_env_0,
+    make_energy_generate_env=make_energy_generate_env_0,
+    make_energy_store_env=make_energy_store_env_0,
+):
     """
     Make a struct system.
 
@@ -63,18 +63,12 @@ def make_energy(clock,
         # if HM_cover_panel is None:
         #     HM_cover_panel = Variable(name="HM_cover_panel", value=1.0, units="", description="1= Solar panel is functional, 0= solar panel is covered against dust")
 
-        energy_performance = make_energy_performance_env(clock,
-                                                         moon,
-                                                         agent_clean_panel,
-                                                         agent_clean_plant,
-                                                         HM_cover_panel)
+        energy_performance = make_energy_performance_env(
+            clock, moon, agent_clean_panel, agent_clean_plant, HM_cover_panel
+        )
 
-        energy_generate = make_energy_generate_env(clock,
-                                                   moon,
-                                                   energy_performance)
+        energy_generate = make_energy_generate_env(clock, moon, energy_performance)
 
-        energy_store = make_energy_store_env(energy_generate,
-                                             ecless_energy_cons)
+        energy_store = make_energy_store_env(energy_generate, ecless_energy_cons)
 
     return energy
-

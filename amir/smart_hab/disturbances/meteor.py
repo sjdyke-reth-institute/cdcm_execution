@@ -40,68 +40,73 @@ def make_meteor_env_0(clock, moon, dome_specs):
             name="meteor_hit_rate",
             value=15 / 1000 / 3600,
             units="1/sec",
-            description="rate of meteor hitting the dome"
+            description="rate of meteor hitting the dome",
         )
 
         meteor_impacts_1 = Variable(
             name="meteor_impacts_1",
             value=0.0,
             units="",
-            description="Meteor impact on the location of Dome section 1"
+            description="Meteor impact on the location of Dome section 1",
         )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_2 = Variable(
             name="meteor_impacts_2",
             value=0.0,
             units="",
-            description="Meteor impact on the location of Dome section 2"
+            description="Meteor impact on the location of Dome section 2",
         )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_3 = Variable(
             name="meteor_impacts_3",
             value=0.0,
             units="",
-            description="Meteor impact on the location of Dome section 3"
+            description="Meteor impact on the location of Dome section 3",
         )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_4 = Variable(
             name="meteor_impacts_4",
             value=0.0,
             units="",
-            description="Meteor impact on the location of Dome section 4"
+            description="Meteor impact on the location of Dome section 4",
         )  # was Variable; Change it to State for consistency if you want
         meteor_impacts_5 = Variable(
             name="meteor_impacts_5",
             value=0.0,
             units="",
-            description="Meteor impact on the location of Dome section 5"
+            description="Meteor impact on the location of Dome section 5",
         )  # was Variable; Change it to State for consistency if you want
 
-        @make_function(meteor_impacts_1,
-                       meteor_impacts_2,
-                       meteor_impacts_3,
-                       meteor_impacts_4,
-                       meteor_impacts_5)
-        def f_meteor_impacts(dome_surface_area=dome_specs.dome_surface_area,
-                             meteor_hit_rate=meteor_hit_rate,
-                             meteor_samp_location=moon.meteor_samp_location,
-                             meteor_samp_impact=moon.meteor_samp_impact,
-                             dt=clock.dt):
+        @make_function(
+            meteor_impacts_1,
+            meteor_impacts_2,
+            meteor_impacts_3,
+            meteor_impacts_4,
+            meteor_impacts_5,
+        )
+        def f_meteor_impacts(
+            dome_surface_area=dome_specs.dome_surface_area,
+            meteor_hit_rate=meteor_hit_rate,
+            meteor_samp_location=moon.meteor_samp_location,
+            meteor_samp_impact=moon.meteor_samp_impact,
+            dt=clock.dt,
+        ):
             """Transition function for meteor_impacts"""
-            meteor_impacts_new = ([0.0, 0.0, 0.0, 0.0, 0.0])
-            P_collide_based_on_dome_size = min(max(dome_surface_area /
-                                                   (2 * math.pi *
-                                                    math.pow(20, 2)), 0.5), 1)
+            meteor_impacts_new = [0.0, 0.0, 0.0, 0.0, 0.0]
+            P_collide_based_on_dome_size = min(
+                max(dome_surface_area / (2 * math.pi * math.pow(20, 2)), 0.5), 1
+            )
             # np.random.seed(101)
             p_hit = np.random.random()
-            print('random', np.random.random())
+            print("random", np.random.random())
             if p_hit < meteor_hit_rate * P_collide_based_on_dome_size * dt:
                 p_choice = np.random.randint(10000)
                 location_hit = int(meteor_samp_location[p_choice] + 1)
-                meteor_impacts_new[location_hit - 1] = \
-                    meteor_samp_impact[p_choice]
+                meteor_impacts_new[location_hit - 1] = meteor_samp_impact[p_choice]
 
-            return meteor_impacts_new[0], \
-                meteor_impacts_new[1], \
-                meteor_impacts_new[2], \
-                meteor_impacts_new[3], \
-                meteor_impacts_new[4]
+            return (
+                meteor_impacts_new[0],
+                meteor_impacts_new[1],
+                meteor_impacts_new[2],
+                meteor_impacts_new[3],
+                meteor_impacts_new[4],
+            )
 
     return meteor

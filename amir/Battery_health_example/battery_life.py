@@ -28,27 +28,27 @@ import os
 # from placeholder_handelers.place_holder_handeler import PlaceHolders
 
 
-class BatterySimulatorTogetherSys():
+class BatterySimulatorTogetherSys:
     def __init__(self):
         np.random.seed(0)
 
-        with System(name="everything",
-                    description="Everything that goes in the simulation") as everything:
+        with System(
+            name="everything", description="Everything that goes in the simulation"
+        ) as everything:
 
             # place_holder_0 = PlaceHolders()  # Define the placeholder object
             # Define the placeholder states for coupled systems.
             # place_holder_0.define_place_holder()
 
             # Make a clock
-            clock = make_clock(3600.0) # 1 Hour
+            clock = make_clock(3600.0)  # 1 Hour
 
             battery_specs = make_battery_specs()
-            disturbances = make_shocks(clock,
-                                       battery_specs)
-            battery_health = make_battery_health(clock,
-                                                 battery_specs,
-                                                 disturbances.current_shock.high_current)
-      
+            disturbances = make_shocks(clock, battery_specs)
+            battery_health = make_battery_health(
+                clock, battery_specs, disturbances.current_shock.high_current
+            )
+
         self.battery_sys = everything
         # print(everything)
 
@@ -60,34 +60,32 @@ class BatterySimulatorTogetherSys():
         list_to_add_nodes = []
         list_to_add_edges = []
         for v in g.nodes:
-            if not(isinstance(v, str)):
-                if not('place_holder' in v.name):
+            if not (isinstance(v, str)):
+                if not ("place_holder" in v.name):
                     list_to_add_nodes.append(v.name)
                     for e in g.edges(v):
-                        if not(isinstance(e[0], str)):
+                        if not (isinstance(e[0], str)):
                             name_node_e_0 = e[0].name
                         else:
                             name_node_e_0 = e[0]
-                        if not(isinstance(e[1], str)):
+                        if not (isinstance(e[1], str)):
                             name_node_e_1 = e[1].name
                         else:
                             name_node_e_1 = e[1]
-                        list_to_add_edges.append((name_node_e_0,
-                                                  name_node_e_1))
+                        list_to_add_edges.append((name_node_e_0, name_node_e_1))
             else:
-                if not('place_holder' in v):
+                if not ("place_holder" in v):
                     list_to_add_nodes.append(v)
                     for e in g.edges(v):
-                        if not(isinstance(e[0], str)):
+                        if not (isinstance(e[0], str)):
                             name_node_e_0 = e[0].name
                         else:
                             name_node_e_0 = e[0]
-                        if not(isinstance(e[1], str)):
+                        if not (isinstance(e[1], str)):
                             name_node_e_1 = e[1].name
                         else:
                             name_node_e_1 = e[1]
-                        list_to_add_edges.append((name_node_e_0,
-                                                  name_node_e_1))
+                        list_to_add_edges.append((name_node_e_0, name_node_e_1))
 
         for v in list_to_add_nodes:
             g_clean.add_node(v)
@@ -101,7 +99,7 @@ class BatterySimulatorTogetherSys():
     def simulate(self):
 
         battery_sys = self.battery_sys
-        max_steps = 24*365*10
+        max_steps = 24 * 365 * 10
 
         dt = battery_sys.clock.dt.value
         t_now = 0
@@ -116,38 +114,48 @@ class BatterySimulatorTogetherSys():
             battery_sys.transition()
             data_to_plot[idx_time] = dict()
             if print_it:
-                print(2 * '\n')
-                print('Time:')
-                print('t=', t_now)
+                print(2 * "\n")
+                print("Time:")
+                print("t=", t_now)
 
-            data_to_plot[idx_time]['time'] = battery_sys.clock.t.value / 3600.0
+            data_to_plot[idx_time]["time"] = battery_sys.clock.t.value / 3600.0
             if print_it:
-                print(f"sim_time: "
-                      f"{data_to_plot[idx_time]['time']:1.5f}")
+                print(f"sim_time: " f"{data_to_plot[idx_time]['time']:1.5f}")
             if print_it:
-                print('Disturbances:')
+                print("Disturbances:")
 
-            data_to_plot[idx_time]['high_current'] =\
-                battery_sys.shocks.current_shock.high_current.value
+            data_to_plot[idx_time][
+                "high_current"
+            ] = battery_sys.shocks.current_shock.high_current.value
             if print_it:
-                print(f"high_current: "
-                      f"{data_to_plot[idx_time]['high_current']:1.5f}")
+                print(
+                    f"high_current: " f"{data_to_plot[idx_time]['high_current']:1.5f}"
+                )
             if print_it:
-                print('Battery:')
+                print("Battery:")
 
-            data_to_plot[idx_time]['battery_degeradation_state'] =\
+            data_to_plot[idx_time][
+                "battery_degeradation_state"
+            ] = (
                 battery_sys.battery_health.battery_degerade.battery_degeradation_state.value
-            data_to_plot[idx_time]['battery_shock_current_state'] =\
+            )
+            data_to_plot[idx_time][
+                "battery_shock_current_state"
+            ] = (
                 battery_sys.battery_health.battery_shocked.battery_shock_current_state.value
-            data_to_plot[idx_time]['battery_overal_state'] = \
-                battery_sys.battery_health.battery_overal.battery_overal_state.value
+            )
+            data_to_plot[idx_time][
+                "battery_overal_state"
+            ] = battery_sys.battery_health.battery_overal.battery_overal_state.value
             if print_it:
-                print(f"battery_degeradation_state: "
-                      f"{data_to_plot[idx_time]['battery_degeradation_state']:1.5f},"
-                      f"battery_shock_current_state: "
-                      f"{data_to_plot[idx_time]['battery_shock_current_state']:1.5f},"
-                      f"battery_overal_state: "
-                      f"{data_to_plot[idx_time]['battery_overal_state']:1.5f}")
+                print(
+                    f"battery_degeradation_state: "
+                    f"{data_to_plot[idx_time]['battery_degeradation_state']:1.5f},"
+                    f"battery_shock_current_state: "
+                    f"{data_to_plot[idx_time]['battery_shock_current_state']:1.5f},"
+                    f"battery_overal_state: "
+                    f"{data_to_plot[idx_time]['battery_overal_state']:1.5f}"
+                )
 
             t_now += dt
             idx_time += 1
@@ -159,10 +167,9 @@ class BatterySimulatorTogetherSys():
         # print(data_to_plot)
         return
 
+
 np.random.seed(0)
 battery_sys = BatterySimulatorTogetherSys()
 # battery_sys.show_graph()
 battery_sys.simulate()
-print('GG-S')
-
-
+print("GG-S")

@@ -27,21 +27,20 @@ import math
 __all__ = ["make_agent"]
 
 
-def make_agent(agents_command = None,
-               make_agents_task_update_env=make_agents_task_update_env_0,
-               make_agents_task_delivary_env=make_agents_task_delivary_env_0
-              ):
+def make_agent(
+    agents_command=None,
+    make_agents_task_update_env=make_agents_task_update_env_0,
+    make_agents_task_delivary_env=make_agents_task_delivary_env_0,
+):
     """
     Make an agent system.
 
     Arguments
 
     """
-    with System(name="agent",
-                description="The agent system") as agent:
+    with System(name="agent", description="The agent system") as agent:
 
         agent_task_update = make_agents_task_update_env()
         agent_task_delivary = make_agents_task_delivary_env()
 
     return agent
-

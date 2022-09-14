@@ -23,7 +23,6 @@ design                    :: DomeSpec                  => |_________________|
 """
 
 
-
 __all__ = ["make_eclss"]
 
 
@@ -36,21 +35,22 @@ from . import make_eclss_energy_consumption_env_0
 from dome_design import *
 
 
-def make_eclss(clock,
-               dome_specs,
-               energy_available_energy=None,
-               struct_health=None,
-               struct_inside_temperature=None,
-               interior_env_temperature=None,
-               int_env_pres=None,
-               HM_temperature_lower_setpoint=None,
-               HM_temperature_upper_setpoint=None,
-               HM_pressure_lower_setpoint=None,
-               HM_pressure_upper_setpoint=None,
-               make_eclss_pressure_env=make_eclss_pressure_env_0,
-               make_eclss_temperature_env=make_eclss_temperature_env_0,
-               make_eclss_energy_consumption_env=make_eclss_energy_consumption_env_0
-              ):
+def make_eclss(
+    clock,
+    dome_specs,
+    energy_available_energy=None,
+    struct_health=None,
+    struct_inside_temperature=None,
+    interior_env_temperature=None,
+    int_env_pres=None,
+    HM_temperature_lower_setpoint=None,
+    HM_temperature_upper_setpoint=None,
+    HM_pressure_lower_setpoint=None,
+    HM_pressure_upper_setpoint=None,
+    make_eclss_pressure_env=make_eclss_pressure_env_0,
+    make_eclss_temperature_env=make_eclss_temperature_env_0,
+    make_eclss_energy_consumption_env=make_eclss_energy_consumption_env_0,
+):
     """
     Make an eclss system.
 
@@ -81,27 +81,29 @@ def make_eclss(clock,
         # if HM_pressure_upper_setpoint is None:
         #     HM_pressure_upper_setpoint = Variable(name="place_holder_HM_upper_pressure_setpoint", units="atm", description="The upper pressure set point from HM to ECLSS")
 
-
         # print('inside main eclss struct_health ', struct_health)
-        eclss_pressure = make_eclss_pressure_env(dome_specs,
-                                                 energy_available_energy,
-                                                 struct_health,
-                                                 int_env_pres,
-                                                 HM_pressure_lower_setpoint,
-                                                 HM_pressure_upper_setpoint)
+        eclss_pressure = make_eclss_pressure_env(
+            dome_specs,
+            energy_available_energy,
+            struct_health,
+            int_env_pres,
+            HM_pressure_lower_setpoint,
+            HM_pressure_upper_setpoint,
+        )
 
-        eclss_temperature = make_eclss_temperature_env(clock,
-                                                       dome_specs,
-                                                       eclss_pressure,
-                                                       energy_available_energy,
-                                                       struct_inside_temperature,
-                                                       interior_env_temperature,
-                                                       HM_temperature_lower_setpoint,
-                                                       HM_temperature_upper_setpoint)
+        eclss_temperature = make_eclss_temperature_env(
+            clock,
+            dome_specs,
+            eclss_pressure,
+            energy_available_energy,
+            struct_inside_temperature,
+            interior_env_temperature,
+            HM_temperature_lower_setpoint,
+            HM_temperature_upper_setpoint,
+        )
 
-        eclss_energy_consumption = make_eclss_energy_consumption_env(energy_available_energy,
-                                                                     eclss_pressure,
-                                                                     eclss_temperature)
+        eclss_energy_consumption = make_eclss_energy_consumption_env(
+            energy_available_energy, eclss_pressure, eclss_temperature
+        )
 
     return eclss
-
