@@ -1,4 +1,4 @@
-"""
+
 Comments on the code:
 
 # 7 - 27 - 2022
@@ -29,4 +29,3 @@ Week after next: Include disturbances to power system
                  Systems that need to be modeled in power systems.
 Following weeks: Unit testing
                  Establishing database for power systems
-"""

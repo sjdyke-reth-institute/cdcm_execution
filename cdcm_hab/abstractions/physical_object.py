@@ -65,22 +65,22 @@ __all__ = ["make_physical_system"]
 
 from cdcm import *
 from typing import Union
-
 from common import maybe_make_system
 
+NoneType = type(None)
 
-def make_physical_system(name_or_system : Union[str,System],
-                         x=0.0 : float,
-                         y=0.0 : float,
-                         length_x=1.0 : float,
-                         length_y=1.0 : float,
-                         length_z=1.0 : float,
-                         A=None : Union[NoneType, float],
-                         m=1.0 : float,
-                         rho=None : Union[NoneType, float],
-                         mass_units="kg" : str,
-                         length_units="m" : str,
-                         **kwargs):
+def make_physical_system(name_or_system:Union[str,System],
+                        x: float = 0.,
+                        y: float = 0.,
+                        length_x: float = 1.,
+                        length_y: float = 1.,
+                        length_z: float = 1.,
+                        A: Union[NoneType, float] = None,
+                        m: float = 1.,
+                        rho: Union[NoneType, float] = None,
+                        mass_units: str = "kg",
+                        length_units: str = "m",
+                        **kwargs):
 
     """A factory of physical objects.
 
@@ -96,7 +96,7 @@ def make_physical_system(name_or_system : Union[str,System],
         x = Variable(name="x", value=x, units=length_units)
         y = Variable(name="y", value=y, units=length_units)
 
-        area = Varaible(name="area", value=0.0, units=length_units+"^2")
+        area = Variable(name="area", value=0.0, units=length_units+"^2")
 
         length_x = Variable(name="length_x", value=length_x, units=length_units)
         length_y = Variable(name="length_y", value=length_y, units=length_units)
@@ -106,20 +106,20 @@ def make_physical_system(name_or_system : Union[str,System],
             # User gave me the area. I am ignoring length_x, length_y
             area.value = A
             @make_function(length_x)
-            def length_from_area(A = area)
+            def length_from_area(A = area):
                 return A ** 0.5
 
             length_y = length_x
         else:
             # User did not give me the area. I am using length_x, length_y
             @make_function(area)
-            def calculated_area(lx=length_x, ly=length_y)
+            def calculated_area(lx=length_x, ly=length_y):
                 return lx*ly
 
         volume = Variable(name="volume", value=0.0, units=length_units+"^3")
 
         @make_function(volume)
-        def calculate_volume(A=area, h=height):
+        def calculate_volume(A=area, h=length_z):
             return A * h
 
 
