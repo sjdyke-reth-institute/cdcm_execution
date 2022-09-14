@@ -1,4 +1,4 @@
-# CDCM Code Reconfiguration
+# Control-oriented Dynamic Computational and Modeling Platform (CDCM)
 
 TODO: Write me.
 

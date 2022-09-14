@@ -45,16 +45,13 @@ def replace_with_raise_error(
         raise Error(msg)
     return raise_error
 
-
+# fmt: off
 replace_with_raise_value_error = partial(replace_with_raise_error, ValueError)
 
-replace_chld_with_raise_value_error = replace_with_raise_value_error(
-    CHLD_INFERRED_MSG
-)
+replace_chld_with_raise_value_error = replace_with_raise_value_error(CHLD_INFERRED_MSG)
 
-replace_prnt_with_raise_value_error = replace_with_raise_value_error(
-    PRNTS_INFERRED_MSG
-)
+replace_prnt_with_raise_value_error = replace_with_raise_value_error(PRNTS_INFERRED_MSG)
+# fmt: on
 
 
 class System(Node, AbstractContextManager):

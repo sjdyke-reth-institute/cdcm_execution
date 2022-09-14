@@ -15,3 +15,6 @@
 
 # mypy
 .mypy_cache/
+
+# Video files
+*.mp4
