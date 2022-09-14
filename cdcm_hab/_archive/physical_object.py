@@ -49,17 +49,19 @@ from typing import Union
 from common import maybe_make_system
 
 
-def make_physical_system(name_or_system : Union[str,System],
-                         x : float = 0.0,
-                         y : float = 0.0,
-                         m : float = 0.0,
-                         rho : Union[None, float] = None,
-                         length_x : float = 1.0,
-                         length_y : float = 1.0,
-                         height : float = 1.0 ,
-                         mass_units : str = "kg" ,
-                         length_units : str = "m",
-                         **kwargs):
+def make_physical_system(
+    name_or_system: Union[str, System],
+    x: float = 0.0,
+    y: float = 0.0,
+    m: float = 0.0,
+    rho: Union[None, float] = None,
+    length_x: float = 1.0,
+    length_y: float = 1.0,
+    height: float = 1.0,
+    mass_units: str = "kg",
+    length_units: str = "m",
+    **kwargs
+):
     """A factory of physical objects.
 
     Arguments:
@@ -76,26 +78,34 @@ def make_physical_system(name_or_system : Union[str,System],
         length_x = Variable(name="length_x", value=length_x, units=length_units)
         length_y = Variable(name="length_y", value=length_y, units=length_units)
         height = Variable(name="height", value=height, units=length_units)
-        area = Variable(name="area", value=0.0, units=length_units+"^2")
+        area = Variable(name="area", value=0.0, units=length_units + "^2")
+
         @make_function(area)
         def calculate_area(lx=length_x, ly=length_y):
             return lx * ly
-        volume = Variable(name="volume", value=0.0, units=length_units+"^3")
+
+        volume = Variable(name="volume", value=0.0, units=length_units + "^3")
+
         @make_function(volume)
         def calculate_volume(A=area, h=height):
             return A * h
-        density = Variable(name="density", value=0.0,
-                           units=mass_units + "/" + volume.units)
+
+        density = Variable(
+            name="density", value=0.0, units=mass_units + "/" + volume.units
+        )
         mass = Variable(name="mass", value=0.0, units=mass_units)
         if rho is not None:
             # User gave me the density. I am ignoring the mass.
             density.value = rho
+
             @make_function(mass)
             def calculate_mass(V=volume, r=density):
                 return r * V
+
         else:
             # User did not gave me the density. I am using the mass.
             mass.value = m
+
             @make_function(density)
             def calculate_density(V=volume, m=mass):
                 return m / V

@@ -37,38 +37,49 @@ from typing import Union
 from common import *
 
 
-def make_resource_consumer(name_or_system : Union[str,System],
-                           dt : Parameter,
-                           in_resource_name : str,
-                           in_resource_units : str,
-                           in_resource_value : float = 0.0,
-                           in_resource_req      : float = 0.0,
-                           **kwargs):
+def make_resource_consumer(
+    name_or_system: Union[str, System],
+    dt: Parameter,
+    in_resource_name: str,
+    in_resource_units: str,
+    in_resource_value: float = 0.0,
+    in_resource_req: float = 0.0,
+    **kwargs
+):
 
     sys = maybe_make_system(name_or_system, **kwargs)
     with sys:
-        resource_req = Parameter(name=in_resource_name + "_rate_required",
-                                 value=in_resource_req,
-                                 units=in_resource_units)
+        resource_req = Parameter(
+            name=in_resource_name + "_rate_required",
+            value=in_resource_req,
+            units=in_resource_units,
+        )
 
-        resource_supplied = Variable(name=in_resource_name + "_rate_supplied",
-                                     value=in_resource_value,
-                                     units=in_resource_units)
+        resource_supplied = Variable(
+            name=in_resource_name + "_rate_supplied",
+            value=in_resource_value,
+            units=in_resource_units,
+        )
 
-        switch = Variable(name=in_resource_name + "_switch", value=1, units="",
-                          description="The switch is on (value=1) if there is"
-                                      + " enough power supplied. Otherwise it is"
-                                      + " off (value=0).")
+        switch = Variable(
+            name=in_resource_name + "_switch",
+            value=1,
+            units="",
+            description="The switch is on (value=1) if there is"
+            + " enough power supplied. Otherwise it is"
+            + " off (value=0).",
+        )
 
-        resource_consumed = Variable(name=in_resource_name + "_consumed",
-                                     value=0.0,
-                                     units=in_resource_units + dt.units)
+        resource_consumed = Variable(
+            name=in_resource_name + "_consumed",
+            value=0.0,
+            units=in_resource_units + dt.units,
+        )
 
         @make_function(resource_consumed)
-        def calculate_consumed_resource(s=switch,
-                                        r_req=resource_req,
-                                        r_in=resource_supplied,
-                                        dt=dt):
+        def calculate_consumed_resource(
+            s=switch, r_req=resource_req, r_in=resource_supplied, dt=dt
+        ):
             if s == 0:
                 return 0.0
             else:
@@ -80,30 +91,35 @@ def make_resource_consumer(name_or_system : Union[str,System],
     return sys
 
 
-def make_power_consumer(name_or_system : Union[str,System],
-                        dt : Parameter,
-                        in_power_value : float = 0.0,
-                        in_power_req      : float = 0.0,
-                        energy_to_heat_coefficient_value : float = 0.0,
-                        **kwargs):
-    sys = make_resource_consumer(name_or_system,
-                                 dt,
-                                 "energy",
-                                 "W",
-                                 in_power_value,
-                                 in_power_req,
-                                 **kwargs)
+def make_power_consumer(
+    name_or_system: Union[str, System],
+    dt: Parameter,
+    in_power_value: float = 0.0,
+    in_power_req: float = 0.0,
+    energy_to_heat_coefficient_value: float = 0.0,
+    **kwargs
+):
+    sys = make_resource_consumer(
+        name_or_system, dt, "energy", "W", in_power_value, in_power_req, **kwargs
+    )
 
     with sys:
-        energy_to_heat_coefficient = Parameter(name="energy_to_heat_coefficient",
-                                        value=energy_to_heat_coefficient_value,
-                                        units="")
-        heat_gain = Variable(name="heat_gain", value=0.0, units=sys.energy_consumed.units,
-                             description="Heat dissipated to the environment as heat.")
+        energy_to_heat_coefficient = Parameter(
+            name="energy_to_heat_coefficient",
+            value=energy_to_heat_coefficient_value,
+            units="",
+        )
+        heat_gain = Variable(
+            name="heat_gain",
+            value=0.0,
+            units=sys.energy_consumed.units,
+            description="Heat dissipated to the environment as heat.",
+        )
+
         @make_function(heat_gain)
-        def calculate_heat_gain(eta=energy_to_heat_coefficient,
-                                energy=sys.energy_consumed,
-                                dt=dt):
+        def calculate_heat_gain(
+            eta=energy_to_heat_coefficient, energy=sys.energy_consumed, dt=dt
+        ):
             return eta * energy * dt
 
     return sys
@@ -123,4 +139,4 @@ if __name__ == "__main__":
     energy_consumer.energy_rate_supplied.value = 5
     energy_consumer.forward()
     print(energy_consumer)
-    #oxygen_consumer = make_resource_consumer("human", "oxygen", "kg/m^3")
+    # oxygen_consumer = make_resource_consumer("human", "oxygen", "kg/m^3")

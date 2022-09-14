@@ -29,16 +29,18 @@ from typing import Union
 from common import maybe_make_system
 
 
-def make_resource_generator(name_or_system : Union[str,System],
-                            resource_input : Variable,
-                            resource_input_name : str,
-                            resource_input_units : str,
-                            switch : str,
-                            transformative_factor : Variable,
-                            resource_output : Variable,
-                            resource_input_value : float = 0.0,
-                            resource_input_local_name : Union[None, str] = None,
-                            **kwargs):
+def make_resource_generator(
+    name_or_system: Union[str, System],
+    resource_input: Variable,
+    resource_input_name: str,
+    resource_input_units: str,
+    switch: str,
+    transformative_factor: Variable,
+    resource_output: Variable,
+    resource_input_value: float = 0.0,
+    resource_input_local_name: Union[None, str] = None,
+    **kwargs
+):
 
     sys = maybe_make_system(name_or_system, **kwargs)
     with sys:
@@ -47,23 +49,25 @@ def make_resource_generator(name_or_system : Union[str,System],
         else:
             local_input_name = resource_input_local_name
 
-        resource_input_local_copy = Variable(name=local_input_name,
-                                             units=resource_input.units,
-                                             value=resource_input.value,
-                                             description= resource_input.description)
+        resource_input_local_copy = Variable(
+            name=local_input_name,
+            units=resource_input.units,
+            value=resource_input.value,
+            description=resource_input.description,
+        )
 
         # Why are making it multiple times?
         # make(resource_input_local_copy)
         # def copy_resource_input(x = resource_input)
-            # return x
+        # return x
 
-
-        resource_output(name=resource_output.name,
-                        value=resource_output.value,
-                        units=resource_output.units)
+        resource_output(
+            name=resource_output.name,
+            value=resource_output.value,
+            units=resource_output.units,
+        )
 
         if switch == "on":
             pass
         else:
             pass
-            
