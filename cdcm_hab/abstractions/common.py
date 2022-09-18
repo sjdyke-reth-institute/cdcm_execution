@@ -1,16 +1,23 @@
 """
 Some functions that are commonly used.
+
+Author:
+    Ilias Bilionis
+    Murali Krishnan R
+
+Date:
+    09.18.2022
 """
 
 
-__all__ = ["maybe_make_system"]
+__all__ = ["make_system"]
 
 
 from cdcm import System
 from typing import Union
 
 
-def maybe_make_system(name_or_system: Union[str, System], **kwargs):
+def make_system(name_or_system: Union[str, System], **kwargs):
     """Returns either a new system with a given name or the system that is provided."""
     if isinstance(name_or_system, str):
         # I am making a new system
