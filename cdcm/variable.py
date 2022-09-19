@@ -29,22 +29,26 @@ class Variable(Node):
     The variable knows its units. It has a decscription that explains
     what it is. It has a name. And it has a value.
 
-    Arguments:
+    Arguments
+    ----------
 
-        value      -- The value of the variable. Must be an int, a
-                      double or a numpy array of ints or floating point
-                      numbers. We also allow it to be a string.
-                      Initially, no value is specified. We are not
-                      going to check for the value of variables.
-                      But keep in mind that for saving them in files,
-                      the type has to be constant through out the life
-                      of the object.
-        units      -- Must be a string or a pint object that describes
-                      an SI physical unit. This is optional as some
-                      variables may not have units.
-        track      -- A boolean. If True the variable will be tracked
-                      during simulations. If False it will not be
-                      tracked.
+        value       : int
+            The value of the variable. Must be an `int`, a
+            double or a numpy array of ints or floating point
+            numbers. We also allow it to be a string.
+            Initially, no value is specified. We are not
+            going to check for the value of variables.
+            But keep in mind that for saving them in files,
+            the type has to be constant through out the life
+            of the object.
+        units       : str
+            Must be a string or a pint object that describes
+            an SI physical unit. This is optional as some
+            variables may not have units.
+        track       : bool
+            A boolean. If True the variable will be tracked
+            during simulations. If False it will not be
+            tracked.
 
     See `Node` for the rest of the parameters.
     """

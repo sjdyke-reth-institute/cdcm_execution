@@ -39,16 +39,23 @@ def in_context():
 class Node(object):
     """A node in a graph.
 
-    Keyword Arguments:
-    children    -- The children of this node. The nodes that this node
-                   is affecting.
-    parents     -- The parents of the node. The nodes that are
-                   affecting this node.
-    owner       -- The owner of the node - if any. In our application
-                   this is a system
-    name        -- The name of the object. The user must definitely
-                   provide a name.
-    description -- The description of the object. Optional.
+    Arguments
+    ---------
+
+    children    :
+        The children of this node. The nodes that this node
+        is affecting.
+    parents     :
+        The parents of the node. The nodes that are
+        affecting this node.
+    owner       :
+        The owner of the node - if any. In our application
+        this is a system
+    name        : 
+        The name of the object. The user must definitely
+        provide a name.
+    description :
+        The description of the object. Optional.
 
     Extra keyword arguments are ignored.
     """
