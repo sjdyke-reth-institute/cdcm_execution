@@ -1,11 +1,4 @@
-"""CDCM - Blah Blah
-
-Author:
-    Ilias Bilinis
-    Roman
-
-Date:
-    3/10/2022
+"""Control-oriented Dynamic Computational and Modeling Platform (CDCM)
 
 """
 

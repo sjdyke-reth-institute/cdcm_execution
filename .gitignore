@@ -18,3 +18,5 @@
 
 # Video files
 *.mp4
+
+/**/.ipynb_checkpoints/

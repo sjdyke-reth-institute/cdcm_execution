@@ -1,0 +1,32 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+# Documentation of CDCM
+root: Introduction
+
+chapters:
+# Core abstractions within CDCM
+- file: core_system/core_system
+  sections:
+    - file: core_system/Node
+    - file: core_system/Variable
+    - file: core_system/State
+    - file: core_system/Function
+    - file: core_system/Transition
+    - file: core_system/System
+      sections:
+      - file: core_system/systems/CoupledSystem
+      - file: core_system/systems/DoublyCoupledSystems
+    - file: core_system/SimulationSaver
+    - file: core_system/DataSystem
+
+# Example: RC Building Model
+- file: buildings/Example_SingleZoneRC
+  sections:
+    - file: buildings/SingleZoneRCSystem
+
+# API Reference
+- file: api_reference/readme
+  sections:
+  - file: api_reference/api
