@@ -125,6 +125,7 @@ def make_function(*args : Variable, **kwargs : Variable):
     """
     children_it = iter(args)
     first = next(children_it)
+    
     if isinstance(first, State):
         ChildType = State
         FunctionType = Transition
@@ -132,7 +133,8 @@ def make_function(*args : Variable, **kwargs : Variable):
         ChildType = Variable
         FunctionType = Function
     else:
-        raise TypeError("Children must be Variables or States.")
+        raise TypeError("Children must be `Variables` or `States`.")
+    
     for child in children_it:
         if not isinstance(child, ChildType):
             if ChildType == State:
