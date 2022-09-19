@@ -1,0 +1,1059 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Transition &#8212; CDCM tutorial book</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="System" href="System.html" />
+    <link rel="prev" title="Function" href="Function.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">CDCM tutorial book</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../introduction.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="core_system.html">
+   Core System
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="Node.html">
+     Node
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Variable.html">
+     Variable
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="State.html">
+     State
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Function.html">
+     Function
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Transition
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="System.html">
+     System
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="systems/CoupledSystem.html">
+       Coupled System
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="systems/DoublyCoupledSystems.html">
+       Doubly Coupled System
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="SimulationSaver.html">
+     Simulation Saver
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="DataSystem.html">
+     Data System
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../buildings/Example_SingleZoneRC.html">
+   Examples
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../buildings/SingleZoneRCSystem.html">
+     Single Zone RC Model system
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/sjdyke-reth-institute/CDCM_reconfig/master?urlpath=lab/tree/docs/CDCM_book/core_system/Transition.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://colab.research.google.com/github/sjdyke-reth-institute/CDCM_reconfig/blob/master/docs/CDCM_book/core_system/Transition.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Colab"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="headerbtn__text-container">Colab</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/core_system/Transition.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transition-with-one-state">
+   Transition with one state
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-standard-function-defnition">
+     Using standard function defnition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-lambda">
+     Using lambda
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-python-decorator-make-function">
+     Using python decorator @make_function
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transition-with-multiple-states">
+   Transition with multiple states
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Transition</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transition-with-one-state">
+   Transition with one state
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-standard-function-defnition">
+     Using standard function defnition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-lambda">
+     Using lambda
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-python-decorator-make-function">
+     Using python decorator @make_function
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transition-with-multiple-states">
+   Transition with multiple states
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdcm</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section class="tex2jax_ignore mathjax_ignore" id="transition">
+<h1>Transition<a class="headerlink" href="#transition" title="Permalink to this headline">#</a></h1>
+<p>Transition class represents transition function of a state variable. This class
+is formed by inheriting the Function class. Transition is special kind of function
+where it is assumed that all the outputs are of the type ‘State’. Transition
+function updates the next value of its parents unlike Function which updates the
+current value of its children. Transition can have only parents of type ‘State’.<br>
+Transition object can be created in multiple ways like Function object each of which differs by the level of compactness.</p>
+<section id="transition-with-one-state">
+<h2>Transition with one state<a class="headerlink" href="#transition-with-one-state" title="Permalink to this headline">#</a></h2>
+<p>Let us consider a transition function <code class="docutils literal notranslate"><span class="pre">f</span></code> which takes input nodes <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">r,</span> <span class="pre">dt</span></code>. The function evaluates the function expression using the input node values and updates the next value of the state <code class="docutils literal notranslate"><span class="pre">x</span></code>. The graph of this function is as shown below. Note the two way connection between the transition function <code class="docutils literal notranslate"><span class="pre">f</span></code> and the state <code class="docutils literal notranslate"><span class="pre">x</span></code>. Order of evaluation of this graph will be: <code class="docutils literal notranslate"> <span class="pre">x,</span> <span class="pre">r,</span> <span class="pre">dt,</span> <span class="pre">x</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="s1">&#39;Transition&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="c1">#g.render(&#39;Function&#39;, format=&#39;png&#39;)</span>
+<span class="n">g</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Transition_3_0.svg" src="../_images/Transition_3_0.svg" /></div>
+</div>
+<section id="using-standard-function-defnition">
+<h3>Using standard function defnition<a class="headerlink" href="#using-standard-function-defnition" title="Permalink to this headline">#</a></h3>
+<p>Here the transition function is constructed separately and is passed as an argument while creating Transition object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">time_step</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">time_step</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;S:x:1:m&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:r:0.1:1/s&quot;</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:dt:0.2:s&quot;</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">,</span>
+    <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">],</span>
+    <span class="n">children</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">func</span><span class="o">=</span><span class="n">func</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let us create some helper functions</span>
+
+<span class="k">def</span> <span class="nf">print_computational_graph</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1"># Print the entire computational graph</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">testing_transition</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="c1"># Test the transition</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State before:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating the next step.&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State before transitioning:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">transition</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State after transitioning:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_computational_graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+r:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.1
+  units: 1/s
+  track: true
+
+dt:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.2
+  units: s
+  track: true
+
+f:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;x&#39;, &#39;r&#39;, &#39;dt&#39;)
+  children: (&#39;x&#39;,)
+  func: !!python/name:__main__.func &#39;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testing_transition</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State before:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+Evaluating the next step.
+State before transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+State after transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1.02
+  units: m
+  track: true
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="using-lambda">
+<h3>Using lambda<a class="headerlink" href="#using-lambda" title="Permalink to this headline">#</a></h3>
+<p>Here Python’s lambda function feature is used to create a Transition object. This is compact than the previously mentioned way of making a Transition object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;S:x:1:m&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:r:0.1:1/s&quot;</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:dt:0.2:s&quot;</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">,</span>
+    <span class="n">parents</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">],</span>
+    <span class="n">children</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">func</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">time_step</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_computational_graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+r:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.1
+  units: 1/s
+  track: true
+
+dt:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.2
+  units: s
+  track: true
+
+f:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;x&#39;, &#39;r&#39;, &#39;dt&#39;)
+  children: (&#39;x&#39;,)
+  func: !!python/name:__main__.%3Clambda%3E &#39;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testing_transition</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State before:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+Evaluating the next step.
+State before transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+State after transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1.02
+  units: m
+  track: true
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="using-python-decorator-make-function">
+<h3>Using python decorator &#64;make_function<a class="headerlink" href="#using-python-decorator-make-function" title="Permalink to this headline">#</a></h3>
+<p>The Transition object <code class="docutils literal notranslate"><span class="pre">f</span></code> is created under the decorator as shown below. The child node <code class="docutils literal notranslate"><span class="pre">x</span></code> is given as argument to <code class="docutils literal notranslate"><span class="pre">&#64;make_function</span></code>. The parent nodes <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">r,</span> <span class="pre">dt</span></code> are given as argument to the function <code class="docutils literal notranslate"><span class="pre">f</span></code> defined under the decorator. The function <code class="docutils literal notranslate"><span class="pre">f</span></code> evaluates the functional form and returns the value to be assigned to the child node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;S:x:1:m&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:r:0.1:1/s&quot;</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;P:dt:0.2:s&quot;</span><span class="p">)</span>
+
+<span class="nd">@make_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">dt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_computational_graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+r:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.1
+  units: 1/s
+  track: true
+
+dt:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;,)
+  value: 0.2
+  units: s
+  track: true
+
+f:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;x&#39;, &#39;r&#39;, &#39;dt&#39;)
+  children: (&#39;x&#39;,)
+  func: !!python/name:__main__.f &#39;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testing_transition</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State before:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+Evaluating the next step.
+State before transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1
+  units: m
+  track: true
+
+State after transitioning:
+x:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;f&#39;,)
+  children: (&#39;f&#39;,)
+  value: 1.02
+  units: m
+  track: true
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="transition-with-multiple-states">
+<h2>Transition with multiple states<a class="headerlink" href="#transition-with-multiple-states" title="Permalink to this headline">#</a></h2>
+<p>Here we consider a transition function <code class="docutils literal notranslate"><span class="pre">g</span></code> which takes input nodes <code class="docutils literal notranslate"><span class="pre">x1,</span> <span class="pre">x2,</span> <span class="pre">r,</span> <span class="pre">dt</span></code>. The function evaluates the function expression using the input node values and updates the next value of the states <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&amp;</span> <span class="pre">x2</span></code>. The graph of this function is as shown below. Note the two way connections between the transition function <code class="docutils literal notranslate"><span class="pre">g</span></code> and the states <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&amp;</span> <span class="pre">x2</span></code>. One of the order of evaluations of this graph will be: <code class="docutils literal notranslate"> <span class="pre">x1,</span> <span class="pre">r,</span> <span class="pre">dt,</span> <span class="pre">x2,</span> <span class="pre">x1,</span> <span class="pre">x2</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="s1">&#39;Transition&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&lt;x&lt;sub&gt;1&lt;/sub&gt;&gt;&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;&lt;x&lt;sub&gt;2&lt;/sub&gt;&gt;&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="c1">#g.render(&#39;Function&#39;, format=&#39;png&#39;)</span>
+<span class="n">g</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Transition_18_0.svg" src="../_images/Transition_18_0.svg" /></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;S:x1:1.0:m&quot;</span><span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">&quot;S:x2:2.0:m&quot;</span><span class="p">)</span>
+
+<span class="nd">@make_function</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">x1</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span>
+        <span class="n">x2</span> <span class="o">+</span> <span class="n">x1</span> <span class="o">*</span> <span class="n">dt</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_computational_graph</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x1:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 1.0
+  units: m
+  track: true
+
+x2:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 2.0
+  units: m
+  track: true
+
+r:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;, &#39;g&#39;)
+  value: 0.1
+  units: 1/s
+  track: true
+
+dt:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: ()
+  children: (&#39;f&#39;, &#39;g&#39;)
+  value: 0.2
+  units: s
+  track: true
+
+g:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;x1&#39;, &#39;x2&#39;, &#39;r&#39;, &#39;dt&#39;)
+  children: (&#39;x1&#39;, &#39;x2&#39;)
+  func: !!python/name:__main__.g &#39;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State before:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating the next step.&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+<span class="n">x1</span><span class="o">.</span><span class="n">transition</span><span class="p">()</span>
+<span class="n">x2</span><span class="o">.</span><span class="n">transition</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State after transitioning:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State before:
+x1:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 1.02
+  units: m
+  track: true
+
+x2:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 2.2
+  units: m
+  track: true
+
+Evaluating the next step.
+State after transitioning:
+x1:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 1.04
+  units: m
+  track: true
+
+x2:
+  description: &#39;&#39;
+  owner: &#39;&#39;
+  parents: (&#39;g&#39;,)
+  children: (&#39;g&#39;,)
+  value: 2.4040000000000004
+  units: m
+  track: true
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./core_system"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="Function.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Function</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="System.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">System</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Sreehari Manikkan<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
