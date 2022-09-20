@@ -20,3 +20,4 @@
 *.mp4
 
 /**/.ipynb_checkpoints/
+docs_build/
