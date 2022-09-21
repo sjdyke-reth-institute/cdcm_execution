@@ -100,12 +100,17 @@ const thebe_selector_output = ".output, .cell_output"
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="../../Introduction.html">
-                    Introduction
+                <a class="reference internal" href="../../intro.html">
+                    Building scalable digital-twins of complex socio-technical systems
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  CDCM Executable
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../core_system/core_system.html">
    Core System
@@ -175,6 +180,13 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
   </ul>
  </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Single Zone RC System
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="../../buildings/Example_SingleZoneRC.html">
    Examples
@@ -192,8 +204,15 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
   </ul>
  </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  API Reference
+ </span>
+</p>
+<ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../api_reference/readme.html">
+  <a class="reference internal" href="../../api_reference/intro.html">
    API Reference
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
@@ -471,10 +490,7 @@ title="Fullscreen mode"
             <span class="n">dres</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="System.get_nodes_of_type"><a class="viewcode-back" href="../../api_reference/api.html#cdcm.system.System.get_nodes_of_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_of_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">Type</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="System.get_nodes_of_type"><a class="viewcode-back" href="../../api_reference/api.html#cdcm.system.System.get_nodes_of_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_of_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get nodes of `Type`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
             <span class="nb">filter</span><span class="p">(</span>
@@ -483,10 +499,7 @@ title="Fullscreen mode"
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="System.remove_node"><a class="viewcode-back" href="../../api_reference/api.html#cdcm.system.System.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">obj</span> <span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="System.remove_node"><a class="viewcode-back" href="../../api_reference/api.html#cdcm.system.System.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span> <span class="p">:</span> <span class="n">Node</span><span class="p">,):</span>
         <span class="sd">&quot;&quot;&quot;Removes a node from the system.</span>
 
 <span class="sd">        Returns the name of and the object that was just removed.</span>

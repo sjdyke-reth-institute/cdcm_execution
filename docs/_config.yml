@@ -1,16 +1,48 @@
-# in _config.yml
-title: "CDCM Documentation"
+# Configuration for the CDCM Reference Jupyter-book
+#
+# Authors:
+#   Sreehari Manikkan
+#   Murali Krishnan R
+# 
+# Date:
+#   09.21.2022
+# 
+# Note: Adopted from - https://jupyterbook.org/en/stable/customize/config.html
+
+###############################################################################
+# Book Settings
+
+title               : "CDCM Documentation"
+author              : "Predictive Science Laboratory, Purdue University"
+copyright           : "2022"
+# exclude_patterns    : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
+
+###############################################################################
+# Execute Settings
+
 execute:
-  execute_notebooks: "off"
-author: "Predictive Science Laboratory, Purdue University"
-repository:
-  url: "https://github.com/sjdyke-reth-institute/CDCM_reconfig/tree/main" 
-  path_to_book: "docs"
+  execute_notebooks : "off"
+  allow_errors      : false
+
+###############################################################################
+# Launch Button Settings
+
 launch_buttons:
   notebook_interface: "jupyterlab"
   colab_url: "https://colab.research.google.com"
-bibtex_bibfiles:
-  - references.bib
+
+repository:
+  url: "https://github.com/sjdyke-reth-institute/CDCM_reconfig/tree/main" 
+  path_to_book: "docs"
+
+###############################################################################
+# LaTeX-specific settings
+
+latex:
+  latex_engine              : pdflatex  # one of 'pdflatex', 'xelatex' (recommended for unicode), 'luatex', 'platex', 'uplatex'
+  use_jupyterbook_latex     : true # use sphinx-jupyterbook-latex for pdf builds as default
+
+
 sphinx:
   extra_extensions:
   - 'sphinx.ext.autodoc'
@@ -19,3 +51,5 @@ sphinx:
   config:
     add_module_names: False
     bibtex_reference_style: author_year
+bibtex_bibfiles:
+  - references.bib

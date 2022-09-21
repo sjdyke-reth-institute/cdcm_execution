@@ -1,32 +1,47 @@
-# Table of contents
-# Learn more at https://jupyterbook.org/customize/toc.html
+# Table of contents of CDCM Jupyter-booj
+#
+# Authors:
+#   Sreehari Manikkan
+#   Murali Krishnan R
+# 
+# Date:
+#   09.21.2022
+# 
+# Note: Adapted from - https://jupyterbook.org/customize/toc.html
 
 format: jb-book
 # Documentation of CDCM
-root: Introduction
+root: intro
 
-chapters:
-# Core abstractions within CDCM
-- file: core_system/core_system
-  sections:
-    - file: core_system/Node
-    - file: core_system/Variable
-    - file: core_system/State
-    - file: core_system/Function
-    - file: core_system/Transition
-    - file: core_system/System
-      sections:
-      - file: core_system/systems/CoupledSystem
-      - file: core_system/systems/DoublyCoupledSystems
-    - file: core_system/SimulationSaver
-    - file: core_system/DataSystem
+parts:
+- caption: CDCM Executable
+  chapters:
+  # Core abstractions within CDCM
+  - file: core_system/core_system
+    sections:
+      - file: core_system/Node
+      - file: core_system/Variable
+      - file: core_system/State
+      - file: core_system/Function
+      - file: core_system/Transition
+      - file: core_system/System
+        sections:
+        - file: core_system/systems/CoupledSystem
+        - file: core_system/systems/DoublyCoupledSystems
+      - file: core_system/SimulationSaver
+      - file: core_system/DataSystem
+
 
 # Example: RC Building Model
-- file: buildings/Example_SingleZoneRC
-  sections:
-    - file: buildings/SingleZoneRCSystem
+- caption: Single Zone RC System
+  chapters:
+  - file: buildings/Example_SingleZoneRC
+    sections:
+      - file: buildings/SingleZoneRCSystem
 
 # API Reference
-- file: api_reference/readme
-  sections:
-  - file: api_reference/api
+- caption: API Reference
+  chapters:
+  - file: api_reference/intro
+    sections:
+    - file: api_reference/api
