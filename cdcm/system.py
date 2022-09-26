@@ -171,10 +171,7 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
             dres["nodes"].update(n.to_dict())
         return res
 
-    def get_nodes_of_type(
-        self,
-        Type
-    ):
+    def get_nodes_of_type(self, Type):
         """Get nodes of `Type`."""
         return set(
             filter(
@@ -183,10 +180,7 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
             )
         )
 
-    def remove_node(
-        self,
-        obj : Node,
-    ):
+    def remove_node(self, obj : Node,):
         """Removes a node from the system.
 
         Returns the name of and the object that was just removed.
