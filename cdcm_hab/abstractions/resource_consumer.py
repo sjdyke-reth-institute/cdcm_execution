@@ -47,7 +47,7 @@ def make_resource_consumer(
     **kwargs
 ):
 
-    sys = maybe_make_system(name_or_system, **kwargs)
+    sys = make_system(name_or_system, **kwargs)
     with sys:
         resource_req = Parameter(
             name=in_resource_name + "_rate_required",
