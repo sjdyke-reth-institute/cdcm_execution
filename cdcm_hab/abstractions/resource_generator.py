@@ -26,7 +26,7 @@ __all__ = ["make_resource_generator"]
 from cdcm import *
 from typing import Union
 
-from common import maybe_make_system
+from common import make_system
 
 
 def make_resource_generator(
@@ -42,7 +42,7 @@ def make_resource_generator(
     **kwargs
 ):
 
-    sys = maybe_make_system(name_or_system, **kwargs)
+    sys = make_system(name_or_system, **kwargs)
     with sys:
         if resource_input_local_name is None:
             local_input_name = resource_input.name
