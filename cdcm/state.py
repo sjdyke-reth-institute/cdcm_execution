@@ -18,7 +18,7 @@ from copy import deepcopy
 
 class State(Variable):
     """A class representing a system state variable.
-    
+
     This is a `Variable` that is changing in discrete steps.
     It stores two versions of its value.
     The current value is in `State.value`.
@@ -28,11 +28,11 @@ class State(Variable):
     See `Quantity` for the keyword arguments.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._next_value = deepcopy(self._value)
 
-    def transition(self):
+    def transition(self) -> None:
         """Writes `value` on `next_value`.
 
         Precondition:
