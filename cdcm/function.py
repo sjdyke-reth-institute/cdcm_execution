@@ -61,7 +61,7 @@ class Function(Node):
         parents : NodeTuple,
         children : NodeTuple,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self._func = func
         if not isinstance(parents, Iterable):
@@ -70,9 +70,10 @@ class Function(Node):
             children = (children,)
         self.add_parents(parents)
         self.add_children(children)
+        self._child_attr_to_update = "value"
 
     @property
-    def func(self):
+    def func(self) -> Callable:
         """Get the function that this Function represents."""
         return self._func
 
@@ -83,21 +84,27 @@ class Function(Node):
         dres["func"] = self.func
         return res
 
-    def _eval_func(self):
+    def _eval_func(self) -> Any:
         """Evaluates the function and returns the result."""
         return self.func(*(obj.value for obj in self.parents))
 
-    def _update_children(self, result, attr):
+    def _update_children(self, result : Any, attr : str) -> None:
         """Writes `result` on `attr` of the children."""
         if not isinstance(result, tuple):
             result = (result, )
         for new_value, child in zip(result, self.children):
             setattr(child, attr, new_value)
 
-    def forward(self):
+    def forward(self) -> None:
         """Evaluates the next values of the children."""
-        result = self._eval_func()
-        self._update_children(result, "_value")
+        if self.parents_changed:
+            super().forward()
+            result = self._eval_func()
+            self._update_children(result, self._child_attr_to_update)
+
+    def __call__(self) -> None:
+        """Runs self.forward()."""
+        self.forward()
 
 
 class Transition(Function):
@@ -111,39 +118,32 @@ class Transition(Function):
     **Do not include parents that are not of type `State`!!!**
     """
 
-    def forward(self):
-        """Evaluates the next values of the children."""
-        result = self._eval_func()
-        self._update_children(result, "_next_value")
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._child_attr_to_update = "_next_value"
 
 
-def make_function(*args : Variable, **kwargs : Variable):
+def make_function(*args : Variable) -> Callable[Callable, Function]:
     """Automate the creation of a function.
 
     The inputs to this decorator are the children states that will
     be updated by the transition function.
     """
-    children_it = iter(args)
-    first = next(children_it)
-    
-    if isinstance(first, State):
-        ChildType = State
-        FunctionType = Transition
-    elif isinstance(first, Variable):
-        ChildType = Variable
-        FunctionType = Function
-    else:
-        raise TypeError("Children must be `Variables` or `States`.")
-    
-    for child in children_it:
-        if not isinstance(child, ChildType):
-            if ChildType == State:
-                raise TypeError("All children must be States.")
-            raise TypeError("All children must be Variables.")
-
-    def make_function_inner(func):
+    def make_function_inner(func : Callable) -> Function:
         signature = get_default_args(func)
         parents = signature.values()
+        children = args
+        # Check if we need a Function or a Transition.
+        # We need a transition when the same variable appears
+        # both in the parents and in the children and that variable
+        # is a state
+        set_c = set(parents)
+        set_p = set(children)
+        common_vars = set_c & set_p
+        if common_vars:
+            FunctionType = Transition
+        else:
+            FunctionType = Function
         return FunctionType(
             name=func.__name__,
             children=args,

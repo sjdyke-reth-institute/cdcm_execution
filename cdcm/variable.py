@@ -60,11 +60,11 @@ class Variable(Node):
         units : str = "",
         track : bool = True,
         **kwargs
-    ):
+    ) -> None:
+        super().__init__(**kwargs)
         self.value = value
         self.units = units
         self.track = track
-        super().__init__(**kwargs)
 
     @property
     def value(self) -> Any:
@@ -75,6 +75,7 @@ class Variable(Node):
     def value(self, new_value : Any):
         """Set the value of the object."""
         self._value = new_value
+        self.tell_my_children_I_have_changed()
 
     @property
     def units(self) -> str:
@@ -82,7 +83,7 @@ class Variable(Node):
         return self._units
 
     @units.setter
-    def units(self, new_units : str):
+    def units(self, new_units : str) -> None:
         """Set the units."""
         ureg.check(new_units)
         self._units = new_units
@@ -93,7 +94,7 @@ class Variable(Node):
         return self._track
 
     @track.setter
-    def track(self, new_track : bool):
+    def track(self, new_track : bool) -> None:
         """Change the tracking flag."""
         self._track = new_track
 
@@ -112,6 +113,6 @@ class Variable(Node):
         dres["track"] = self.track
         return res
 
-    def from_yaml(self, data):
+    def from_yaml(self, data : str) -> None:
         """TODO Write me."""
         raise NotImplementedError("This is not implemented yet.")

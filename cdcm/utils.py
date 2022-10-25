@@ -15,7 +15,7 @@ import yaml
 import numpy as np
 import inspect
 import numpy.typing as npt
-from typing import Union, Any
+from typing import Union, Any, Dict, Callable
 
 
 __all__ = [
@@ -30,13 +30,13 @@ __all__ = [
 class bidict(dict):
     """A simple bidirectional dictionary."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.inverse = {}
         for k, v in self.items():
             self.inverse.update({v: k})
 
-    def __setitem__(self, key : Any, value : Any):
+    def __setitem__(self, key : Any, value : Any) -> None:
         if key in self:
             raise RuntimeError(
                 f"{key} aready in bidirectional dictionary!"
@@ -48,23 +48,23 @@ class bidict(dict):
         super().__setitem__(key, value)
         self.inverse.update({value: key})
 
-    def update(self, new_dict):
+    def update(self, new_dict : dict) -> None:
         for k, v in new_dict.items():
             self[k] = v
 
-    def __delitem__(self, key : Any):
+    def __delitem__(self, key : Any) -> None:
         del self.inverse[self[key]]
         super().__delitem__(key)
 
 
-def yamlstr(dict_of_dicts):
+def yamlstr(dict_of_dicts : dict) -> str:
     """
     Turn a dictionary of dictionaries to a yaml string.
     """
-    return yaml.dumP(dict_of_dicts, sort_keys=False)
+    return yaml.dump(dict_of_dicts, sort_keys=False)
 
 
-def get_default_args(func):
+def get_default_args(func : Callable) -> dict[str, Any]:
     """Return a dictionary containing the default arguments of a
     function.
 
@@ -84,9 +84,8 @@ def get_default_args(func):
 TEXT_TRIMMING_SIZE = 20
 
 
-def trim_str(text: str, size: int = TEXT_TRIMMING_SIZE):
-    """
-    Returns a trimmed version of the `text`.
+def trim_str(text: str, size: int = TEXT_TRIMMING_SIZE) -> str:
+    """Returns a trimmed version of the `text`.
 
     If the `text` is smaller than `size`,
     then it returns `text`.
@@ -100,7 +99,7 @@ def trim_str(text: str, size: int = TEXT_TRIMMING_SIZE):
 
 def clip(value: Union[int, float, npt.ArrayLike],
          min_value: Union[int, float] = None,
-         max_value: Union[int, float] = None):
+         max_value: Union[int, float] = None) -> Union[int, float, npt.ArrayLike]:
     """Clip the value (int, float, or numpy array) between the bounds
 
     Arguments
