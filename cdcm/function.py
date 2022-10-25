@@ -61,7 +61,7 @@ class Function(Node):
         parents : NodeTuple,
         children : NodeTuple,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self._func = func
         if not isinstance(parents, Iterable):
@@ -73,7 +73,7 @@ class Function(Node):
         self._child_attr_to_update = "value"
 
     @property
-    def func(self):
+    def func(self) -> Callable:
         """Get the function that this Function represents."""
         return self._func
 
@@ -84,27 +84,28 @@ class Function(Node):
         dres["func"] = self.func
         return res
 
-    def _eval_func(self):
+    def _eval_func(self) -> Any:
         """Evaluates the function and returns the result."""
         return self.func(*(obj.value for obj in self.parents))
 
-    def _update_children(self, result, attr):
+    def _update_children(self, result : Any, attr : str) -> None:
         """Writes `result` on `attr` of the children."""
         if not isinstance(result, Iterable):
             result = (result, )
         for new_value, child in zip(result, self.children):
             setattr(child, attr, new_value)
 
-    def forward(self):
+    def forward(self) -> None:
         """Evaluates the next values of the children."""
         if self.parents_changed:
             super().forward()
             result = self._eval_func()
             self._update_children(result, self._child_attr_to_update)
 
-    def __call__(self):
+    def __call__(self) -> None:
         """Runs self.forward()."""
         self.forward()
+
 
 class Transition(Function):
     """A class representing a transition function.
@@ -117,18 +118,18 @@ class Transition(Function):
     **Do not include parents that are not of type `State`!!!**
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._child_attr_to_update = "_next_value"
 
 
-def make_function(*args : Variable, **kwargs : Variable):
+def make_function(*args : Variable) -> Callable[Callable, Function]:
     """Automate the creation of a function.
 
     The inputs to this decorator are the children states that will
     be updated by the transition function.
     """
-    def make_function_inner(func):
+    def make_function_inner(func : Callable) -> Function:
         signature = get_default_args(func)
         parents = signature.values()
         children = args
