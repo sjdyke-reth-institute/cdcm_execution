@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    Murali Krishnan R
 
 Date:
     3/17/2022
+    10/26/2022
 
 """
 
@@ -26,7 +28,7 @@ from . import bidict
 NodeSet = NewType("NodeSet", Set["Node"])
 
 
-def get_context() -> list["System"]:
+def get_context() -> 'System':
     """Return the current context, i.e., the system in which things are being created."""
     from . import System
     return System.get_context()
@@ -79,7 +81,8 @@ class Node:
         description : str = "",
         children : NodeSet = list(),
         parents : NodeSet = list(),
-        owner : Any = None
+        owner : Any = None,
+        **kwargs
     ) -> None:
         self.name = name
         self.description = description
