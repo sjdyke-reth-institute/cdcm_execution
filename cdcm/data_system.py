@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    Murali Krishnan R
 
 Date:
     3/14/2022
+    10/26/2022
 
 TODO: Write me.
 
@@ -18,7 +20,6 @@ from typing import Collection, Union, Sequence
 import numpy as np
 from pandas import DataFrame
 from . import Variable, Parameter, State, System, make_function
-
 
 class DataSystem(System):
     """A system that just reads through a data sequence.
@@ -34,11 +35,10 @@ class DataSystem(System):
 
     def define_internal_nodes(
         self,
-        *,
         data : Union[Collection, Collection[Collection]] = None,
         columns : Union[str, Sequence[str]] = None,
         column_units : Union[str, Sequence[str]] = None,
-        column_desciptions : Union[str, Sequence[str]] = None,
+        column_descriptions : Union[str, Sequence[str]] = None,
         column_track : Union[bool, Sequence[bool]] = True,
         **kwargs
     ):
@@ -50,26 +50,26 @@ class DataSystem(System):
             columns = (columns, )
         if isinstance(column_units, str):
             column_units = (column_units,)
-        if isinstance(column_desciptions, str):
-            column_desciptions = (column_desciptions,)
+        if isinstance(column_descriptions, str):
+            column_descriptions = (column_descriptions,)
         if isinstance(column_track, bool):
             column_track = (column_track,) * num_cols
         if column_units is None:
             column_units = (None, ) * num_cols
-        if column_desciptions is None:
-            column_desciptions = (None, ) * num_cols
+        if column_descriptions is None:
+            column_descriptions = (None, ) * num_cols
         first_row = data[0]
         if num_cols > 1:
             assert len(first_row) == num_cols
         assert len(column_units) == num_cols
-        assert len(column_desciptions) == num_cols
+        assert len(column_descriptions) == num_cols
 
         var_nodes = tuple(
             Variable(name=n, units=u, description=d, track=t)
             for n, u, d, t in zip(
                 columns,
                 column_units,
-                column_desciptions,
+                column_descriptions,
                 column_track
             )
         )
