@@ -19,5 +19,8 @@
 # Video files
 *.mp4
 
+# VSCode
+.vscode/
+
 /**/.ipynb_checkpoints/
 /**/.doctrees/
