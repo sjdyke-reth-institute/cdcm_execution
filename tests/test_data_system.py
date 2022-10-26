@@ -22,7 +22,7 @@ rnd_sys = DataSystem(
     description="A data system made from a pre-sampled random stream.",
     columns="omega",
     column_units="meters",
-    column_desciptions="Some random quantity."
+    column_descriptions="Some random quantity."
 )
 
 print(rnd_sys)

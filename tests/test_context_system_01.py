@@ -42,7 +42,7 @@ print(sys)
 # SECOND WAY - INHERITANCE
 class NewSystem(System):
 
-    def define_internal_nodes(self):
+    def define_internal_nodes(self, *args, **kwargs):
         """This function is run automatically when the system is
         initialized. The system keeps track of all the Nodes that are
         created inside here and adds them to its node list."""
