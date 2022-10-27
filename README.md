@@ -1,5 +1,4 @@
-# Control-oriented Dynamic Computational and Modeling Platform (CDCM)
+# Execution code of the Control-oriented Dynamic Computational and Modeling Platform (CDCM)
 
-TODO: Write me.
 
-We need to start writing this.
+This repository contains the execution code the CDCM Language. 
