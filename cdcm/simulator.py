@@ -19,7 +19,7 @@ from . import System
 from . import Agenda
 
 
-class Simulator(object):
+class Simulator:
 
     """A simulator.
 
