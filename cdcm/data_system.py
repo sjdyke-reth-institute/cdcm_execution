@@ -112,6 +112,10 @@ def make_data_system(data : DataFrame, **kwargs):
         columns=data.columns.values,
         **kwargs
     )
+    
+    # By default, `data_system` initializes to `None`s.
+    # Calling `forward()` and `transition()` can help 
+    # initialize the data system
     data_system.forward()
     data_system.transition()
     return data_system
