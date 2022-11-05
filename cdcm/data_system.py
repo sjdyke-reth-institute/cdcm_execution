@@ -107,8 +107,11 @@ class DataSystem(System):
 
 def make_data_system(data : DataFrame, **kwargs):
     """Make a data system from a pandas DataFrame."""
-    return DataSystem(
+    data_system = DataSystem(
         data=data.values,
         columns=data.columns.values,
         **kwargs
     )
+    data_system.forward()
+    data_system.transition()
+    return data_system
