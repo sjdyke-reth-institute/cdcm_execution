@@ -123,21 +123,24 @@ class System(Node, AbstractContextManager):
         """
         pass
 
-    def add_node(self, obj):
+    def add_node(self, obj, name=None):
         """Add a node."""
-        if obj.name in self.__dict__.keys():
+        if name is None:
+            name = obj.name
+        
+        if name in self.__dict__.keys():
             raise ValueError(
 f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
 + "there is another node owned by the system with the same name.\n"
 + "The original object is:\n"
-+ str(self.__dict__[obj.name]) + "\n"
++ str(self.__dict__[name]) + "\n"
 + "The object you are trying to add is:\n"
 + str(obj) + "\n"
 + "You have to rename one of the two."
             )
         self._nodes.append(obj)
         obj.owner = self
-        self.__dict__[obj.name] = obj
+        self.__dict__[name] = obj
 
     @property
     def direct_nodes(self):
