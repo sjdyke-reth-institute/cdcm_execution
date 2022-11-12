@@ -123,7 +123,7 @@ class Transition(Function):
         self._child_attr_to_update = "_next_value"
 
 
-def make_function(*args : Variable) -> Callable[Callable, Function]:
+def make_function(*args : Variable) -> Callable[[Callable], Function]:
     """Automate the creation of a function.
 
     The inputs to this decorator are the children states that will
