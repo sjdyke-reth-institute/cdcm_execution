@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    Murali Krishnan R
 
 Date:
     4/12/2022
+    2/9/2023
 
 """
 
@@ -12,7 +14,8 @@ Date:
 __all__ = [
     "Function",
     "Transition",
-    "make_function"
+    "make_function",
+    "make_named_function",
 ]
 
 
@@ -146,6 +149,39 @@ def make_function(*args : Variable) -> Callable[[Callable], Function]:
             FunctionType = Function
         return FunctionType(
             name=func.__name__,
+            children=args,
+            parents=parents,
+            description=func.__doc__,
+            func=func
+        )
+
+    return make_function_inner
+
+
+# Making a named function in the CDCM graph
+def make_named_function(func_name: str, *args) -> Callable[[Callable], Function]:
+    """Automate the creation of a function.
+
+    The inputs to this decorator are the children states that will
+    be updated by the transition function.
+    """
+    def make_function_inner(func : Callable) -> Function:
+        signature = get_default_args(func)
+        parents = signature.values()
+        children = args
+        # Check if we need a Function or a Transition.
+        # We need a transition when the same variable appears
+        # both in the parents and in the children and that variable
+        # is a state
+        set_c = set(parents)
+        set_p = set(children)
+        common_vars = set_c & set_p
+        if common_vars:
+            FunctionType = Transition
+        else:
+            FunctionType = Function
+        return FunctionType(
+            name=func_name,
             children=args,
             parents=parents,
             description=func.__doc__,
