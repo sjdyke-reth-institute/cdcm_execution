@@ -222,7 +222,7 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
         For computational purposes, use dag.
         """
         g = nx.DiGraph()
-        for n in self.all_nodes:
+        for n in self.nodes:
             g.add_node(n)
             for c in n.children:
                 g.add_edge(n, c)
