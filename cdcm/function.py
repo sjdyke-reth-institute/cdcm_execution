@@ -15,7 +15,6 @@ __all__ = [
     "Function",
     "Transition",
     "make_function",
-    "make_named_function",
 ]
 
 
@@ -126,49 +125,23 @@ class Transition(Function):
         self._child_attr_to_update = "_next_value"
 
 
-def make_function(*args : Variable) -> Callable[[Callable], Function]:
+def make_function(*args : Tuple[str, Variable]) -> Callable[[Callable], Function]:
     """Automate the creation of a function.
 
     The inputs to this decorator are the children states that will
     be updated by the transition function.
     """
     def make_function_inner(func : Callable) -> Function:
-        signature = get_default_args(func)
-        parents = signature.values()
-        children = args
-        # Check if we need a Function or a Transition.
-        # We need a transition when the same variable appears
-        # both in the parents and in the children and that variable
-        # is a state
-        set_c = set(parents)
-        set_p = set(children)
-        common_vars = set_c & set_p
-        if common_vars:
-            FunctionType = Transition
+
+        if isinstance(args[0], str):
+            func_name = args[0]
+            children = args[1:]
         else:
-            FunctionType = Function
-        return FunctionType(
-            name=func.__name__,
-            children=args,
-            parents=parents,
-            description=func.__doc__,
-            func=func
-        )
-
-    return make_function_inner
-
-
-# Making a named function in the CDCM graph
-def make_named_function(func_name: str, *args) -> Callable[[Callable], Function]:
-    """Automate the creation of a function.
-
-    The inputs to this decorator are the children states that will
-    be updated by the transition function.
-    """
-    def make_function_inner(func : Callable) -> Function:
+            func_name = func.__name__
+            children = args
+        
         signature = get_default_args(func)
         parents = signature.values()
-        children = args
         # Check if we need a Function or a Transition.
         # We need a transition when the same variable appears
         # both in the parents and in the children and that variable
@@ -182,7 +155,7 @@ def make_named_function(func_name: str, *args) -> Callable[[Callable], Function]
             FunctionType = Function
         return FunctionType(
             name=func_name,
-            children=args,
+            children=children,
             parents=parents,
             description=func.__doc__,
             func=func
