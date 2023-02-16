@@ -88,7 +88,10 @@ class Function(Node):
 
     def _eval_func(self) -> Any:
         """Evaluates the function and returns the result."""
-        return self.func(*(obj.value for obj in self.parents))
+        try:
+            return self.func(*(obj.value for obj in self.parents))
+        except:
+            raise TypeError(f"{self.name}._eval_func() is not defined properly. Please check your definition in ``{self.absname}``")
 
     def _update_children(self, result : Any, attr : str) -> None:
         """Writes `result` on `attr` of the children."""
@@ -146,6 +149,8 @@ def make_function(*args : Tuple[str, Variable]) -> Callable[[Callable], Function
         # We need a transition when the same variable appears
         # both in the parents and in the children and that variable
         # is a state
+        # Note: @murakrishn
+        # Ensure that the `Transition` requires a parent and child `state`
         set_c = set(parents)
         set_p = set(children)
         common_vars = set_c & set_p
