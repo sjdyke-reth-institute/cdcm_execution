@@ -14,6 +14,7 @@ __all__ = ["Agenda"]
 
 from typing import Callable
 from collections import deque as Queue
+from sortedcontainers import SortedDict
 
 
 from . import Function
@@ -25,7 +26,7 @@ class Agenda(object):
     """
 
     def __init__(self):
-        self._todo = {}
+        self._todo = SortedDict()
 
     @property
     def current_time(self) -> float:
