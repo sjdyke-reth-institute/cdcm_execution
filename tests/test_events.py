@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    R Murali Krishnan
 
 Date:
     6/16/2022
+    08/03/2023
 
 """
 
@@ -62,6 +64,8 @@ def change_omega_to(new_value):
 
 # Here is how you can add these events at different timesteps
 simulator.add_event(0, random_change_x)
+
+simulator.add_event(0.011, change_omega_to(-5.))
 
 simulator.add_event(0.03, set_omega_to_minus_one)
 
