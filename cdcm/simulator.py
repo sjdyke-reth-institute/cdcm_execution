@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    R Murali Krishnan
 
 Date:
     6/24/2022
+    03/07/2023
 
 """
 
@@ -30,8 +32,8 @@ class Simulator:
 
     def __init__(self, system : System, agenda : Agenda = Agenda()):
         assert (hasattr(system, "clock") and
-                hasattr(system.clock, "t"),
-                "I need a clock to run a simulation with events.")
+                hasattr(system.clock, "t")), \
+                "I need a clock to run a simulation with events."
         self._system = system
         self._agenda = agenda
 
@@ -48,9 +50,12 @@ class Simulator:
 
     def forward(self):
         """Simulate one timestep."""
-        if (not self.agenda.empty() and
+        while (not self.agenda.empty() and
             self.system.clock.t.value >= self.agenda.current_time):
             self.agenda.forward()
+        # if not self.agenda.empty():
+        #     while self.system.clock.t.value >= self.agenda.current_time:
+        #         self.agenda.forward()
         self.system.forward()
 
     def transition(self):
