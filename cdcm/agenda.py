@@ -2,9 +2,11 @@
 
 Author:
     Ilias Bilionis
+    R Murali Krishnan
 
 Date:
-    6/24/2022
+    06/24/2022
+    03/07/2023
 
 """
 
@@ -60,7 +62,8 @@ class Agenda(object):
     def forward(self):
         """Run all events in the current timestep."""
         ct = self.current_time
-        current_events = next(iter(self.todo.values()))
+        # current_events = next(iter(self.todo.values()))
+        current_events = self.todo[ct]
         while current_events:
             event = current_events.pop()
             event()
