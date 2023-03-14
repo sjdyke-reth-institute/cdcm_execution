@@ -63,7 +63,7 @@ class Agenda(object):
         """Run all events in the current timestep."""
         ct = self.current_time
         # current_events = next(iter(self.todo.values()))
-        current_events = self.todo[ct]
+        current_events: Queue = self.todo[ct]
         while current_events:
             event = current_events.pop()
             event()
