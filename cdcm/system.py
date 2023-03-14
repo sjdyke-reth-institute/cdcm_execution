@@ -25,7 +25,7 @@ from . import (
     make_function,
     get_default_args
 )
-from typing import Any, Dict, Callable, Sequence, Tuple
+from typing import Any, Dict, Callable, Sequence, Tuple, List
 from functools import partial, partialmethod, cached_property
 from contextlib import AbstractContextManager
 import networkx as nx
@@ -192,25 +192,39 @@ f"While trying to add `{obj.name}` to `{self.name}`, I discovered that\n"
         del self.__dict__[obj.name]
 
     @cached_property
-    def states(self):
+    def states(self) -> List[State]:
         return self.get_nodes_of_type(State)
 
     @cached_property
-    def parameters(self):
+    def parameters(self) -> List[Parameter]:
         return self.get_nodes_of_type(Parameter)
 
     @cached_property
-    def functions(self):
+    def functions(self) -> List[Function]:
         return self.get_nodes_of_type(Function)
 
     @cached_property
-    def transitions(self):
+    def transitions(self) -> List[Transition]:
         return self.get_nodes_of_type(Transition)
 
     @cached_property
-    def subsystems(self):
+    def subsystems(self) -> List['System']:
         """Return the subsystems of this system."""
-        return self.get_nodes_of_type(System)
+        return set(
+            filter(
+                lambda n: isinstance(n, System),
+                self._nodes
+            )
+        )
+
+    def get_subsystems_of_type(self, Type) -> List['System']:
+        """Return subsystems of certain `Type`"""
+        return set(
+            filter(
+                lambda n: isinstance(n, Type),
+                self.subsystems
+            )
+        )
 
     @cached_property
     def graph(self):
