@@ -149,13 +149,18 @@ def make_function(*args : Tuple[str, Variable]) -> Callable[[Callable], Function
         # We need a transition when the same variable appears
         # both in the parents and in the children and that variable
         # is a state
-        # Note: @murakrishn
-        # Ensure that the `Transition` requires a parent and child `state`
         set_c = set(parents)
         set_p = set(children)
         common_vars = set_c & set_p
         if common_vars:
-            FunctionType = Transition
+            common_vars_state = all(isinstance(n, State) for n in set_p.intersection(set_c))
+            if common_vars_state:
+                FunctionType = Transition
+            else:
+                raise TypeError(
+                f"`Function` node -> {func_name}(...) , have common `Variable` nodes as parents and children." + \
+                " This behavior is only allowed for `State` nodes. Please check your definition."
+                )
         else:
             FunctionType = Function
         return FunctionType(
