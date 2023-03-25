@@ -34,7 +34,10 @@ __all__ = ["make_resource_consumer"]
 
 from cdcm import *
 from typing import Union
-from common import *
+
+from .common import *
+
+Scalar = Union[int, float]
 
 
 def make_resource_consumer(
@@ -90,6 +93,18 @@ def make_resource_consumer(
 
     return sys
 
+def make_resource_generator(
+        name_or_system: Union[str, System],
+        dt: Parameter,
+        out_resource_name: str,
+        out_reseource_value: Scalar = 0.,
+        out_resource_req: Scalar = 0.,
+        ) -> System:
+    """Make a resource generator"""
+
+    
+
+    pass
 
 def make_power_consumer(
     name_or_system: Union[str, System],

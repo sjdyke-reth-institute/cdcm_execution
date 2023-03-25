@@ -3,21 +3,23 @@ Some functions that are commonly used.
 
 Author:
     Ilias Bilionis
-    Murali Krishnan R
+    R Murali Krishnan
 
 Date:
     09.18.2022
+    03.25.2023
+
 """
 
 
-__all__ = ["make_system"]
+__all__ = ["maybe_make_system"]
 
 
 from cdcm import System
 from typing import Union
 
 
-def make_system(name_or_system: Union[str, System], **kwargs):
+def maybe_make_system(name_or_system: Union[str, System], **kwargs):
     """Returns either a new system with a given name or the system that is provided."""
     if isinstance(name_or_system, str):
         # I am making a new system
