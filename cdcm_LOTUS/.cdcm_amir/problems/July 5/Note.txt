@@ -1,0 +1,11 @@
+Hi, 
+
+
+Since the error affects the models in all subsystems, it itakes a few times to run and regenerate it. Sometimes other subsystems show error. I triesd to  usetry-except to filter them as much as I could. 
+The error should pop up when you run "habitat.py" file almost everytime. 
+
+I added the diffcheck print too but also you can use "compare_and_check_all_files.py" to see the files and folders compared line by line.
+
+The error is defienctly for replace. I am checking if there is an alternative.
+
+Tahnk you. 
