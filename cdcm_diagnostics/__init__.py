@@ -9,3 +9,5 @@ Date:
 """
 
 from .health_status import *
+from .sensor import *
+from .tests import *

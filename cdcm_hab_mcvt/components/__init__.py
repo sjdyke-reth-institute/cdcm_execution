@@ -11,4 +11,5 @@ Date:
 
 from .structure_protective import *
 from .structure_mechanical import *
-from .sensors import *
+from .pressure_control import *
+from .power import *
