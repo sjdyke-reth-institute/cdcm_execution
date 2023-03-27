@@ -42,8 +42,10 @@ class HealthStatus(Variable):
     def __init__(self, 
                  name: str, 
                  support: Tuple[Scalar, ...],
+                 idx: Optional[int]=None,
                  **kwargs) -> None:
         self.support = support
+        self.idx = idx
         super().__init__(name=name, **kwargs)
 
 class DiscreteHealthStatus(HealthStatus):
