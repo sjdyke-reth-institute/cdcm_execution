@@ -78,44 +78,44 @@ def make_compressor(name: str,
             value=0,
             support=(0, 1)
         )
-        life_of_oil = State(
-            name="life_of_oil",
-            value=0.,
-            units=time_units,
-            description="Life of the oil"
-        )
-        @make_function(life_of_oil)
-        def calc_life_of_oil(lo=life_of_oil, step_time=dt):
-            """Calculate the life of oil"""
-            return lo + step_time
+        # life_of_oil = State(
+        #     name="life_of_oil",
+        #     value=0.,
+        #     units=time_units,
+        #     description="Life of the oil"
+        # )
+        # @make_function(life_of_oil)
+        # def calc_life_of_oil(lo=life_of_oil, step_time=dt):
+        #     """Calculate the life of oil"""
+        #     return lo + step_time
         
-        # virtual logical operation
-        pr_breakdown = Variable(
-            name="pr_breakdown",
-            value=0.1,
-            description="Probability of breaking down | status, and life_of_oil"
-        )
-        @make_function(pr_breakdown)
-        def calc_probability_of_breakdown(_status=status, _loil=life_of_oil):
-            """Calculate probability of breakdown"""
-            if _loil > oil_life or (not (_status == 0)):
-                return 0.9
-            else:
-                return 0.1
+        # # virtual logical operation
+        # pr_breakdown = Variable(
+        #     name="pr_breakdown",
+        #     value=0.1,
+        #     description="Probability of breaking down | status, and life_of_oil"
+        # )
+        # @make_function(pr_breakdown)
+        # def calc_probability_of_breakdown(_status=status, _loil=life_of_oil):
+        #     """Calculate probability of breakdown"""
+        #     if _loil > oil_life or (not (_status == 0)):
+        #         return 0.9
+        #     else:
+        #         return 0.1
             
-        cost = Variable(
-            name="cost",
-            value=0.,
-            description="Cost of operating asset"
-        )
-        @make_function(cost)
-        def calc_cost_function(pr=pr_breakdown):
-            """Calculate the operational cost"""
-            rnd = np.random.rand()
-            if rnd < pr:
-                return 100. * operating_cost
-            else:
-                return operating_cost
+        # cost = Variable(
+        #     name="cost",
+        #     value=0.,
+        #     description="Cost of operating asset"
+        # )
+        # @make_function(cost)
+        # def calc_cost_function(pr=pr_breakdown):
+        #     """Calculate the operational cost"""
+        #     rnd = np.random.rand()
+        #     if rnd < pr:
+        #         return 100. * operating_cost
+        #     else:
+        #         return operating_cost
     return compressor
 
 def make_condenser(name: str, **kwargs) -> Condenser:
@@ -228,21 +228,29 @@ def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
 
 def make_active_thermal_control(
         name_or_system: Union[str, System],
+        dt: Node,
         **kwargs
     ) -> System:
     """Make the active thermal control system"""
 
     with maybe_make_system(name_or_system, **kwargs) as atc:
-        heat_pump = make_heat_pump("heat_pump")
+        heat_pump = make_heat_pump("heat_pump", dt)
 
         radiator = make_radiator("radiator")
 
         pump = make_pump("pump")
 
-        # fans for active thermal control
-
-        pass
-
-    print(atc)
-
-    raise NotImplementedError("Implement me..")
+        # fans and filters for active thermal control
+        fan_status = make_health_status(
+            name="fan_status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of operation of the fan"
+        )
+        filter_status = make_health_status(
+            name="filter_status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of filter of active thermal control"
+        )
+    return atc

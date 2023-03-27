@@ -12,8 +12,10 @@ Date:
 
 from cdcm import *
 
+# Sub-systems in MCVT/Structure
 
-# Sub-systems in ECLSS - Pressure Control
+
+# Sub-systems in MCVT/ECLSS/Pressure Control
 class Tank(System):
     """A tank system"""
     pass
@@ -31,7 +33,7 @@ class InletValve(Valve):
 class ReliefValve(Valve):
     pass
 
-# Sub-systems in ECLSS - Thermal Control
+# Sub-systems in MCVT/ECLSS/Thermal Control
 ## Air-Handling Unit
 class Fan(System):
     pass

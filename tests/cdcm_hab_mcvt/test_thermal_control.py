@@ -45,7 +45,7 @@ with System(name="sys") as sys:
     fan = make_fan("fan")
 
     # Active thermal control
-    atc = make_active_thermal_control("thermal_control")
+    atc = make_active_thermal_control("thermal_control", clock.dt)
 
 
 print("!ovn!")
