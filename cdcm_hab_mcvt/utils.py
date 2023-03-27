@@ -15,13 +15,16 @@ __all__ = ["show_interactive_graph"]
 import pyvis.network as nt
 
 from cdcm import *
+from cdcm_diagnostics import *
 
 
 def get_node_properties(node: Node):
     """Node properties"""
     node_type = str(type(node)).split('.')[-1][:-2]
 
-    if isinstance(node, State):
+    if isinstance(node, HealthStatus):
+        return {"type": "Status", "color": "cyan", 'shape': 'dot'} 
+    elif isinstance(node, State):
         return {"type": "State", "color": "green", 'shape': 'dot'}
     elif isinstance(node, Parameter):
         return {"type": "Parameter", "shape": "star", "color": "gray"}
