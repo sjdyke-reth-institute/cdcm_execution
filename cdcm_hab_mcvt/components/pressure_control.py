@@ -11,25 +11,26 @@ Date:
 
 
 
+__all__ = [
+    "AirTank",
+    "Valve",
+    "InletValve",
+    "ReliefValve",
+    "make_air_tank",
+    "make_pressure_valve",
+    "make_active_pressure_control", 
+]
+
 from typing import Union
 
 from cdcm import *
 from cdcm_diagnostics import *
 
+from .types import *
 from ..abstractions import *
 
 
-# Sub-system types in ECLSS
-class AirTank(System):
-    pass
-class Valve(System):
-    pass
 
-class InletValve(Valve):
-    pass
-
-class ReliefValve(Valve):
-    pass
 
 def make_air_tank(name: str, **kwargs) -> AirTank:
     """Make an air tank"""
@@ -74,10 +75,6 @@ def make_active_pressure_control(
     with maybe_make_system(name_or_system, **kwargs) as press_control:
         # Air tank
         air_tank = make_air_tank("air_tank")
-
-        # Valves 
-        # press_control.inlet_valves = []
-        # press_control.relief_valves = []
 
         for izone in range(num_zones):
             inlet_valve_name = "inlet_valve_zone" + str(izone + 1)
@@ -127,17 +124,16 @@ def make_active_pressure_control(
             description="Cost of operating pressure control"
         )
         @make_function(cost)
-        def calc_cost_function(iv_status=status_inlet_valves, ov_status=status_outlet_valves):
+        def calc_cost_function(tank_status=air_tank.status, iv_status=status_inlet_valves, ov_status=status_outlet_valves):
             """Simple cost function"""
-            if all([iv_status, ov_status]):
+            if  all([tank_status, iv_status, ov_status]):
+                # All mechanisms are working
                 return 100.
-            elif any([iv_status, ov_status]):
+            elif ov_status and any([iv_status, tank_status]):
+                # Relief mechanism is healthy
+                # Pressurizing mechanism has a failure
                 return 150.
             else:
+                # Problem in relief and pressurizing mechanism
                 return 300.
     return press_control
-
-
-def make_active_thermal_control():
-    """Active thermal control module"""
-    raise NotImplementedError("Implement me..")
