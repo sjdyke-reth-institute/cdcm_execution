@@ -9,7 +9,6 @@ Date:
     
 """
 
-from .structure_protective import *
-from .structure_mechanical import *
+
 from .pressure_control import *
-from .power import *
+from .thermal_control import *
