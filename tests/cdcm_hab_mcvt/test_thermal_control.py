@@ -35,6 +35,18 @@ with System(name="sys") as sys:
     # Heat pump
     heat_pump = make_heat_pump("heat_pump", clock.dt) 
 
+    # Radiator
+    radiator = make_radiator("rediator")
+
+    # Pump
+    pump = make_pump("pump")
+
+    # Fan
+    fan = make_fan("fan")
+
+    # Active thermal control
+    atc = make_active_thermal_control("thermal_control")
+
 
 print("!ovn!")
 sys.forward()

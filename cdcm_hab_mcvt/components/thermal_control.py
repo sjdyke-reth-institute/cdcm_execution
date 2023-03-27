@@ -17,7 +17,11 @@ __all__ = [
     "make_condenser",
     "make_evaporator",
     "make_expansion_valve",
-    "make_heat_pump"
+    "make_heat_pump",
+    "make_radiator",
+    "make_pump",
+    "make_fan",
+    "make_active_thermal_control",
 ]
 
 import numpy as np
@@ -68,7 +72,7 @@ def make_compressor(name: str,
     """Make a compressor module"""
 
     # _Compressor = Compressor if isinstance(name, str) else maybe_make_system
-    with Compressor(name=name, **kwargs) as compressor:
+    with maybe_make_system(name, Compressor, **kwargs) as compressor:
         status = make_health_status(
             name="status",
             value=0,
@@ -114,11 +118,10 @@ def make_compressor(name: str,
                 return operating_cost
     return compressor
 
-
 def make_condenser(name: str, **kwargs) -> Condenser:
     """Make the model of MCVT's condensing heat-exchanger in ECLSS"""
 
-    with Condenser(name=name, **kwargs) as chx:
+    with maybe_make_system(name, Condenser, **kwargs) as chx:
         coil_status = make_health_status(
             name="coil_status",
             value=0,
@@ -130,7 +133,7 @@ def make_condenser(name: str, **kwargs) -> Condenser:
 def make_evaporator(name: str, **kwargs) -> Evaporator:
     """Make the model of MCVT's evaporating heat-exchanger in ECLSS"""
 
-    with Evaporator(name=name, **kwargs) as ehx:
+    with maybe_make_system(name, Evaporator, **kwargs) as ehx:
         coil_status = make_health_status(
             name="coil_status",
             value=0,
@@ -145,11 +148,10 @@ def make_evaporator(name: str, **kwargs) -> Evaporator:
         )
     return ehx
 
-
 def make_expansion_valve(name: str, **kwargs) -> TXValve:
     """Make the model of a thermo-static expansion valve"""
 
-    with TXValve(name=name, **kwargs) as txv:
+    with maybe_make_system(name, TXValve, **kwargs) as txv:
         status = make_health_status(
             name="status",
             value=0,
@@ -158,11 +160,10 @@ def make_expansion_valve(name: str, **kwargs) -> TXValve:
         )
     return txv
 
-def make_heat_pump(name: str, 
-                   dt: Node, **kwargs) -> HeatPump:
+def make_heat_pump(name: str, dt: Node, **kwargs) -> HeatPump:
     """Make the heat pump loop"""
 
-    with HeatPump(name=name, **kwargs) as heat_pump:
+    with maybe_make_system(name, HeatPump, **kwargs) as heat_pump:
 
         compressor = make_compressor(
             name="compressor",
@@ -177,8 +178,71 @@ def make_heat_pump(name: str,
 
         # Thermo-static expansion valve
         txvalve = make_expansion_valve("tx_valve")
-
-
-
     return heat_pump
 
+def make_radiator(name: str, **kwargs) -> Radiator:
+    """Make the radiator for ECLSS' Thermal Control System"""
+    with maybe_make_system(name, Radiator, **kwargs) as radiator:
+        paint_status = make_health_status(
+            name="paint_status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of the reflective paint"
+        )
+        dust_status = make_health_status(
+            name="dust_status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of dust-related performance loss of radiator"
+        )
+    return radiator
+
+def make_pump(name: str, **kwargs) -> Pump:
+    """Make model of a pump"""
+    with maybe_make_system(name, Pump, **kwargs) as pump:
+        status = make_health_status(
+            name="status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of operation of the pump"
+        )
+    return pump
+
+def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
+    """Make a fan system"""
+
+    with maybe_make_system(name, Fan, **kwargs) as fan:
+        status = make_health_status(
+            name="status",
+            value=0,
+            support=(0, 1, 2),
+            description="Overall health status of fan"
+        )
+        filter_status = make_health_status(
+            name="filter_status",
+            value=0,
+            support=(0, 1, 2),
+            description="Status of the filter of the fan"
+        )
+    return fan
+
+def make_active_thermal_control(
+        name_or_system: Union[str, System],
+        **kwargs
+    ) -> System:
+    """Make the active thermal control system"""
+
+    with maybe_make_system(name_or_system, **kwargs) as atc:
+        heat_pump = make_heat_pump("heat_pump")
+
+        radiator = make_radiator("radiator")
+
+        pump = make_pump("pump")
+
+        # fans for active thermal control
+
+        pass
+
+    print(atc)
+
+    raise NotImplementedError("Implement me..")

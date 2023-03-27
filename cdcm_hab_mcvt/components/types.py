@@ -14,7 +14,12 @@ from cdcm import *
 
 
 # Sub-systems in ECLSS - Pressure Control
-class AirTank(System):
+class Tank(System):
+    """A tank system"""
+    pass
+
+class AirTank(Tank):
+    """Tank for storing air"""
     pass
 
 class Valve(System):
@@ -27,6 +32,11 @@ class ReliefValve(Valve):
     pass
 
 # Sub-systems in ECLSS - Thermal Control
+## Air-Handling Unit
+class Fan(System):
+    pass
+
+## Heat-pump loop
 class Compressor(System):
     pass
 
@@ -41,14 +51,19 @@ class Evaporator(HeatExchanger):
     """Turn liquid-to-vapor"""
     pass
 
-class Radiator(HeatExchanger):
-    """Radiator component"""
-    pass
-
 class HeatPump(System):
     """A heat-pump system"""
     pass
 
 class TXValve(Valve):
     """Thermo-static expansion valve"""
+    pass
+
+## Radiator Loop
+class Radiator(HeatExchanger):
+    """Radiator component"""
+    pass
+
+class Pump(System):
+    """Pump system"""
     pass
