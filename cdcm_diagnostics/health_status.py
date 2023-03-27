@@ -8,7 +8,7 @@ Date:
     
 """
 
-__all__ = ["make_health_status", "DiscreteHealthStatus", "BinaryHealthStatus"]
+__all__ = ["make_health_status", "HealthStatus", "DiscreteHealthStatus", "BinaryHealthStatus"]
 
 from typing import Union, Tuple, Optional, Any
 from cdcm import *
