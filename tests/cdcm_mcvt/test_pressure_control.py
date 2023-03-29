@@ -10,7 +10,7 @@ Date:
 """
 
 from cdcm import *
-from cdcm_hab_mcvt import *
+from cdcm_mcvt import *
 
 from pprint import pprint
 

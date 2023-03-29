@@ -42,7 +42,6 @@ def make_air_tank(name: str, **kwargs) -> AirTank:
             support=(0, 1),
             description=f"Status of {tank.absname}"
         )
-
     return tank
 
 

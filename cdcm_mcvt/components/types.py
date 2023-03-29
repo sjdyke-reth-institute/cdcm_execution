@@ -1,5 +1,5 @@
 #!ovn!
-"""Types of components required to model MCVT-NRH in CDCM
+"""Types of components required to model MCVT-NRH in `exlang`
 
 Author:
     R Murali Krishnan
@@ -68,4 +68,39 @@ class Radiator(HeatExchanger):
 
 class Pump(System):
     """Pump system"""
+    pass
+
+# MCVT :: Power System
+# SPD
+class StepUpConverter(System):
+    """Step-up converter"""
+    pass
+
+class StepDownConverter(System):
+    """Step-down generator"""
+    pass
+
+class GenerationBus(System):
+    """Generation bus of the Power System"""
+    pass
+
+class Batteries(System):
+    """Energy Storage Systems"""
+    pass
+
+# Source of energy
+class EnergySource(System):
+    """Sources of energy"""
+    pass
+
+class Solar(EnergySource):
+    """Solar power source"""
+    pass
+
+class Nuclear(EnergySource):
+    """Nuclear energy source"""
+    pass
+
+class EnergyConsumer(System):
+    """Consumer of energy"""
     pass

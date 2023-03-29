@@ -10,6 +10,8 @@ Date:
 """
 
 
+__all__ = ["make_segment", "make_dome_structure", "Segment"]
+
 import numpy as np
 import numpy.typing as npt
 from functools import cached_property
@@ -110,14 +112,26 @@ class Segment(System):
         )
         return super().define_internal_nodes(**kwargs)
 
-def make_segment(name:str, segment_properties: Dict[str, Any], **kwargs) -> Segment:
+def make_segment(name:str, segment_properties: Dict[str, Any]=None, **kwargs) -> Segment:
     """Make the structure module"""
 
     # Structure needs to handle 2 failure modes
     # Read MCVT's structure module and see what to name them
     # raise NotImplementedError("Implement me..")
 
+    assert segment_properties is not None
+
     return Segment(name, segment_properties)
+
+
+def make_dome_structure(
+        name: str, 
+        spl_properties: Dict[str, Any], 
+        sml_properties: Dict[str, Any], 
+        **kwargs) -> System:
+    """Make the structure"""
+
+    raise NotImplementedError("Implement me..")
 
 
 
