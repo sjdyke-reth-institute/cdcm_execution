@@ -17,10 +17,26 @@ with System(name="power") as ps:
     # clock system
     clock = make_clock(dt=1.0, units="hr")
 
-    # make a power converters
-    step_up_converter = make_power_converter("step_up_converter_1", "U")
+    # Step-up converters
+    step_up_converter = make_power_converter("step_up_converter")
 
-    step_down_converter = make_power_converter("step_down_converter_1", "D")
+    # Step-down converters
+    step_down_converter = make_power_converter("step_down_converter")
+
+    # Generation bus
+    gen_bus = make_generation_bus("gen_bus")
+
+    # Energy storage/Batteries
+    batteries = make_energy_storage("batteries")
+
+    # Solar power generation
+    solar = make_power_generator("solar")
+
+    # Nuclear power generation
+    nuclear = make_power_generator("nuclear")
+
+    # Make the whole power system
+    power_system = make_power_system("power_system")
 
 
 print(ps)

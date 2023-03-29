@@ -58,4 +58,4 @@ sys.forward()
 print("!0vn!")
 
 
-sys_interactive = show_interactive_graph(sys, "test_structure.html")
+sys_interactive = make_pyvis_graph(sys, "test_structure.html")

@@ -53,6 +53,6 @@ sys.forward()
 
 pprint(vars(sys))
 
-sys = show_interactive_graph(sys, "test_thermal_control.html")
+sys = make_pyvis_graph(sys, "test_thermal_control.html")
 
 print("fin.")

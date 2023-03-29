@@ -40,7 +40,7 @@ print("!0vn!")
 
 ## -- Sub-systems within the pressure-control
 
-nrh_interactive = show_interactive_graph(sys, "test_pressure_control.html")
+nrh_interactive = make_pyvis_graph(sys, "test_pressure_control.html")
 
 
 # Events with value change

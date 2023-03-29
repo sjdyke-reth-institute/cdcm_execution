@@ -71,38 +71,23 @@ class Pump(System):
     pass
 
 # MCVT :: Power System
-# SPD
-class StepUpConverter(System):
+class PowerConverter(System):
     """Step-up converter"""
     pass
-
-class StepDownConverter(System):
-    """Step-down generator"""
-    pass
-
-POWER_CONVERTER_SET = {'U': StepUpConverter, 'D': StepDownConverter}
 
 class GenerationBus(System):
     """Generation bus of the Power System"""
     pass
 
-class Batteries(System):
+class EnergyStorage(System):
     """Energy Storage Systems"""
     pass
 
 # Source of energy
-class EnergySource(System):
+class PowerGenerator(System):
     """Sources of energy"""
     pass
 
-class Solar(EnergySource):
-    """Solar power source"""
-    pass
-
-class Nuclear(EnergySource):
-    """Nuclear energy source"""
-    pass
-
-class EnergyConsumer(System):
+class PowerConsumer(System):
     """Consumer of energy"""
     pass
