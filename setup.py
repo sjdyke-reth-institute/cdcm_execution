@@ -1,3 +1,14 @@
+"""Control-oriented dynamic and computational modeling framework
+
+Author:
+    Ilias Bilionis
+    R Murali Krishnan
+
+Date:
+    03.29.2023
+
+"""
+
 from setuptools import setup, find_packages
 
 
@@ -5,21 +16,22 @@ with open('README.md') as f:
     readme = f.read()
 
 with open('LICENSE') as f:
-    license = f.read()
+    _license = f.read()
 
 with open('requirements.txt') as f:
     requirements = [line.strip() for line in f]
 
 setup(
     name='cdcm',
-    version='0.0.1',
+    version='0.9.7',
     description='Control-oriented Dynamic Computational Modeling Platform (CDCM)',
     long_description=readme,
     author='',
     author_email='',
     url='',
-    license=license,
-    packages=find_packages(exclude=('tests', 'docs')),
+    license=_license,
+    # packages=find_packages(exclude=('tests', 'docs')),
+    packages=['cdcm', 'cdcm_diagnostics', 'cdcm_mcvt'],
     python_requires=">=3.6",
     install_requires=requirements,
 )
