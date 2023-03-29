@@ -9,7 +9,7 @@ Date:
 """
 
 
-__all__ = ["show_interactive_graph"]
+__all__ = ["make_pyvis_graph"]
 
 
 import pyvis.network as nt
@@ -37,7 +37,7 @@ def get_node_properties(node: Node):
     else:
         raise TypeError(f"Unknown node type: {node_type}")
 
-def show_interactive_graph(sys: System, html_name: str, buttons: bool=True, **kwargs):
+def make_pyvis_graph(sys: System, html_name: str, buttons: bool=True, **kwargs):
     """Build a `pyvis` graph instance of the system"""
 
     g = nt.Network('1500px', '75%', directed=True)
