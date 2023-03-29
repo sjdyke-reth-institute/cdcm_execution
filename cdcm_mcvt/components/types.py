@@ -80,6 +80,8 @@ class StepDownConverter(System):
     """Step-down generator"""
     pass
 
+POWER_CONVERTER_SET = {'U': StepUpConverter, 'D': StepDownConverter}
+
 class GenerationBus(System):
     """Generation bus of the Power System"""
     pass

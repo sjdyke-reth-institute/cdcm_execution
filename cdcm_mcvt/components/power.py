@@ -9,7 +9,7 @@ Date:
     
 """
 
-__all__ = ["make_generator", "make_batteries"]
+__all__ = ["make_power_converter", "make_batteries"]
 
 from cdcm import *
 from cdcm_diagnostics import *
@@ -20,29 +20,35 @@ from ..abstractions import *
 from typing import Union
 
 
-GENERATOR_SET = {'U', 'D'}
-SOURCE_SET = {'S', 'N'}
+POWER_SOURCE_SET = {'S', 'N'}
 
 
-def make_generator(
+def make_energy_storage():
+    """Make an energy storage"""
+    raise NotImplementedError("Implement me..")
+
+
+def make_power_converter(
         name: str, 
-        gen_type: str,
+        conv_type: str,
         **kwargs
 ) -> Union[StepUpConverter, StepDownConverter]:
-    """Make a generator
+    """Make a power converter
     
     Arguments:
     ----------
     name        :    str
         Name of the generator
-    gen_type    :   str, {'U', 'D'}
-        Type of the generator
+    conv_type    :   str, {'U', 'D'}
+        Type of the converter
+            U - step-up converter
+            D - step-down converter
+    
     """
-    _gen_type = gen_type.upper()
 
-    assert _gen_type in GENERATOR_SET
+    assert conv_type.upper() in POWER_CONVERTER_SET
 
-    Converter = StepUpConverter if _gen_type == 'U' else StepDownConverter
+    Converter = POWER_CONVERTER_SET[conv_type.upper()]
 
     with Converter(name=name, **kwargs) as converter:
         status = make_health_status(
