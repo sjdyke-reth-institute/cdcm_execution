@@ -70,6 +70,10 @@ class Pump(System):
     """Pump system"""
     pass
 
+class Heater(System):
+    """Heater system"""
+    pass
+
 # MCVT :: Power System
 class PowerConverter(System):
     """Step-up converter"""

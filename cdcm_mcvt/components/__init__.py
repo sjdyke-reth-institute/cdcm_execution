@@ -13,4 +13,5 @@ Date:
 from .structure import *
 from .pressure_control import *
 from .thermal_control import *
+from .eclss import *
 from .power import *
