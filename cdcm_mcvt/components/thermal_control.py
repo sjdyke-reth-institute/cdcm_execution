@@ -21,6 +21,7 @@ __all__ = [
     "make_radiator",
     "make_pump",
     "make_fan",
+    "make_heater",
     "make_active_thermal_control",
 ]
 
@@ -208,6 +209,18 @@ def make_pump(name: str, **kwargs) -> Pump:
         )
     return pump
 
+def make_heater(name: str, **kwargs) -> Heater:
+    """Make a model of the heater"""
+
+    with maybe_make_system(name, Heater, **kwargs) as heater:
+        status = make_health_status(
+            name="status",
+            value=0,
+            support=(0, 1, 2),
+            description="Overall status of the heater variable"
+        )
+    return heater
+
 def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
     """Make a fan system"""
 
@@ -226,31 +239,3 @@ def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
         )
     return fan
 
-def make_active_thermal_control(
-        name_or_system: Union[str, System],
-        dt: Node,
-        **kwargs
-    ) -> System:
-    """Make the active thermal control system"""
-
-    with maybe_make_system(name_or_system, **kwargs) as atc:
-        heat_pump = make_heat_pump("heat_pump", dt)
-
-        radiator = make_radiator("radiator")
-
-        pump = make_pump("pump")
-
-        # fans and filters for active thermal control
-        fan_status = make_health_status(
-            name="fan_status",
-            value=0,
-            support=(0, 1, 2),
-            description="Status of operation of the fan"
-        )
-        filter_status = make_health_status(
-            name="filter_status",
-            value=0,
-            support=(0, 1, 2),
-            description="Status of filter of active thermal control"
-        )
-    return atc

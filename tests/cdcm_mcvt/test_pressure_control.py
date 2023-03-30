@@ -24,12 +24,6 @@ with System(name="system") as sys:
     # Valve
     valve = make_pressure_valve("generic_valve")
     
-    # MCVT's Pressure controller's model
-    pres_control = make_active_pressure_control("pres_control", 2)
-
-    
-
-
 
 
 sys.forward()
