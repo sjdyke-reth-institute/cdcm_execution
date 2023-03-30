@@ -1,11 +1,11 @@
 #!ovn!
-"""Test the power-systems model
+"""Test a model of the power-systems in MCVT
 
 Author:
     R Murali Krishnan
     
 Date:
-    03.29.2023
+    03.30.2023
     
 """
 
