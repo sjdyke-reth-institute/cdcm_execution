@@ -8,7 +8,7 @@ author:
     R Murali Krishnan
 
 date:
-    03.25.2023
+    03.30.2023
 
 """
 
@@ -22,7 +22,6 @@ __all__ = [
     "make_pump",
     "make_fan",
     "make_heater",
-    "make_active_thermal_control",
 ]
 
 import numpy as np

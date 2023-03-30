@@ -10,7 +10,11 @@ Date:
 """
 
 
-__all__ = ["make_active_pressure_control", "make_active_cooling_system", "make_eclss"]
+__all__ = [
+    "make_active_pressure_control", 
+    "make_active_cooling_system", 
+    "make_environment_control_system"
+]
 
 from typing import Union
 
@@ -95,8 +99,6 @@ def make_active_pressure_control(
                 return 300.
     return press_control
 
-
-
 def make_active_cooling_system(
         name_or_system: Union[str, System],
         dt: Node,
@@ -105,34 +107,37 @@ def make_active_cooling_system(
     """Make the active cooling system"""
 
     with maybe_make_system(name_or_system, **kwargs) as atc:
-        heat_pump = make_heat_pump("heat_pump", dt)
 
+        # Radiator panels for rejecting heat to space
         radiator = make_radiator("radiator")
 
+        # Heat-pump for cooling
+        heat_pump = make_heat_pump("heat_pump", dt)
+
+        # Pump for cycling 
         pump = make_pump("pump")
 
         # fans and filters for active thermal control
         fan_status = make_health_status(
-            name="fan_status",
+            name="status_fan",
             value=0,
             support=(0, 1, 2),
             description="Status of operation of the fan"
         )
         filter_status = make_health_status(
-            name="filter_status",
+            name="status_filter",
             value=0,
             support=(0, 1, 2),
             description="Status of filter of active thermal control"
         )
     return atc
 
-
-def make_eclss(name: str, dt: Node, **kwargs) -> System:
+def make_environment_control_system(name: str, dt: Node, num_zones: int, **kwargs) -> System:
     """Make model for the ECLSS"""
 
     with maybe_make_system(name, **kwargs) as eclss:
 
-        pressure_control =  make_active_pressure_control("pressure_control")
+        pressure_control =  make_active_pressure_control("pressure_control", num_zones)
 
         cooling_system = make_active_cooling_system("cooling_system", dt)
 

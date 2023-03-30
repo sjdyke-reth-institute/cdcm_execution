@@ -1,11 +1,11 @@
-# ovn!
+#~ovn!
 """Digital-twin of MCVT-Structure (Mechanical) model in CxLang
 
 Author:
     R Murali Krishnan
     
 Date:
-    03.27.2023
+    03.30.2023
     
 """
 
@@ -53,8 +53,8 @@ class Segment(System):
     @cached_property
     def centroid(self) -> Tuple[float]:
         """Return the centrooid of the segment"""
-        x0 = self.properties.r_0 * np.cos(self.properties.theta_0)
-        y0 = self.properties.r_0 * np.sin(self.properties.theta_0)
+        x0 = self.properties.r0 * np.cos(self.properties.theta0)
+        y0 = self.properties.r0 * np.sin(self.properties.theta0)
         return (x0, y0)
 
 
@@ -131,10 +131,11 @@ def make_dome_structure(
         **kwargs) -> System:
     """Make the structure"""
 
-    raise NotImplementedError("Implement me..")
+    with System(name=name, **kwargs) as dome:
+        # Protective layer
+        spl = make_segment("protective", spl_properties)
 
+        # Mechanical layer
+        sml = make_segment("mechanical", sml_properties)
 
-
-
-
-
+    return dome

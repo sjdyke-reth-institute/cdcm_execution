@@ -27,6 +27,7 @@ from .types import *
 from ..abstractions import *
 
 from typing import Union
+from collections import defaultdict
 
 
 def make_power_converter(name: str, **kwargs) -> PowerConverter:
@@ -44,14 +45,12 @@ def make_power_converter(name: str, **kwargs) -> PowerConverter:
 def make_energy_storage(name: str, **kwargs) -> EnergyStorage:
     """Make an energy storage system"""
     with maybe_make_system(name, EnergyStorage, **kwargs) as storage:
-
         status = make_health_status(
             name="status",
             value=0,
             support=(0, 1, 2),
             description="Health status variable of the energy storage"
         )
-
     return storage
 
 def make_batteries(name: str, num_cells: int, **kwargs):
@@ -59,14 +58,12 @@ def make_batteries(name: str, num_cells: int, **kwargs):
 
     with make_energy_storage(name, **kwargs) as batteries:
         status_cells = make_health_status(
-            name="status_cells",
+            name="status",
             value=[0] * num_cells,
             support=(0, 1, 2),
             description="Status of each cell of the battery"
         )
-
     return batteries
-
 
 def make_generation_bus(name: str, **kwargs) -> GenerationBus:
     """Make the generation bus"""
@@ -110,7 +107,6 @@ def make_nuclear_generator(name: str, **kwargs) -> System:
 
     return nuclear
 
-
 def make_solar_arrays(name: str, **kwargs) -> System:
     """Make solar arrays"""
     with make_power_generator(name, **kwargs) as solar_arrays:
@@ -135,10 +131,10 @@ def make_power_system(
         name: str, 
         num_step_up_converters: int=3,
         num_step_dn_converters: int=3,
-        **kwargs) -> System:
+        **kwargs) -> PowerSystem:
     """Make the power system"""
 
-    with System(name=name, **kwargs) as power_sys:
+    with maybe_make_system(name, PowerSystem, **kwargs) as power_sys:
 
         # Batteries
         batteries = make_energy_storage("batteries")
@@ -148,16 +144,12 @@ def make_power_system(
 
         nuclear = make_nuclear_generator("nuclear")
 
-        # Power Converters
-        power_sys.converters = {}
         # Step-up converters
-        power_sys.converters["step_up"] = []
         for i in range(num_step_up_converters):
             step_up_converter = make_power_converter("step_up_converter_" + str(i + 1))
             power_sys.converters["step_up"].append(step_up_converter)
 
         # Step-down converters
-        power_sys.converters["step_down"] = []
         for i in range(num_step_dn_converters):
             step_down_converter = make_power_converter("step_dn_converter_" + str(i + 1))
             power_sys.converters["step_down"].append(step_down_converter)

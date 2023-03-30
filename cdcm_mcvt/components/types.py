@@ -1,21 +1,21 @@
 #!ovn!
-"""Types of components required to model MCVT-NRH in `exlang`
+"""Types of components and systems required to model MCVT-NRH in `exlang`
 
 Author:
     R Murali Krishnan
 
 Date:
-    03.27.2023
+    03.30.2023
 
 """
 
 
 from cdcm import *
 
-# Sub-systems in MCVT/Structure
+from collections import defaultdict
 
 
-# Sub-systems in MCVT/ECLSS/Pressure Control
+# Components of the active pressure control system
 class Tank(System):
     """A tank system"""
     pass
@@ -33,12 +33,12 @@ class InletValve(Valve):
 class ReliefValve(Valve):
     pass
 
-# Sub-systems in MCVT/ECLSS/Thermal Control
-## Air-Handling Unit
+
+# Components of the air-handling unit
 class Fan(System):
     pass
 
-## Heat-pump loop
+## Components of the heat-pump loop
 class Compressor(System):
     pass
 
@@ -61,7 +61,7 @@ class TXValve(Valve):
     """Thermo-static expansion valve"""
     pass
 
-## Radiator Loop
+## Components of the radiator loop
 class Radiator(HeatExchanger):
     """Radiator component"""
     pass
@@ -74,7 +74,7 @@ class Heater(System):
     """Heater system"""
     pass
 
-# MCVT :: Power System
+# Components of the power system
 class PowerConverter(System):
     """Step-up converter"""
     pass
@@ -87,7 +87,6 @@ class EnergyStorage(System):
     """Energy Storage Systems"""
     pass
 
-# Source of energy
 class PowerGenerator(System):
     """Sources of energy"""
     pass
@@ -95,3 +94,10 @@ class PowerGenerator(System):
 class PowerConsumer(System):
     """Consumer of energy"""
     pass
+
+
+# Systems in MCVT-NRH
+class PowerSystem(System):
+    """System that handles power in MCVT"""
+    # Dictionary
+    converters = {"step_up": [], "step_down": []}

@@ -1,24 +1,22 @@
-#!ovn!
-"""Test the structure model
+#~ovn!
+"""A CDCM model of MCVT-NRH
 
 Author:
     R Murali Krishnan
 
 Date:
-    03.28.2023
+    03.30.2023
 
 """
-
-
-import numpy as np
-
 
 from cdcm import *
 from cdcm_mcvt import *
 from cdcm_utils import *
 
+import numpy as np
 
 POS_INF = np.finfo(np.float32).max
+
 # Normalize a vector
 hat = lambda vec: np.array(vec) / np.linalg.norm(np.array(vec))
 
@@ -46,18 +44,26 @@ segment_properties = {
         "W": SEGMENT_W, 
 }
 
-with System(name="sys") as sys:
-    # clock system
-    clock = make_clock(dt=1., units="hr")
+with System(name="mcvt_nrh") as mcvt_nrh:
+    
+    clock = make_clock(dt=1.0, units="hr")
 
-    # Segment system
-    segment = make_segment("segment", segment_properties)
+    hab1 = make_hab(
+        "hab1", 
+        clock.dt, 
+        num_zones=2, 
+        spl_properties=segment_properties,
+        sml_properties=segment_properties
+    )
 
-    # Make structure system
-    # dome = make_dome_structure("dome", segment_properties, segment_properties)
 
-sys.forward()
-print("!0vn!")
+print(mcvt_nrh)
+print("~ovn!")
 
+print("MCVT level nodes: ", len(hab1.nodes))
 
-sys_interactive = make_pyvis_graph(sys, "test_structure.html")
+print("Nodes of MCVT ECLSS: ", len(hab1.eclss.nodes))
+print("Nodes of MCVT Power systems: ", len(hab1.power.nodes))
+print("Nodes of MCVT dome: ", len(hab1.dome.nodes))
+
+mcvt_nrh_interactive = make_pyvis_graph(mcvt_nrh, "test_nrh.html")
