@@ -10,10 +10,16 @@ Date:
 """
 
 from cdcm import *
-from typing import Any
+from typing import Any, Union
+
+Scalar = Union[int, float]
 
 class Functionality(Variable):
     """Functionality variable"""
+    def __init__(self, name: str, value: Any = None, units: str = "", track: bool = True, **kwargs) -> None:
+        super().__init__(name=name, value=value, units=units, track=track, **kwargs)
 
-    def __init__(self, *, value: Any = None, units: str = "", track: bool = True, **kwargs) -> None:
-        super().__init__(value, units, track, **kwargs)
+class BinaryFunctionality(Functionality):
+    """Binary functionality variable"""
+    def __init__(self, name: str, value: Any = None, units: str = "", track: bool = True, **kwargs) -> None:
+        super().__init__(name=name, value=value, units=units, track=track, **kwargs)

@@ -60,6 +60,11 @@ class BinaryHealthStatus(DiscreteHealthStatus):
         super().__init__(name=name, **kwargs)
 
 
+class ContinuousHealthStatus(HealthStatus):
+    """Continuous health status variable"""
+    def __init__(self, name: str, support: Tuple[Scalar, ...], idx: Optional[int] = None, **kwargs) -> None:
+        super().__init__(name, support, idx, **kwargs)
+
 def make_health_status(
     name: str, 
     value: Union[Scalar, bool],
@@ -76,7 +81,13 @@ def make_health_status(
         Name of the health status variable
     value:
     """
-    HealthStatusConstructor = DiscreteHealthStatus if len(support) > 2 else BinaryHealthStatus
+
+    if isinstance(value, float):
+        HealthStatusConstructor = ContinuousHealthStatus
+    elif isinstance(value, int):
+        HealthStatusConstructor = DiscreteHealthStatus if len(support) > 2 else BinaryHealthStatus
+    else:
+        raise TypeError(f"CDCM cannot infer the type of status variable you are trying to create {type(value)}")
 
     return HealthStatusConstructor(
         name=name,
