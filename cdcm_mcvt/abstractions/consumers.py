@@ -35,7 +35,7 @@ __all__ = ["make_resource_consumer"]
 from cdcm import *
 from typing import Union
 
-from .common import *
+from cdcm_abstractions import *
 
 Scalar = Union[int, float]
 

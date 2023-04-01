@@ -68,7 +68,7 @@ __all__ = ["make_physical_system"]
 
 from cdcm import *
 from typing import Union
-from common import make_system
+from cdcm_abstractions import *
 
 NoneType = type(None)
 
@@ -123,7 +123,7 @@ def make_physical_system(
     -------
     """
 
-    physical_system = make_system(system, **kwargs)
+    physical_system = maybe_make_system(system, **kwargs)
 
     with physical_system:
         x = Variable(name="x", value=x, units=length_units)

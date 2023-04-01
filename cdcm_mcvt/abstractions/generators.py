@@ -27,7 +27,7 @@ __all__ = ["make_resource_generator"]
 from cdcm import *
 from typing import Union
 
-from .common import *
+from cdcm_abstractions import *
 
 
 def make_resource_generator_new():

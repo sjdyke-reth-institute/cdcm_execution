@@ -18,7 +18,7 @@ from functools import cached_property
 from typing import Dict, Any, NamedTuple, Tuple
 
 from cdcm import *
-from cdcm_diagnostics import *
+from cdcm_abstractions import *
 
 from .types import *
 

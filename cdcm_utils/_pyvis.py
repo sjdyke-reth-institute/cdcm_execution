@@ -16,7 +16,7 @@ __all__ = ["make_pyvis_graph"]
 import pyvis.network as nt
 
 from cdcm import *
-from cdcm_diagnostics import *
+from cdcm_abstractions import *
 
 
 def get_node_properties(node: Node):

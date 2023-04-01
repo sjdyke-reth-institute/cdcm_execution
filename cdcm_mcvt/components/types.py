@@ -12,8 +12,6 @@ Date:
 
 from cdcm import *
 
-from collections import defaultdict
-
 
 # Components of the active pressure control system
 class Tank(System):

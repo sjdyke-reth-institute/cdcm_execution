@@ -19,7 +19,7 @@ __all__ = [
 from typing import Union
 
 from cdcm import *
-from cdcm_diagnostics import *
+from cdcm_abstractions import *
 
 from ..abstractions import *
 from .types import *
@@ -63,7 +63,7 @@ def make_active_pressure_control(
         calc_status_inlet_valves = Function(
             name="fn_status_inlet_valves",
             children=status_inlet_valves,
-            parents=[iv.status for iv in press_control.inlet_valves],
+            parents=[iv.status_valve for iv in press_control.inlet_valves],
             func=lambda *list_of_states: all(s for s in list_of_states),
             description="Calculate the combined status of inlet valves"
         )
@@ -75,28 +75,10 @@ def make_active_pressure_control(
         calc_status_outlet_valves = Function(
             name="calc_status_outlet_valves",
             children=status_outlet_valves,
-            parents=[rv.status for rv in press_control.relief_valves],
+            parents=[rv.status_valve for rv in press_control.relief_valves],
             func=lambda *list_of_states: all(s for s in list_of_states),
             description="Calculate the combined status of outlet valves"
         )
-        cost = Variable(
-            name="cost",
-            value=0.,
-            description="Cost of operating pressure control"
-        )
-        @make_function(cost)
-        def calc_cost_function(tank_status=air_tank.status, iv_status=status_inlet_valves, ov_status=status_outlet_valves):
-            """Simple cost function"""
-            if  all([tank_status, iv_status, ov_status]):
-                # All mechanisms are working
-                return 100.
-            elif ov_status and any([iv_status, tank_status]):
-                # Relief mechanism is healthy
-                # Pressurizing mechanism has a failure
-                return 150.
-            else:
-                # Problem in relief and pressurizing mechanism
-                return 300.
     return press_control
 
 def make_active_cooling_system(

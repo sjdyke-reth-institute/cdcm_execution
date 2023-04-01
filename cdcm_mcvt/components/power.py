@@ -21,7 +21,7 @@ __all__ = [
     ]
 
 from cdcm import *
-from cdcm_diagnostics import *
+from cdcm_abstractions import *
 
 from .types import *
 from ..abstractions import *
