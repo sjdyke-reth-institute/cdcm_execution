@@ -28,10 +28,9 @@ import numpy as np
 from typing import Optional, Union
 
 from cdcm import *
-from cdcm_diagnostics import *
+from cdcm_abstractions import *
 
 from .types import *
-from ..abstractions import *
 
 Scalar = Union[int, float]
 
@@ -74,10 +73,21 @@ def make_compressor(name: str,
     # _Compressor = Compressor if isinstance(name, str) else maybe_make_system
     with maybe_make_system(name, Compressor, **kwargs) as compressor:
         status = make_health_status(
-            name="status",
+            name="status_compressor",
             value=0,
             support=(0, 1)
         )
+        test = Test(
+            name="test_status_compressor",
+            value=0.,
+            description="Test for the compressor"
+        )
+        @make_function(test)
+        def calc_test_status_compressor(s=status):
+            if s == 0:
+                return 0.
+            else:
+                return 1.
         # life_of_oil = State(
         #     name="life_of_oil",
         #     value=0.,
@@ -122,12 +132,24 @@ def make_condenser(name: str, **kwargs) -> Condenser:
     """Make the model of MCVT's condensing heat-exchanger in ECLSS"""
 
     with maybe_make_system(name, Condenser, **kwargs) as chx:
-        coil_status = make_health_status(
-            name="coil_status",
+        status_coil = make_health_status(
+            name="status_coil",
             value=0,
             support=(0, 1, 2),
             description="Status of heat-exchanging coils in Condenser"
         )
+        test_coil = Test(
+            name="test_coil",
+            value=0.,
+            description="Test results from the coil"
+        )
+        @make_function(test_coil)
+        def calc_test_consenser_coil(s=status_coil):
+            if s == 0.:
+                return 0.
+            else:
+                return 
+
     return chx
 
 def make_evaporator(name: str, **kwargs) -> Evaporator:

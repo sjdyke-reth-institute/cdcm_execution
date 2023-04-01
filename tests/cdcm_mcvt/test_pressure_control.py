@@ -18,18 +18,22 @@ from pprint import pprint
 
 with System(name="system") as sys:
 
+    # Make a clock
     clock = make_clock(dt=1., units="hr")
 
     # AirTank
     tank = make_air_tank("supplementary_tank")
+
+
     # Valve
     valve = make_pressure_valve("generic_valve")
     
 
 
 sys.forward()
-print("!0vn!")
-# print(pres_control)
+
+# print("!0vn!")
+print(sys)
 
 # pprint(vars(pres_control))
 
