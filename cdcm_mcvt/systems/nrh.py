@@ -5,7 +5,7 @@ Author:
     R Murali Krishnan
     
 Date:
-    03.30.2023
+    04.01.2023
     
 """
 
@@ -30,13 +30,15 @@ def make_hab(
 
     with System(name=name, **kwargs) as habitat:
 
+        # Make structure
+        dome = make_dome_structure("dome", spl_properties, sml_properties)
+        # Functionality :: Dome Integrity
+
         # Make environment control and life support system
         env_control = make_environment_control_system("eclss", dt, num_zones)
 
         # Make power system
         power_system = make_power_system("power")
 
-        # Make structture
-        dome = make_dome_structure("dome", spl_properties, sml_properties)
 
     return habitat

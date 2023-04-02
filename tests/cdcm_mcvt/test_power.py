@@ -1,11 +1,11 @@
-#!ovn!
+#~ovn!
 """Test a model of the power-systems in MCVT
 
 Author:
     R Murali Krishnan
     
 Date:
-    03.30.2023
+    04.01.2023
     
 """
 
@@ -25,7 +25,7 @@ with System(name="power") as ps:
     step_down_converter = make_power_converter("step_down_converter")
 
     # Generation bus
-    gen_bus = make_generation_bus("gen_bus")
+    gen_bus = make_generation_bus("gen_bus_0")
 
     # Energy storage/Batteries
     batteries = make_energy_storage("batteries")
@@ -41,6 +41,8 @@ with System(name="power") as ps:
 
 
 print(ps)
+ps.forward()
+
 print("!0vn!")
 
 ps_interactive = make_pyvis_graph(ps, "test_power.html")

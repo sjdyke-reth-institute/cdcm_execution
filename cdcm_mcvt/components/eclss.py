@@ -59,11 +59,10 @@ def make_active_pressure_control(
         relief_valve_statuses = [rv.status_valve for rv in relief_valves]
 
         # How do we address the following with decorator patterns?
-        # @make_functionality("func_pressurizing", _map=True)
-        # def fn_func_pressurizing(ivs=inlet_valve_statuses):
-        #     """Functionality of pressurizing the habitat"""
-        #     return all(ivs)
-        #     pass
+        # @make_functionality(..., _map=True)
+        # def fn_calc_functionality(...):
+        #     ...
+
         func_pressurize = Functionality(
             name="func_pressurize",
             value=0.,
@@ -100,7 +99,6 @@ def make_active_cooling_system(
 
     with maybe_make_system(name_or_system, **kwargs) as atc:
 
-
         # Primary heat-exchange loop
         heat_pump = make_heat_pump("heat_pump", dt)
 
@@ -120,6 +118,15 @@ def make_active_cooling_system(
             support=(0, 1, 2),
             description="Status of filter of active thermal control"
         )
+
+        @make_functionality("func_auto_cooling")
+        def fn_func_auto_cooling(fhp=heat_pump.func_heat_pump,
+                                 frd=radiator.func_radiator,
+                                 ffn=fan_status,
+                                 ffs=filter_status):
+            """Functionality of auto-cooling"""
+            return fhp * frd * ffn * ffs
+
     return atc
 
 def make_environment_control_system(name: str, dt: Node, num_zones: int, **kwargs) -> System:
@@ -127,10 +134,34 @@ def make_environment_control_system(name: str, dt: Node, num_zones: int, **kwarg
 
     with maybe_make_system(name, **kwargs) as eclss:
 
+        # Pressure control
         pressure_control =  make_active_pressure_control("pressure_control", num_zones)
+        # Functionality :: func_pressurize
+        # Functionality :: func_depressurize
 
+        # Cooling system
         cooling_system = make_active_cooling_system("cooling_system", dt)
+        # Functionality :: func_auto_cooling
 
+        # Heater system
         heater = make_heater("heater")
+        # Functionality :: func_heater
+
+        bio_comfort = Variable(
+            name="bio_comfort",
+            value=0.,
+            description="Thermal comfort indicator variable"
+        )
+        @make_function(bio_comfort)
+        def fn_calc_thermal_comfort(pfunc=pressure_control.func_pressurize,
+                                    pdefunc=pressure_control.func_depressurize,
+                                    cfunc=cooling_system.func_auto_cooling,
+                                    hfunc=heater.func_heater):
+            """Procedure to calculate thermal comfort"""
+            return cfunc * hfunc * pfunc * pdefunc
+        
+        # @make_functionality("")
+
+        
 
     return eclss

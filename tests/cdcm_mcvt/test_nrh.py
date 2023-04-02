@@ -10,6 +10,7 @@ Date:
 """
 
 from cdcm import *
+from cdcm_abstractions import *
 from cdcm_mcvt import *
 from cdcm_utils import *
 
@@ -61,9 +62,11 @@ print(mcvt_nrh)
 print("~ovn!")
 
 print("MCVT level nodes: ", len(hab1.nodes))
+print("Number of Status: ", len(hab1.get_nodes_of_type(HealthStatus)))
+print("Number of Tests: ", len(hab1.get_nodes_of_type(Test)))
 
 print("Nodes of MCVT ECLSS: ", len(hab1.eclss.nodes))
-print("Nodes of MCVT Power systems: ", len(hab1.power.nodes))
+# print("Nodes of MCVT Power systems: ", len(hab1.power.nodes))
 print("Nodes of MCVT dome: ", len(hab1.dome.nodes))
 
 mcvt_nrh_interactive = make_pyvis_graph(mcvt_nrh, "test_nrh.html")

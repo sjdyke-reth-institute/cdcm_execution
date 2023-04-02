@@ -40,6 +40,9 @@ def make_functionality(functionality_name: str, *, _map: bool=False, **kwargs):
             print()
             quit()
 
+
+        assert not hasattr(System.get_context(), functionality_name)
+
         functionality = Functionality(
             name=functionality_name,
             value=0.,

@@ -36,14 +36,20 @@ with System(name="sys") as sys:
     # Heat pump
     heat_pump = make_heat_pump("heat_pump", clock.dt) 
 
-    # Radiator
-    radiator = make_radiator("radiator")
-
     # Pump
     pump = make_pump("pump")
 
+    # Radiator Panels
+    radiator_panels = make_radiator_panels("panels")
+
+    # Radiator
+    radiator = make_radiator("radiator")
+
     # Fan
     fan = make_fan("fan")
+
+    # Heater
+    heater = make_heater("heater")
 
 print("!ovn!")
 sys.forward()

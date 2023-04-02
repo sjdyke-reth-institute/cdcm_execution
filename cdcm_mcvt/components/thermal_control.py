@@ -18,14 +18,15 @@ __all__ = [
     "make_evaporator",
     "make_expansion_valve",
     "make_heat_pump",
-    "make_radiator",
+    "make_radiator_panels",
     "make_pump",
+    "make_radiator",
     "make_fan",
     "make_heater",
 ]
 
 import numpy as np
-from typing import Optional, Union
+from typing import Union
 
 from cdcm import *
 from cdcm_abstractions import *
@@ -35,12 +36,7 @@ from .types import *
 Scalar = Union[int, float]
 
 
-def make_compressor(name: str, 
-                    dt: Node, 
-                    operating_cost=100,
-                    oil_life: Scalar=1.*365*24, 
-                    time_units: str="hr", 
-                    **kwargs) -> Compressor:
+def make_compressor(name: str, dt: Node, **kwargs) -> Compressor:
     """Make a compressor module"""
 
     # _Compressor = Compressor if isinstance(name, str) else maybe_make_system
@@ -181,24 +177,50 @@ def make_radiator_panels(name: str, **kwargs) -> RadiatorPanels:
 def make_pump(name: str, **kwargs) -> Pump:
     """Make model of a pump"""
     with maybe_make_system(name, Pump, **kwargs) as pump:
-        status = make_health_status(
-            name="status",
+        status_pump = make_health_status(
+            name="status_pump",
             value=0,
             support=(0, 1),
             description="Status of operation of the pump"
         )
+        @make_test("test_status_pump")
+        def fn_test_status_pump(s=status_pump):
+            """Function which tests the status of the pump"""
+            if s == 0:
+                return 0.
+            else:
+                return 1.
+            
+        @make_functionality("func_pump")
+        def fn_func_pump(s=status_pump):
+            """Function that calculcates the status of the pump"""
+            return s
+
     return pump
 
 def make_heater(name: str, **kwargs) -> Heater:
     """Make a model of the heater"""
 
     with maybe_make_system(name, Heater, **kwargs) as heater:
-        status = make_health_status(
-            name="status",
+        status_heater = make_health_status(
+            name="status_heater",
             value=0,
             support=(0, 1, 2),
             description="Overall status of the heater variable"
         )
+        @make_test("test_status_heater")
+        def fn_test_status_pump(s=status_heater):
+            """Function which tests the status of the heater"""
+            if s == 0:
+                return 0.
+            else:
+                return 1.
+            
+        @make_functionality("func_heater")
+        def fn_func_pump(s=status_heater):
+            """Function that calculcates the status of the heater"""
+            return s
+
     return heater
 
 def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
@@ -265,10 +287,7 @@ def make_heat_pump(name: str, dt: Node, **kwargs) -> HeatPump:
             fwi=heat_pump.func_work_in,
             fwo=heat_pump.func_work_out):
             """Higher-order functionality for heat-pump"""
-            if all([fhe, fwi, fwo]):
-                return 1.
-            else:
-                return 0.
+            return fhe * fwi * fwo 
         
     return heat_pump
 
@@ -282,6 +301,12 @@ def make_radiator(name: str, **kwargs) -> System:
 
         # Pump
         pump = make_pump("pump")
+
+        @make_functionality("func_radiator")
+        def fn_func_radiator(frp=radiator_panels.func_radiator_panels,
+                             fpm=pump.func_pump):
+            """Functionality of the radiators"""
+            return frp * fpm
 
     return radiator
 
