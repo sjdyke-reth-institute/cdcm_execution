@@ -38,6 +38,7 @@ class Fan(System):
 
 ## Components of the heat-pump loop
 class Compressor(System):
+
     pass
 
 class HeatExchanger(System):
@@ -51,6 +52,11 @@ class Evaporator(HeatExchanger):
     """Turn liquid-to-vapor"""
     pass
 
+## Components of the radiator loop
+class RadiatorPanels(HeatExchanger):
+    """Radiator component"""
+    pass
+
 class HeatPump(System):
     """A heat-pump system"""
     pass
@@ -59,9 +65,8 @@ class TXValve(Valve):
     """Thermo-static expansion valve"""
     pass
 
-## Components of the radiator loop
-class Radiator(HeatExchanger):
-    """Radiator component"""
+class RadiatorLoop(System):
+    """Radiator loop"""
     pass
 
 class Pump(System):

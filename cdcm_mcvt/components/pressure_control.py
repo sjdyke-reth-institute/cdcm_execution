@@ -41,18 +41,25 @@ def make_air_tank(name: str, **kwargs) -> AirTank:
             support=(0, 1, 2),
             description=f"Status of {tank.absname}"
         )
-        test = Test(
-            name="test_air_tank",
-            value=0.,
-            description=f"Test for of air tank {tank.absname}"
-        )
-        @make_function(test)
-        def calc_status_air_tank(s=status):
-            """Status of the air tank"""
+
+        @make_functionality("func_air_tank")
+        def fn_func_air_tank(s=status):
+            """Functionality of the air tank"""
             if s == 0:
                 return 1.
+            elif s == 1:
+                return 0.5
             else:
+                return 0.25
+
+        @make_test("test_status_air_tank")
+        def fn_test_status_air_leak(s=status):
+            """Test the health status of air tank"""
+            if s < 1:
                 return 0.
+            else:
+                return 1.
+        
     return tank
 
 
@@ -73,12 +80,15 @@ def make_pressure_valve(name: str, **kwargs) -> Valve:
             support=(0, 1, 2),
             description=f"Status of :{valve.absname}"
         )
-        test = Test(
-            name="test_valve",
-            value=0.,
-            description=f"Test for the pressure value"
-        )
-        @make_function(test)
+
+        @make_functionality("func_valve")
+        def fn_func_valve(s=status):
+            if s in [0, 1]:
+                return 1.0
+            else:
+                return 0.0
+            
+        @make_test("test_status_valve")
         def test_status_air_tank(s=status):
             """Status of the pressure valve"""
             if s == 0:
