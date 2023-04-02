@@ -34,8 +34,10 @@ def make_active_pressure_control(
     """Make an active pressure control module"""
 
     with maybe_make_system(name_or_system, **kwargs) as press_control:
+        
         # Air tank
         air_tank = make_air_tank("air_tank")
+
 
         for izone in range(num_zones):
             inlet_valve_name = "inlet_valve_zone" + str(izone + 1)
@@ -43,42 +45,50 @@ def make_active_pressure_control(
                 name=inlet_valve_name,
                 description=f"Status of the inlet valve at Zone ({str(izone + 1)})"
             )
-            # inlet_valves.append((inlet_valve_name, inlet_valve))
 
             relief_valve_name = "relief_valve_zone" + str(izone + 1)
             relief_valve = make_pressure_valve(
                 name=relief_valve_name,
                 description=f"Status of the relief valve at Zone ({str(izone + 1)})"
             )
-            # relief_valves.append((relief_valve_name, relief_valve))
         
-        press_control.inlet_valves = press_control.get_subsystems_of_type(InletValve)
-        press_control.relief_valves = press_control.get_subsystems_of_type(ReliefValve)
+        inlet_valves = press_control.get_subsystems_of_type(InletValve)
+        relief_valves = press_control.get_subsystems_of_type(ReliefValve)
 
-        status_inlet_valves = Test(
-            name="status_inlet_valves",
+        inlet_valve_statuses = [iv.status_valve for iv in inlet_valves]
+        relief_valve_statuses = [rv.status_valve for rv in relief_valves]
+
+        # How do we address the following with decorator patterns?
+        # @make_functionality("func_pressurizing", _map=True)
+        # def fn_func_pressurizing(ivs=inlet_valve_statuses):
+        #     """Functionality of pressurizing the habitat"""
+        #     return all(ivs)
+        #     pass
+        func_pressurize = Functionality(
+            name="func_pressurize",
             value=0.,
-            description="Status of all inlet valves"
+            description="Functionality to pressurize the dome structure"
         )
-        calc_status_inlet_valves = Function(
-            name="fn_status_inlet_valves",
-            children=status_inlet_valves,
-            parents=[iv.status_valve for iv in press_control.inlet_valves],
-            func=lambda *list_of_states: all(s for s in list_of_states),
-            description="Calculate the combined status of inlet valves"
+        fn_func_pressurize = Function(
+            name="fn_func_pressurize",
+            parents=inlet_valve_statuses,
+            children=func_pressurize,
+            func=lambda *args: all([arg > 0.5 for arg in args]),
+            description="Functionality of pressurizing the habitat"
         )
-        status_outlet_valves = Test(
-            name="status_outlet_valves",
+        func_depresssurize = Functionality(
+            name="func_depressurize",
             value=0.,
-            description="Status of all outlet valves"
+            description="Functionality to de-pressurize the dome structure"
         )
-        calc_status_outlet_valves = Function(
-            name="calc_status_outlet_valves",
-            children=status_outlet_valves,
-            parents=[rv.status_valve for rv in press_control.relief_valves],
-            func=lambda *list_of_states: all(s for s in list_of_states),
-            description="Calculate the combined status of outlet valves"
+        fn_func_depressurize = Function(
+            name="fn_func_depressurize",
+            parents=relief_valve_statuses,
+            children=func_depresssurize,
+            func=lambda *args: all([arg > 0.5 for arg in args]),
+            description="Functionality of de-pressurizing the habitat"
         )
+
     return press_control
 
 def make_active_cooling_system(
@@ -90,14 +100,12 @@ def make_active_cooling_system(
 
     with maybe_make_system(name_or_system, **kwargs) as atc:
 
-        # Radiator panels for rejecting heat to space
-        radiator = make_radiator("radiator")
 
-        # Heat-pump for cooling
+        # Primary heat-exchange loop
         heat_pump = make_heat_pump("heat_pump", dt)
 
         # Pump for cycling 
-        pump = make_pump("pump")
+        radiator = make_radiator("radiator")
 
         # fans and filters for active thermal control
         fan_status = make_health_status(

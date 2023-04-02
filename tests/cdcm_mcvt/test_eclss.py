@@ -24,15 +24,15 @@ with System(name="nrh") as nrh:
     press_control = make_active_pressure_control("press_control", 2)
 
     # Make active cooling system
-    cooling_system = make_active_cooling_system("cooling_system", clock.dt)
+    # cooling_system = make_active_cooling_system("cooling_system", clock.dt)
 
     # Modularized environment control
-    env_control = make_environment_control_system("eclss", clock.dt, 2)
+    # env_control = make_environment_control_system("eclss", clock.dt, 2)
 
 
-print("~ovn!")
+print("!ovn!")
 
-print(nrh)
+# print(nrh)
 
 nrh_interactive = make_pyvis_graph(nrh, "test_eclss.html")
 

@@ -67,13 +67,13 @@ def make_pressure_valve(name: str, **kwargs) -> Valve:
     """Make models of pressurizing/relief valves in habitat"""
 
     if "inlet" in name:
-        _Valve = InletValve
+        ValveType = InletValve
     elif "relief" in name:
-        _Valve = ReliefValve
+        ValveType = ReliefValve
     else:
-        _Valve = Valve
+        ValveType = Valve
 
-    with maybe_make_system(name, _Valve, **kwargs) as valve:
+    with maybe_make_system(name, ValveType, **kwargs) as valve:
         status = make_health_status(
             name="status_valve",
             value=0,

@@ -37,7 +37,7 @@ with System(name="sys") as sys:
     heat_pump = make_heat_pump("heat_pump", clock.dt) 
 
     # Radiator
-    radiator = make_radiator("rediator")
+    radiator = make_radiator("radiator")
 
     # Pump
     pump = make_pump("pump")
