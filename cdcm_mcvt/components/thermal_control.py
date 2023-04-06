@@ -77,11 +77,12 @@ def make_condenser(name: str, **kwargs) -> Condenser:
             description="Status of heat-exchanging coils in Condenser"
         )
         @make_functionality("func_condenser")
-        def fn_func_condenser_coil(s=status_coil):
-            if status_coil == 0:
-                return 1.
+        def fn_func_condenser_coil(sc=status_coil):
+            if sc <= 1.:
+                return 1.0
             else:
                 return 0.5
+
         @make_test("test_status_coil") 
         def fn_test_status_coil(s=status_coil):
             """Test for status coil"""
@@ -184,19 +185,20 @@ def make_pump(name: str, **kwargs) -> Pump:
             description="Status of operation of the pump"
         )
         @make_test("test_status_pump")
-        def fn_test_status_pump(s=status_pump):
+        def fn_test_status_pump(sp=status_pump):
             """Function which tests the status of the pump"""
-            if s == 0:
+            if sp < 1:
                 return 0.
             else:
                 return 1.
             
         @make_functionality("func_pump")
-        def fn_func_pump(s=status_pump):
+        def fn_func_pump(sp=status_pump):
             """Function that calculcates the status of the pump"""
-            return s
+            return sp
 
     return pump
+
 
 def make_heater(name: str, **kwargs) -> Heater:
     """Make a model of the heater"""
@@ -209,9 +211,9 @@ def make_heater(name: str, **kwargs) -> Heater:
             description="Overall status of the heater variable"
         )
         @make_test("test_status_heater")
-        def fn_test_status_pump(s=status_heater):
+        def fn_test_status_pump(sh=status_heater):
             """Function which tests the status of the heater"""
-            if s == 0:
+            if sh < 1.:
                 return 0.
             else:
                 return 1.
@@ -222,6 +224,7 @@ def make_heater(name: str, **kwargs) -> Heater:
             return s
 
     return heater
+
 
 def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
     """Make a fan system"""
@@ -239,7 +242,14 @@ def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
             support=(0, 1, 2),
             description="Status of the filter of the fan"
         )
+
+        @make_functionality(st=status, fs=filter_status)
+        def fn_func_fan(st=status, fs=filter_status):
+            """Procedure for the fan functionality"""
+            return st * fs
+
     return fan
+
 
 def make_heat_pump(name: str, dt: Node, **kwargs) -> HeatPump:
     """Make primary heat-exchanging loop (a heat-pump)"""

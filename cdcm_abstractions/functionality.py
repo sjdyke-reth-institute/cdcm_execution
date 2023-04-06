@@ -25,16 +25,23 @@ class BinaryFunctionality(Functionality):
         super().__init__(name=name, value=value, units=units, track=track, **kwargs)
 
 
-def make_functionality(functionality_name: str, *, _map: bool=False, **kwargs):
+def make_functionality(functionality_name: str, *, debug: bool=False, **kwargs):
     """A function that creates a functionality variable with a health status depdnency"""
     
-    def make_functionality_inner(func: Callable) -> Functionality:
-        """"""
+    def make_functionality_wrapper(func: Callable) -> Functionality:
+        """Wrapper procedure defining a `Functionality` node and a `Function`
+        node.
+        
+        Arguments
+        ---------
+        func        :   Callable
+            A function that defines how to set the value of the functionality variable
+        """
 
         signature = get_default_args(func)
         parents = signature.values()
 
-        if _map:
+        if debug:
             print("~ovn!")
             print(signature)
             print()
@@ -55,6 +62,6 @@ def make_functionality(functionality_name: str, *, _map: bool=False, **kwargs):
             func=func,
             description=f"Procedure that sets the value of {functionality.absname}"
         )
-        return functionality
+        return fn_func_var 
     
-    return make_functionality_inner
+    return make_functionality_wrapper

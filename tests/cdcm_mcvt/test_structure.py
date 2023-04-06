@@ -30,7 +30,7 @@ SEGMENT_C = np.array([[0.0, 0.50, 1.00],
                       [0.0, 0.25, 0.75],
                       [0.0, 0.00, 1.00]])
 
-SEGMENT_W = np.array([[    10.0,   20.0, 20.0],
+SEGMENT_W = np.array([[   10.0,    20.0, 20.0],
                       [POS_INF,     1.0, 10.0],
                       [POS_INF, POS_INF, 00.0]])
 
@@ -51,10 +51,10 @@ with System(name="sys") as sys:
     clock = make_clock(dt=1., units="hr")
 
     # Segment system
-    segment = make_segment("segment", segment_properties)
+    # segment = make_segment("segment", segment_properties)
 
     # Make structure system
-    # dome = make_dome_structure("dome", segment_properties, segment_properties)
+    dome = make_dome_structure("dome", segment_properties, segment_properties)
 
 sys.forward()
 print("!0vn!")
