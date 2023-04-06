@@ -119,16 +119,12 @@ class Segment(System):
         @make_functionality("func_integrity")
         def fn_func_integrity(s=impact_status):
             """Calculate the integrity function"""
-            return 1. if impact_status < 2 else 0.
+            return 1. if s < 2 else 0.
 
         return super().define_internal_nodes(**kwargs)
 
 def make_segment(name:str, segment_properties: Dict[str, Any]=None, **kwargs) -> Segment:
     """Make the structure module"""
-
-    # Structure needs to handle 2 failure modes
-    # Read MCVT's structure module and see what to name them
-    # raise NotImplementedError("Implement me..")
 
     assert segment_properties is not None
 

@@ -11,7 +11,7 @@ Date:
 
 
 from cdcm import *
-from .health_status import *
+from .health import *
 
 from typing import Set, Union, NewType, Callable
 
@@ -26,19 +26,24 @@ class Test(Variable):
 
 
 
-def make_test(test_name: str="test", *args, **kwargs) -> Test:
-    """A function that creates a test variable with a functional dependency"""
+def make_test(
+        test_name: str="test", 
+        *, 
+        debug: bool=False, 
+        func_name: str=None,
+        **kwargs) -> Test:
+    """A function that creates a test variable whose value is set by a procedure"""
 
-    def make_test_inner(test_func: Callable):
+    def make_test_wrapper(test_func: Callable):
 
         signature = get_default_args(test_func)
         parents = signature.values()
         
-        # if test_func.__name__ == "fn_test_status_inlet_valves":
-        #     print("~ovn!")
-        #     print(signature)
-        #     print("~~~~ovn!")
-        #     quit()
+        if debug and test_func.__name__ == func_name:
+            print("~ovn!")
+            print(signature)
+            print("~~~~ovn!")
+            quit()
 
         test_var = Test(
             name=test_name,
@@ -52,6 +57,6 @@ def make_test(test_name: str="test", *args, **kwargs) -> Test:
             func=test_func,
             description=f"Definition of procedure that sets value of {test_var.absname}"
         )
-        return test_var
+        return fn_test_var
 
-    return make_test_inner
+    return make_test_wrapper

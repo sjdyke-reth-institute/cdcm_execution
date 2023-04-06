@@ -79,7 +79,7 @@ def make_health_status(
     ---------
     name                :   str
         Name of the health status variable
-    value:
+    value               :
     """
 
     if isinstance(value, float):

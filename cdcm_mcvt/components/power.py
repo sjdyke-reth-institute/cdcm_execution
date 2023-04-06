@@ -47,9 +47,9 @@ def make_power_converter(name: str, **kwargs) -> PowerConverter:
         @make_test("test_status_power_converter")
         def fn_test_status_power_converter(s=status_power_converter):
             if s <= 1:
-                return 1.
+                return 0.
             else:
-                0.
+                return 1.
         
         @make_functionality("func_power_converter")
         def fn_func_power_converter(s=status_power_converter):
@@ -72,9 +72,9 @@ def make_energy_storage(name: str, **kwargs) -> EnergyStorage:
         @make_test("test_status_energy_storage")
         def fn_test_status_power_converter(s=status_energy_storage):
             if s <= 1:
-                return 1.
+                return 0.
             else:
-                0.
+                return 1.
         
         @make_functionality("func_energy_storage")
         def fn_func_power_converter(s=status_energy_storage):
@@ -97,9 +97,9 @@ def make_batteries(name: str, num_cells: int, **kwargs):
         @make_test("test_status_battery")
         def fn_test_status_power_converter(s=status_batteries):
             if s <= 1:
-                return 1.
+                return 0.
             else:
-                0.
+                return 1.
         
         @make_functionality("func_battery")
         def fn_func_power_converter(s=status_batteries):
@@ -123,9 +123,9 @@ def make_generation_bus(name: str, **kwargs) -> GenerationBus:
        @make_test("test_status_gen_bus")
        def fn_test_status_power_converter(s=status_gen_bus):
             if s <= 1:
-                return 1.
-            else:
                 return 0.
+            else:
+                return 1.
             
        @make_functionality("func_gen_bus")
        def fn_func_power_converter(s=status_gen_bus):
@@ -147,9 +147,9 @@ def make_power_generator(name: str, **kwargs) -> PowerGenerator:
         @make_test("test_status_power_gen")
         def fn_test_status_power_converter(s=status_power_gen):
             if s <= 1:
-                return 1.
+                return 0.
             else:
-                0.
+                return 1.
         
         @make_functionality("func_power_gen")
         def fn_func_power_converter(s=status_power_gen):
@@ -246,6 +246,7 @@ def make_solar_arrays(name: str, **kwargs) -> System:
 
     return solar_arrays
 
+
 def make_power_system(
         name: str, 
         num_step_up_converters: int=3,
@@ -315,7 +316,5 @@ def make_power_system(
             func=reduce_prod,
             description="Procedure that calculate the power flow through"
         )
-
-
 
     return power_sys

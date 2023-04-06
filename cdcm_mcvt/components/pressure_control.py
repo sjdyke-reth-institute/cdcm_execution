@@ -83,6 +83,7 @@ def make_pressure_valve(name: str, **kwargs) -> Valve:
 
         @make_functionality("func_valve")
         def fn_func_valve(s=status):
+            """Procedure for functionality values"""
             if s in [0, 1]:
                 return 1.0
             else:
@@ -91,10 +92,10 @@ def make_pressure_valve(name: str, **kwargs) -> Valve:
         @make_test("test_status_valve")
         def test_status_air_tank(s=status):
             """Status of the pressure valve"""
-            if s == 0:
-                return 1.
-            else:
+            if s < 1.:
                 return 0.
+            else:
+                return 1.
 
     return valve
 
