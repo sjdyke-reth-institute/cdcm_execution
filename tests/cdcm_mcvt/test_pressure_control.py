@@ -24,7 +24,6 @@ with System(name="system") as sys:
     # AirTank
     tank = make_air_tank("supplementary_tank")
 
-
     # Valve
     valve = make_pressure_valve("generic_valve")
     

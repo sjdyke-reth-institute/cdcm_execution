@@ -110,6 +110,17 @@ class Segment(System):
             support=(0, 1, 2),
             description="Status of the segment due to meteorite impact"
         )
+
+        @make_test("test_impact_status")
+        def fn_test_impact_status(s=impact_status):
+            """Test the impact status"""
+            return 1. if s >= 1 else 0.
+
+        @make_functionality("func_integrity")
+        def fn_func_integrity(s=impact_status):
+            """Calculate the integrity function"""
+            return 1. if impact_status < 2 else 0.
+
         return super().define_internal_nodes(**kwargs)
 
 def make_segment(name:str, segment_properties: Dict[str, Any]=None, **kwargs) -> Segment:
@@ -137,5 +148,13 @@ def make_dome_structure(
 
         # Mechanical layer
         sml = make_segment("mechanical", sml_properties)
+
+        @make_functionality("func_dome_integrity")
+        def fn_func_dome_integrity(
+            fsp=spl.func_integrity,
+            fml=sml.func_integrity):
+            """Functionality of dome integrity"""
+            return fsp * fml
+
 
     return dome

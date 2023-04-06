@@ -25,6 +25,10 @@ def get_node_properties(node: Node):
 
     if isinstance(node, HealthStatus):
         return {"type": "Status", "color": "cyan", 'shape': 'dot'} 
+    elif isinstance(node, Test):
+        return {"type": 'Test', "color": "red", 'shape': 'triangle'}
+    elif isinstance(node, Functionality):
+        return {"type": 'Test', "color": "orange", 'shape': 'triangle'}
     elif isinstance(node, State):
         return {"type": "State", "color": "green", 'shape': 'dot'}
     elif isinstance(node, Parameter):
@@ -34,7 +38,7 @@ def get_node_properties(node: Node):
     elif isinstance(node, Transition):
         return {"type": 'Transition', "color": "green", "shape": 'triangle'}
     elif isinstance(node, Function):
-        return {"type": 'Function', "color": "blue", 'shape': 'triangle'}
+        return {"type": 'Function', "color": "black", 'shape': 'triangle'}
     else:
         raise TypeError(f"Unknown node type: {node_type}")
 

@@ -30,7 +30,7 @@ with System(name="nrh") as nrh:
     env_control = make_environment_control_system("eclss", clock.dt, 2)
 
 
-print("~ovn!")
+print("!ovn!")
 
 print(nrh)
 
