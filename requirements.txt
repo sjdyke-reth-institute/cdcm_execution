@@ -6,3 +6,4 @@ networkx
 pint
 rich
 sortedcontainers
+pyvis==0.2.0
