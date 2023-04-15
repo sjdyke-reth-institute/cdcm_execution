@@ -23,8 +23,10 @@ def get_node_properties(node: Node):
     """Node properties"""
     node_type = str(type(node)).split('.')[-1][:-2]
 
-    if isinstance(node, HealthStatus):
+    if isinstance(node, HealthState):
         return {"type": "Status", "color": "cyan", 'shape': 'dot'} 
+    elif isinstance(node, HealthVariable):
+        return {"type": "Status", "color": "cyan", 'shape': 'triangle'} 
     elif isinstance(node, Test):
         return {"type": 'Test', "color": "red", 'shape': 'triangle'}
     elif isinstance(node, Functionality):

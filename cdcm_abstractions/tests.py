@@ -11,12 +11,13 @@ Date:
 
 
 from cdcm import *
-from .health import *
+from .health_variable import *
 
 from typing import Set, Union, NewType, Callable
 
 
-SetofStatusVariables = NewType("SetofStatusVariables", Set['HealthStatus'])
+# We need to support Sequence/Set types. Needs reference.
+SetofHealthVariables = NewType("SetofStatusVariables", Set['HealthVariable'])
 
 
 class Test(Variable):
@@ -26,25 +27,15 @@ class Test(Variable):
 
 
 
-def make_test(
-        test_name: str="test", 
-        *, 
-        debug: bool=False, 
-        func_name: str=None,
-        **kwargs) -> Test:
+def make_test(test_name: str="test", **kwargs) -> Test:
     """A function that creates a test variable whose value is set by a procedure"""
 
     def make_test_wrapper(test_func: Callable):
+        """Wraps around a `test_procedure` and create a test variable"""
 
         signature = get_default_args(test_func)
         parents = signature.values()
         
-        if debug and test_func.__name__ == func_name:
-            print("~ovn!")
-            print(signature)
-            print("~~~~ovn!")
-            quit()
-
         test_var = Test(
             name=test_name,
             value=0.,

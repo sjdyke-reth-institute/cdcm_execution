@@ -62,8 +62,8 @@ print(mcvt_nrh)
 print("~ovn!")
 
 print("MCVT level nodes: ", len(hab1.nodes))
-print("Number of Status: ", len(hab1.get_nodes_of_type(HealthStatus)))
-print("Number of Tests: ", len(hab1.get_nodes_of_type(Test)))
+print("Number of Health Variables: ", len(hab1.get_nodes_of_type(HealthVariable)))
+print("Number of Test Variables: ", len(hab1.get_nodes_of_type(Test)))
 
 print("Nodes of MCVT ECLSS: ", len(hab1.eclss.nodes))
 # print("Nodes of MCVT Power systems: ", len(hab1.power.nodes))

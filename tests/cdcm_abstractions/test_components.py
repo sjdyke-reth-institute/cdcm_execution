@@ -21,14 +21,14 @@ with System(name="sys") as sys:
     # Make a clock
     clock = make_clock(dt=1.0, units="hr")
 
-    hs1 = make_health_status(
+    hs1 = make_health_variable(
         name="status1",
         value=0.,
         support=(0., 1.),
         description="A continuous status variable"
     )
 
-    hs2 = make_health_status(
+    hs2 = make_health_variable(
         name="status2",
         value=0,
         support=(0, 1),
@@ -36,7 +36,7 @@ with System(name="sys") as sys:
     )
 
     with System(name="component") as component:
-        status = make_health_status(
+        status = make_health_variable(
             name="status",
             value=0,
             support=(0, 1)
@@ -54,12 +54,12 @@ with System(name="sys") as sys:
                 return 0.
 
     with System(name="component_w_sensor") as component_w_sensor:
-        status_1 = make_health_status(
+        status_1 = make_health_variable(
             name="health_status_1",
             value=0,
             support=(0, 1)
         )
-        status_2 = make_health_status(
+        status_2 = make_health_variable(
             name="health_status_2",
             value=0.,
             support=(0., 1.),
@@ -79,7 +79,7 @@ with System(name="sys") as sys:
                 return 0.5
             
         with System(name="sensor") as sensor:
-            status_sensor = make_health_status(
+            status_sensor = make_health_variable(
                 name="status_sensor",
                 value=0,
                 support=(0, 1)
@@ -156,5 +156,5 @@ with System(name="sys") as sys:
 
 print(sys)
 sys.forward()
-sys_interactive = make_pyvis_graph(sys, "test_variable_types.html")
+sys_interactive = make_pyvis_graph(sys, "test_components.html")
 

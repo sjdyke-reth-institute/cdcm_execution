@@ -38,7 +38,7 @@ from collections import defaultdict
 def make_power_converter(name: str, **kwargs) -> PowerConverter:
     """Make power converter system"""
     with maybe_make_system(name, PowerConverter, *kwargs) as converter:
-        status_power_converter = make_health_status(
+        status_power_converter = make_health_variable(
             name="status_power_converter",
             value=0,
             support=(0, 1, 2),
@@ -63,7 +63,7 @@ def make_power_converter(name: str, **kwargs) -> PowerConverter:
 def make_energy_storage(name: str, **kwargs) -> EnergyStorage:
     """Make an energy storage system"""
     with maybe_make_system(name, EnergyStorage, **kwargs) as storage:
-        status_energy_storage = make_health_status(
+        status_energy_storage = make_health_variable(
             name="status_energy_storage",
             value=0,
             support=(0, 1, 2),
@@ -88,7 +88,7 @@ def make_batteries(name: str, num_cells: int, **kwargs):
     """Make battery system"""
 
     with make_energy_storage(name, **kwargs) as batteries:
-        status_batteries = make_health_status(
+        status_batteries = make_health_variable(
             name="status_batteries",
             value=[0] * num_cells,
             support=(0, 1, 2),
@@ -113,7 +113,7 @@ def make_generation_bus(name: str, **kwargs) -> GenerationBus:
     """Make the generation bus"""
 
     with maybe_make_system(name, GenerationBus, **kwargs) as bus:
-       status_gen_bus = make_health_status(
+       status_gen_bus = make_health_variable(
            name="status_gen_bus",
            value=0,
            support=(0, 1, 2),
@@ -138,7 +138,7 @@ def make_generation_bus(name: str, **kwargs) -> GenerationBus:
 def make_power_generator(name: str, **kwargs) -> PowerGenerator:
     """Make the power generator system"""
     with maybe_make_system(name, PowerGenerator, **kwargs) as generator:
-        status_power_gen = make_health_status(
+        status_power_gen = make_health_variable(
             name="status_power_gen",
             value=0,
             support=(0, 1, 2),
@@ -163,7 +163,7 @@ def make_nuclear_generator(name: str, **kwargs) -> System:
     """Make a nuclear generator system"""
 
     with make_power_generator(name, **kwargs) as nuclear:
-        status_dust = make_health_status(
+        status_dust = make_health_variable(
             name="status_dust",
             value=0,
             support=(0, 1, 2),
@@ -177,7 +177,7 @@ def make_nuclear_generator(name: str, **kwargs) -> System:
             else:
                 return 1.
 
-        status_paint = make_health_status(
+        status_paint = make_health_variable(
             name="status_paint",
             value=0,
             support=(0, 1, 2),
@@ -211,7 +211,7 @@ def make_solar_arrays(name: str, **kwargs) -> System:
 
     with make_power_generator(name, **kwargs) as solar_arrays:
 
-        status_dust = make_health_status(
+        status_dust = make_health_variable(
             name="status_dust",
             value=0,
             support=(0, 1, 2),
@@ -225,7 +225,7 @@ def make_solar_arrays(name: str, **kwargs) -> System:
             else:
                 return 1.
 
-        status_mechanical = make_health_status(
+        status_mechanical = make_health_variable(
             name="status_mechanical",
             value=0,
             support=(0, 1, 2),

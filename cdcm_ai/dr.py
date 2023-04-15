@@ -41,9 +41,9 @@ class DiagnosticReasoner:
         self._system = val
 
     @cached_property
-    def health_status_vars(self) -> Set[HealthStatus]:
+    def health_status_vars(self) -> Set[HealthVariable]:
         """Getter method for health status variables"""
-        return self.system.get_nodes_of_type(HealthStatus)
+        return self.system.get_nodes_of_type(HealthVariable)
     
     @cached_property
     def test_vars(self) -> Set[Test]:
@@ -115,7 +115,7 @@ class DiagnosticReasoner:
         dict_failure_class = {hs.absname: (fail_class, hs) for hs, fail_class in zip(self.health_status_vars, failure_class)}
         return dict_failure_class
     
-    def process(self, verbose: bool=False) -> HealthStatus:
+    def process(self, verbose: bool=False) -> HealthVariable:
         """Perform health management"""
 
         dr_results = self.run()

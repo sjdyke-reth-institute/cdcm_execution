@@ -35,7 +35,7 @@ def make_air_tank(name: str, **kwargs) -> AirTank:
     """Make an air tank"""
 
     with maybe_make_system(name, AirTank, **kwargs) as tank:
-        status = make_health_status(
+        status = make_health_variable(
             name="status_air_tank",
             value=0,
             support=(0, 1, 2),
@@ -74,7 +74,7 @@ def make_pressure_valve(name: str, **kwargs) -> Valve:
         ValveType = Valve
 
     with maybe_make_system(name, ValveType, **kwargs) as valve:
-        status = make_health_status(
+        status = make_health_variable(
             name="status_valve",
             value=0,
             support=(0, 1, 2),
