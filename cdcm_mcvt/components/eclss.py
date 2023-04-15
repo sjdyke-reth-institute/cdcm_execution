@@ -106,13 +106,13 @@ def make_active_cooling_system(
         radiator = make_radiator("radiator")
 
         # fans and filters for active thermal control
-        fan_status = make_health_status(
+        fan_status = make_health_variable(
             name="status_fan",
             value=0,
             support=(0, 1, 2),
             description="Status of operation of the fan"
         )
-        filter_status = make_health_status(
+        filter_status = make_health_variable(
             name="status_filter",
             value=0,
             support=(0, 1, 2),

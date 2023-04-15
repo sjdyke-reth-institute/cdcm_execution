@@ -104,7 +104,7 @@ class Segment(System):
             description="Weights for the factor of the hazard state class"
         )
 
-        impact_status = make_health_status(
+        impact_status = make_health_variable(
             name="impact_status",
             value=0,
             support=(0, 1, 2),

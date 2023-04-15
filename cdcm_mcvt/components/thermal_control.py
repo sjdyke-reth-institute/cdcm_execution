@@ -41,7 +41,7 @@ def make_compressor(name: str, dt: Node, **kwargs) -> Compressor:
 
     # _Compressor = Compressor if isinstance(name, str) else maybe_make_system
     with maybe_make_system(name, Compressor, **kwargs) as compressor:
-        status = make_health_status(
+        status = make_health_variable(
             name="status_compressor",
             value=0,
             support=(0, 1)
@@ -70,7 +70,7 @@ def make_condenser(name: str, **kwargs) -> Condenser:
     """Make the model of MCVT's condensing heat-exchanger in ECLSS"""
 
     with maybe_make_system(name, Condenser, **kwargs) as chx:
-        status_coil = make_health_status(
+        status_coil = make_health_variable(
             name="status_coil",
             value=0,
             support=(0, 1, 2),
@@ -94,13 +94,13 @@ def make_evaporator(name: str, **kwargs) -> Evaporator:
     """Make the model of MCVT's evaporating heat-exchanger in ECLSS"""
 
     with maybe_make_system(name, Evaporator, **kwargs) as ehx:
-        coil_status = make_health_status(
+        coil_status = make_health_variable(
             name="coil_status",
             value=0,
             support=(0, 1, 2),
             description="Status of heat-exchanging coils in Evaporator"
         )
-        leak_status = make_health_status(
+        leak_status = make_health_variable(
             name="leak_status",
             value=0,
             support=(0, 1, 2),
@@ -126,7 +126,7 @@ def make_expansion_valve(name: str, **kwargs) -> TXValve:
     """Make the model of a thermo-static expansion valve"""
 
     with maybe_make_system(name, TXValve, **kwargs) as txv:
-        status = make_health_status(
+        status = make_health_variable(
             name="status_expansion_valve",
             value=0,
             support=(0, 1, 2),
@@ -141,13 +141,13 @@ def make_expansion_valve(name: str, **kwargs) -> TXValve:
 def make_radiator_panels(name: str, **kwargs) -> RadiatorPanels:
     """Make the radiator for ECLSS' Thermal Control System"""
     with maybe_make_system(name, RadiatorPanels, **kwargs) as radiator_panels:
-        status_paint = make_health_status(
+        status_paint = make_health_variable(
             name="status_paint",
             value=0,
             support=(0, 1),
             description="Status of the reflective paint"
         )
-        status_dust = make_health_status(
+        status_dust = make_health_variable(
             name="status_dust",
             value=0,
             support=(0, 1),
@@ -178,7 +178,7 @@ def make_radiator_panels(name: str, **kwargs) -> RadiatorPanels:
 def make_pump(name: str, **kwargs) -> Pump:
     """Make model of a pump"""
     with maybe_make_system(name, Pump, **kwargs) as pump:
-        status_pump = make_health_status(
+        status_pump = make_health_variable(
             name="status_pump",
             value=0,
             support=(0, 1),
@@ -204,7 +204,7 @@ def make_heater(name: str, **kwargs) -> Heater:
     """Make a model of the heater"""
 
     with maybe_make_system(name, Heater, **kwargs) as heater:
-        status_heater = make_health_status(
+        status_heater = make_health_variable(
             name="status_heater",
             value=0,
             support=(0, 1, 2),
@@ -230,20 +230,20 @@ def make_fan(name: str, filter: bool=True, **kwargs) -> Fan:
     """Make a fan system"""
 
     with maybe_make_system(name, Fan, **kwargs) as fan:
-        status = make_health_status(
+        status = make_health_variable(
             name="status",
             value=0,
             support=(0, 1, 2),
             description="Overall health status of fan"
         )
-        filter_status = make_health_status(
+        filter_status = make_health_variable(
             name="filter_status",
             value=0,
             support=(0, 1, 2),
             description="Status of the filter of the fan"
         )
 
-        @make_functionality(st=status, fs=filter_status)
+        @make_functionality("func_fan")
         def fn_func_fan(st=status, fs=filter_status):
             """Procedure for the fan functionality"""
             return st * fs
