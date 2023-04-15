@@ -8,15 +8,26 @@ Date:
     
 """
 
-__all__ = ["make_health_status", "HealthStatus", "DiscreteHealthStatus", "BinaryHealthStatus"]
+__all__ = [
+    "HealthVariable", 
+    "CategoricalHealthVariable", 
+    "BinaryHealthVariable",
+    "make_health_variable",
+    ]
 
 from typing import Union, Tuple, Optional, Any
 from cdcm import *
 
 Scalar = Union[int, float]
 
-class HealthStatus(Variable):
-    """Health state"""
+class HealthVariable(Variable):
+    """Health variable, a variable of the system that indicates the health
+    of a system. 
+
+    Their value can be changed as a side-effect of an external event, and/or
+    by effect of a parent function node that compute the variable's value 
+    based on its grandparent variable nodes.
+    """
 
     @property
     def support(self) -> Tuple[Scalar, ...]:
@@ -31,7 +42,7 @@ class HealthStatus(Variable):
     @Variable.value.setter
     def value(self, val) -> None:
         """Set the value of the status variable
-        REF: 
+        References: 
          - https://tinyurl.com/3xtf8u64
          - https://tinyurl.com/ywfnhcva
         """
@@ -48,32 +59,39 @@ class HealthStatus(Variable):
         self.idx = idx
         super().__init__(name=name, **kwargs)
 
-class DiscreteHealthStatus(HealthStatus):
+class CategoricalHealthVariable(HealthVariable):
     """Discrete health state"""
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, name: str, *, support: Tuple[Scalar, ...]=None, **kwargs) -> None:
+        assert support is not None
+        super().__init__(name=name, support=support, **kwargs)
 
 
-class BinaryHealthStatus(DiscreteHealthStatus):
+class BinaryHealthVariable(CategoricalHealthVariable):
     """Binary health state"""
-    def __init__(self, name: str, **kwargs) -> None:
-        super().__init__(name=name, **kwargs)
+    def __init__(self, name: str, *, support: Tuple[Scalar, ...], **kwargs) -> None:
+        assert len(support) == 2
+        super().__init__(name=name, support=support, **kwargs)
 
 
-class ContinuousHealthStatus(HealthStatus):
+class ContinuousHealthVariable(HealthVariable):
     """Continuous health status variable"""
     def __init__(self, name: str, support: Tuple[Scalar, ...], idx: Optional[int] = None, **kwargs) -> None:
         super().__init__(name, support, idx, **kwargs)
 
-def make_health_status(
+def make_health_variable(
     name: str, 
     value: Union[Scalar, bool],
-    support: Tuple[int, ...]=(0, 1),
+    support: Optional[Tuple[int, ...]]=None,
     units: Optional[str]=None,
     description: Optional[str]=None,
-    **kwargs) -> Union[BinaryHealthStatus, DiscreteHealthStatus]:
-    """Make a health status variable inferring the type of the variable from
-    the provided information
+    **kwargs) -> Union[CategoricalHealthVariable, ContinuousHealthVariable]:
+    """Make a health variable.
+    The sub-type of the variable is determined by the characterizing the 
+    `value` and `support`.
+
+    `value` :: float                    => ContinuousHealthVariable
+    `value` :: int && len(support) > 2  => DiscreteHealthVariable
+    `value` :: int && len(support) ==
     
     Arguments
     ---------
@@ -83,16 +101,16 @@ def make_health_status(
     """
 
     if isinstance(value, float):
-        HealthStatusConstructor = ContinuousHealthStatus
+        HealthVariableConstructor = ContinuousHealthVariable
     elif isinstance(value, int):
-        HealthStatusConstructor = DiscreteHealthStatus if len(support) > 2 else BinaryHealthStatus
+        HealthVariableConstructor = BinaryHealthVariable if support is None else CategoricalHealthVariable
     else:
         raise TypeError(f"CDCM cannot infer the type of status variable you are trying to create {type(value)}")
 
-    return HealthStatusConstructor(
+    return HealthVariableConstructor(
         name=name,
         value=value,
-        support=support,
+        support=(0., 1.) if support is None else support,
         units="" if units is None else units,
         description="" if description is None else description,
         **kwargs

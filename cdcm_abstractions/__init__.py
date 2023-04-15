@@ -10,6 +10,7 @@ Date:
 """
 
 from .common import *
-from .health import *
+from .health_variable import *
+from .health_state import *
 from .functionality import *
 from .tests import *
