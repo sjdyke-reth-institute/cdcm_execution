@@ -25,7 +25,7 @@ class BinaryFunctionality(Functionality):
         super().__init__(name=name, value=value, units=units, track=track, **kwargs)
 
 
-def make_functionality(functionality_name: str, *, debug: bool=False, **kwargs):
+def make_functionality(functionality_name: str, **kwargs):
     """A function that creates a functionality variable with a health status depdnency"""
     
     def make_functionality_wrapper(func: Callable) -> Functionality:
@@ -40,13 +40,6 @@ def make_functionality(functionality_name: str, *, debug: bool=False, **kwargs):
 
         signature = get_default_args(func)
         parents = signature.values()
-
-        if debug:
-            print("~ovn!")
-            print(signature)
-            print()
-            quit()
-
 
         assert not hasattr(System.get_context(), functionality_name)
 
