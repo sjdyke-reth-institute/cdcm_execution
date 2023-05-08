@@ -49,6 +49,7 @@ with System(name="sys") as sys:
         column_descriptions=["Solar irradiation"]
     )
     ExtEnv.forward()
+    ExtEnv.transition()
 
 print(ExtEnv)
 
