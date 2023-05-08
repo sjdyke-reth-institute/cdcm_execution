@@ -28,7 +28,7 @@ def get_node_properties(node: Node):
     elif isinstance(node, HealthVariable):
         return {"type": "Status", "color": "cyan", 'shape': 'triangle'} 
     elif isinstance(node, Test):
-        return {"type": 'Test', "color": "red", 'shape': 'triangle'}
+        return {"type": 'Test', "color": "pink", 'shape': 'triangle'}
     elif isinstance(node, Functionality):
         return {"type": 'Test', "color": "orange", 'shape': 'triangle'}
     elif isinstance(node, State):
