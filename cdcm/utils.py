@@ -2,7 +2,7 @@
 
 Author:
     Ilias Bilionis
-    Murali Krishnan R
+    R Murali Krishnan
 
 Date:
     3/13/2022
@@ -48,7 +48,7 @@ class bidict(dict):
         super().__setitem__(key, value)
         self.inverse.update({value: key})
 
-    def update(self, new_dict : dict) -> None:
+    def update(self, new_dict : Dict) -> None:
         for k, v in new_dict.items():
             self[k] = v
 
@@ -57,14 +57,14 @@ class bidict(dict):
         super().__delitem__(key)
 
 
-def yamlstr(dict_of_dicts : dict) -> str:
+def yamlstr(dict_of_dicts : Dict) -> str:
     """
     Turn a dictionary of dictionaries to a yaml string.
     """
     return yaml.dump(dict_of_dicts, sort_keys=False)
 
 
-def get_default_args(func : Callable) -> dict[str, Any]:
+def get_default_args(func : Callable) -> Dict[str, Any]:
     """Return a dictionary containing the default arguments of a
     function.
 
