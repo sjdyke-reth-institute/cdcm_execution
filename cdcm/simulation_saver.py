@@ -81,7 +81,7 @@ class SimulationSaver(object):
                 self._create_h5_structure(sg, n)
         else:
             node = system_or_node
-            if not isinstance(node, Variable):
+            if (not isinstance(node, Variable)) or (not node.track):
                 return
             node_type = type(node.value)
             if node_type == int:
