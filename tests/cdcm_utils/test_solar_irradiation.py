@@ -18,39 +18,43 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def make_exterior_environment(start_time, end_time, step_size, phi, lamda, alpha=0.0, beta=0.0):
+    """Get an exterior environment model"""
+
+    # Solar irradiation from Sreehari's model
+    solar_irr = get_insolation_ephemeris(
+        start_time=start_time,
+        end_time=end_time,
+        step_size=step_size,
+        phi=phi,
+        lamda=lamda,
+        alpha=alpha,
+        beta=beta,
+    )
+
+    # Instantiate a datasystem for exterior environment
+    ext_env = DataSystem(
+        name="ext_env",
+        data=solar_irr['Q'].to_numpy(),
+        columns=["Q"],
+        column_units=["W/m^2"],
+        column_descriptions=["Solar irradiation"]
+    )
+    ext_env.forward()
+    ext_env.transition()
+    return ext_env
+
+
 start_time = "2022-01-10%2000:00"
 end_times = ["2022-03-10%2000:00", "2023-01-10%2000:00"]
 step_size = "1h"
 phis = [0.7, 45.6, 88.5]
 lamdas = [0.5, 88.5, -88.5]
 
-data = get_insolation_ephemeris(
-    start_time=start_time,
-    end_time=end_times[1],
-    step_size=step_size,
-    phi=phis[0],
-    lamda=lamdas[0],
-    alpha=0.0,
-    beta=0.0
-)
-
-print(data.columns.values)
-print(data.columns.value_counts())
-
 with System(name="sys") as sys:
 
     clock = make_clock(dt=1.0, units="hr")
 
-    ExtEnv = DataSystem(
-        name="ext_env",
-        data=data['Q'].to_numpy(),
-        columns=["Q"],
-        column_units=["W/m^2"],
-        column_descriptions=["Solar irradiation"]
-    )
-    ExtEnv.forward()
-    ExtEnv.transition()
+    ext_env = make_exterior_environment(start_time, end_times[0], step_size, phis[0], lamdas[0])
 
-print(ExtEnv)
-
-print("~ovn!!")
+print(ext_env)

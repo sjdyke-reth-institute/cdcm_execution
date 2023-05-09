@@ -1,5 +1,5 @@
 #~ovn!
-"""Stoachstic irradiation model
+"""Stochastic irradiation model
 
 Author:
     Sreehari Manikkan
