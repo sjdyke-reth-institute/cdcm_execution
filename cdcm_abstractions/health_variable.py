@@ -4,9 +4,10 @@ Author:
     R Murali Krishnan
     
 Date:
-    03.24.2023
+    05.12.2023
     
 """
+
 
 __all__ = [
     "HealthVariable", 
@@ -15,10 +16,13 @@ __all__ = [
     "make_health_variable",
     ]
 
+
 from typing import Union, Tuple, Optional, Any
 from cdcm import *
 
+
 Scalar = Union[int, float]
+
 
 class HealthVariable(Variable):
     """Health variable, a variable of the system that indicates the health
@@ -41,14 +45,8 @@ class HealthVariable(Variable):
 
     @Variable.value.setter
     def value(self, val) -> None:
-        """Set the value of the status variable
-        References: 
-         - https://tinyurl.com/3xtf8u64
-         - https://tinyurl.com/ywfnhcva
-        """
-        assert val in self.support
+        """Set the value of the status variable"""
         Variable.value.fset(self, val)
-
 
     def __init__(self, 
                  name: str, 
@@ -59,24 +57,37 @@ class HealthVariable(Variable):
         self.idx = idx
         super().__init__(name=name, **kwargs)
 
+
 class CategoricalHealthVariable(HealthVariable):
-    """Discrete health state"""
+    """Discrete health variable"""
+
+    @Variable.value.setter
+    def value(self, val) -> None:
+        """Set the value of the status variable
+        References: 
+         - https://tinyurl.com/3xtf8u64
+         - https://tinyurl.com/ywfnhcva
+        """
+        assert val in self.support
+        Variable.value.fset(self, val)
+
     def __init__(self, name: str, *, support: Tuple[Scalar, ...]=None, **kwargs) -> None:
         assert support is not None
         super().__init__(name=name, support=support, **kwargs)
 
 
 class BinaryHealthVariable(CategoricalHealthVariable):
-    """Binary health state"""
+    """Binary health variable"""
     def __init__(self, name: str, *, support: Tuple[Scalar, ...], **kwargs) -> None:
         assert len(support) == 2
         super().__init__(name=name, support=support, **kwargs)
 
 
 class ContinuousHealthVariable(HealthVariable):
-    """Continuous health status variable"""
+    """Continuous health variable"""
     def __init__(self, name: str, support: Tuple[Scalar, ...], idx: Optional[int] = None, **kwargs) -> None:
         super().__init__(name, support, idx, **kwargs)
+
 
 def make_health_variable(
     name: str, 
