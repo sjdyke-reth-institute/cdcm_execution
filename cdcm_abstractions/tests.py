@@ -11,7 +11,7 @@ Date:
 
 
 from cdcm import *
-from .health_variable import *
+from cdcm_abstractions.health_variable import *
 
 from typing import Set, Union, NewType, Callable
 
@@ -25,6 +25,48 @@ class Test(Variable):
     def __init__(self, name: str, **kwargs):
         super().__init__(name=name, **kwargs)
 
+class BinaryTest(Test):
+    """Diagnostic tests with binary output"""
+    def __init__(self, name: str, **kwargs):
+        super().__init__(name, **kwargs)
+
+    def __add__(self, other: 'Test') -> 'Test':
+        """Boolean addition operation""" 
+
+        # print("Attemping to perform **Binary operation** on two test variables")
+        # print(type(self), ' & ', type(other))
+        # print("**")
+
+        # from cdcm.node import get_context
+
+        with System.get_context() as ctx:
+            # print(ctx)
+            sum = BinaryTest(
+                name=f"(+ {self.name} {other.name})", 
+                value=0.,
+                description=f"child of (+ {self.name} {other.name})")
+            
+            @make_function(sum)
+            def calc_sum(a=self, b=other):
+                return a + b
+            
+
+        return sum
+    
+    def __mul__(self, other: 'Test') -> 'Test':
+
+        with System.get_context() as ctx:
+            # print(ctx)
+            prod = BinaryTest(
+                name=f"(* {self.name} {other.name})", 
+                value=0.,
+                description=f"child of (* {self.name} {other.name})")
+            
+            @make_function(prod)
+            def calc_prod(a=self, b=other):
+                return a * b
+
+        return prod
 
 
 def make_test(test_name: str="test", **kwargs) -> Test:
