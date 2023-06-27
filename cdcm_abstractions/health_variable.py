@@ -78,8 +78,12 @@ class CategoricalHealthVariable(HealthVariable):
 
 class BinaryHealthVariable(CategoricalHealthVariable):
     """Binary health variable"""
-    def __init__(self, name: str, *, support: Tuple[Scalar, ...], **kwargs) -> None:
-        assert len(support) == 2
+    def __init__(self, name: str, *, support: Tuple[Scalar, ...]=None, **kwargs) -> None:
+        if support is None:
+            support = (0, 1)
+        else:
+            assert len(support) == 2, f"Binary health variables received a len(support) = {len(support)} > 2"
+
         super().__init__(name=name, support=support, **kwargs)
 
 
