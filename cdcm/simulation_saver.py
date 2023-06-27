@@ -97,7 +97,7 @@ class SimulationSaver(object):
                 dtype = node.value.dtype
                 shape = node.value.shape
             else:
-                raise ValueError(f"Node {node.name} has an uninitialized value."
+                raise ValueError(f"Node {node.name} ({node_type}) has an uninitialized value."
                     + " Please specify a value so that I can figure out"
                     + " the type of the variable I need to store.")
             maxshape = (self.max_steps,) + shape
