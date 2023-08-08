@@ -11,3 +11,4 @@ Date:
 
 
 from ._pyvis import *
+from .derivatives import *
