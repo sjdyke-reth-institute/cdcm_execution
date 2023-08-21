@@ -17,6 +17,7 @@ __all__ = ["SimulationSaver"]
 import h5py
 import os
 import numpy as np
+import jaxlib
 from typing import Union
 from . import System, Node, State, Parameter, Variable
 
@@ -94,6 +95,9 @@ class SimulationSaver(object):
                 dtype = node.value.dtype
                 shape = node.value.shape
             elif isinstance(node.value, (np.integer, np.inexact)):
+                dtype = node.value.dtype
+                shape = node.value.shape
+            elif node_type == jaxlib.xla_extension.DeviceArray:
                 dtype = node.value.dtype
                 shape = node.value.shape
             else:
