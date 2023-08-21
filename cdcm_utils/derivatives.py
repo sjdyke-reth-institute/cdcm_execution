@@ -6,7 +6,9 @@ Author:
 Date:
     08/08/2023
 """
-__all__ = ["set_derivative"]
+__all__ = ["set_derivative",
+           "update_loss_grad",
+           ]
 
 from cdcm import *
 from jax import jacfwd
@@ -57,7 +59,6 @@ def update_sys_dag_for_grad(sys):
 def edge_jac_fn(y_fn,x):
     posn = y_fn.parents.index(x)
     def wrap_fn(*args):
-        #print(f"edge jac fn of {y_fn.name} called")
         args=[*args]
         f1 = lambda q1: y_fn.func(*args[:posn],q1,*args[posn+1:])
         return jacfwd(f1)(args[posn])
@@ -70,7 +71,6 @@ def get_edge_gradient(
         sys,
         sys_nodes_for_grad,
         grad_edge_name,
-        sub_graph_nodes,
     ):
     """
     get the gradient of edge going from x to y with the mapping given by
@@ -97,35 +97,26 @@ def get_edge_gradient(
         dydx_edge = [
             n for n in sys_nodes_for_grad if n.name == grad_edge_name
         ][0]
-    
-    sub_graph_nodes.add(dydx_edge)
-    sub_graph_nodes.add(dydx_edge.parents[0])
-    for p in dydx_edge.parents[0].parents:
-        sub_graph_nodes.add(p)
-        if len(p.parents)>0:
-            sub_graph_nodes.add(p.parents[0])
-    return dydx_edge, sub_graph_nodes
+    return dydx_edge
 
 
 def get_simple_path_gradients(
         path,
         sys_nodes_for_grad,
         sys,
-        sub_graph_nodes,
     ):
     grad_path_edges = []
     # setting the gradient along the path
     for idx in range(len(path)-2,-1,-2):
-        dydx_edge, sub_graph_nodes = get_edge_gradient(
+        dydx_edge = get_edge_gradient(
             x=path[idx-1],
             y_fn=path[idx],
             sys=sys,
             sys_nodes_for_grad=sys_nodes_for_grad,
-            grad_edge_name=f"pd{path[idx+1].name}d{path[idx-1].name}",
-            sub_graph_nodes=sub_graph_nodes,
+            grad_edge_name=f"pd{path[idx+1].absname}d{path[idx-1].absname}",
         )
         grad_path_edges.append(dydx_edge)    
-    return grad_path_edges, sub_graph_nodes
+    return grad_path_edges
 
 
 def get_dir_indir_path_gradients(
@@ -186,8 +177,9 @@ def edge_jac_prod(ed1,ed2):
         return ed1*ed2
     elif len(ed1.shape)>2 or len(ed2.shape)>2:
         raise Exception(
-            """Jacobian matrix of dimension upto 2 is allowed
-                for edge derivative"""
+            f"""Jacobian matrix of dimension upto 2 is allowed
+                for edge derivative. detected shapes are {ed1.shape},
+                {ed2.shape}"""
         )
     elif len(ed1.shape)==0:
         return ed1*ed2
@@ -226,7 +218,6 @@ def get_simple_path_grad_nodes(
         sys,
         grad_paths,
         grad_name,
-        sub_graph_nodes,
 ):  
     
     # getting gradients from simple paths
@@ -235,11 +226,10 @@ def get_simple_path_grad_nodes(
         # grad_path_name does not guarantee uniqueness w.r.t 
         # path. hence dydx_path are not added to the 
         # sys_nodes_for_grad.
-        grad_path_edges, sub_graph_nodes = get_simple_path_gradients(
+        grad_path_edges = get_simple_path_gradients(
                         path=path,
                         sys_nodes_for_grad=sys.sys_nodes_for_grad,
                         sys=sys,
-                        sub_graph_nodes=sub_graph_nodes,
                     )
             
         if len(grad_path_edges) == 1:
@@ -258,12 +248,12 @@ def get_simple_path_grad_nodes(
                     parents=grad_path_edges,
                     children=dydx_path
                 )
-                sub_graph_nodes.add(dydx_path)
-                sub_graph_nodes.add(calc_dydx_path)
+                sys.sys_nodes_for_grad.add(dydx_path)
+                sys.sys_nodes_for_grad.add(calc_dydx_path)
         
         grad_paths.append(dydx_path)
     
-    return grad_paths,sub_graph_nodes,path_no
+    return grad_paths,path_no
 
 
 def get_dir_indir_path_grad_nodes(
@@ -403,35 +393,66 @@ class GradientPaths:
 
 def total_derv_func(*args):
     args=[*args]
+
     if not hasattr(args[0],"shape"):
         # args[0] is scalar float/int object
         res = 0.
         for i in args:
             if hasattr(i, "shape"):
-                assert len(i.shape)==0
+                assert len(i.shape)==0 or i.shape==(1,) or i.shape==(1,1)
+            res += i
+    elif len(args[0].shape)==0 or args[0].shape==(1,) or args[0].shape==(1,1):
+        res = jnp.zeros_like(args[0])
+        for i in args:
+            if hasattr(i, "shape"):
+                assert len(i.shape)==0 or i.shape==(1,) or i.shape==(1,1)
             res += i
     else:
-        if len(args[0].shape)==0:
-            res = jnp.zeros_like(args[0])
-            for i in args:
-                if hasattr(i, "shape"):
-                    assert len(i.shape)==0
-                res += i
-        else:
-            res = jnp.zeros_like(args[0])
-            for i in args:
-                if not res.shape==i.shape:
-                    raise Exception(f"""
-                    path jacobians should have same shape. detected shapes 
-                    {res.shape},{i.shape}
-                    """)
-                res += i
+        res = jnp.zeros_like(args[0])
+        for i in args:
+            if not res.shape==i.shape:
+                raise Exception(f"""
+                path jacobians should have same shape. detected shapes 
+                {res.shape},{i.shape}
+                """)
+            res += i
     return res
 
 
 def rec_prod_func(*args):
     temp = [1/i for i in [*args]]
     return math.prod(temp)
+
+
+def print_dag_edges(dag):
+    for i in dag.edges:
+        if isinstance(i[0],str):
+            if isinstance(i[1],str):
+                print(f"{i[0], i[1]}")
+            else:
+                print(f"{i[0], i[1].name}")
+        elif isinstance(i[1],str):
+            print(f"{i[0].name, i[1]}")
+        else:
+            print(f"{i[0].name, i[1].name}")
+
+
+def get_update_seq(paths):
+    update_seq = []
+    update_seq.append(paths[0][-2])
+    max_path_len = max([len(p) for p in paths])
+    for i in range(max_path_len-2,-1, -2):
+        for idx, p in enumerate(paths):
+            if i<=len(p)-4:
+                if p[i] not in update_seq:
+                    update_seq.append(p[i])
+    update_seq.reverse()
+    return update_seq
+
+
+def update_loss_grad(update_seq):
+    for n in update_seq:
+        n.forward()
 
 
 def set_derivative(sys,y,x,grad_name,update_seq=False):
@@ -449,7 +470,7 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                    representing the total derivative need not be necessary
                    this one.
         update_seq: If True, this will return a list of CDCM Functions
-            to be evaluated in order to update the value of derivative 
+            to be evaluated in order to evaluate the value of derivative 
             of y w.r.t x for a given value of x. Useful for Calibration
             purposes.
     Return: update_seq if update_seq==True else None.
@@ -462,7 +483,6 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
     sys.sys_nodes_for_grad =  get_sys_nodes_for_grad(
         sys, sys.sys_nodes_for_grad
     )
-    #sys.sys_dag_for_grad = get_sys_dag_for_grad(sys.sys_nodes_for_grad)
     update_sys_dag_for_grad(sys)
     
     if hasattr(sys, grad_name):
@@ -481,18 +501,21 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                 sys_dag_for_grad=sys.sys_dag_for_grad,
             )
             paths = grad_paths_obj.paths
-            sub_graph_nodes = set()
             grad_paths_obj.fetch_dir_indir_paths()
             dir_paths = grad_paths_obj.dir_paths
             indir_paths = grad_paths_obj.indir_paths
-            assert len(indir_paths)==len(dir_paths)
 
+            assert len(indir_paths)==len(dir_paths)
+            if len(paths)==0:
+                raise Exception(
+                    f"""no simple paths of dependency found
+                    between nodes {x.name} and {y.name}"""
+                    )
             if len(paths)==1 and len(indir_paths)==0:
-                grad_path_edges,sub_graph_nodes = get_simple_path_gradients(
+                grad_path_edges = get_simple_path_gradients(
                         path=paths[0],
                         sys_nodes_for_grad=sys.sys_nodes_for_grad,
                         sys=sys,
-                        sub_graph_nodes=sub_graph_nodes,
                     )
 
                 if len(grad_path_edges) == 1:
@@ -513,8 +536,6 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                         )
                     sys.sys_nodes_for_grad.add(dydx)
                     sys.sys_nodes_for_grad.add(calc_dydx)
-                    sub_graph_nodes.add(dydx)
-                    sub_graph_nodes.add(calc_dydx)
 
             else:
                 if len(indir_paths)>0:
@@ -526,13 +547,12 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                     supported."""
                     )
                 else:
-                    grad_paths, sub_graph_nodes, path_no = (
+                    grad_paths, path_no = (
                     get_simple_path_grad_nodes(
                                     paths=paths,
                                     sys=sys,
                                     grad_paths=[],
                                     grad_name=grad_name,
-                                    sub_graph_nodes=sub_graph_nodes,
                     )
                     )
                     with sys:
@@ -550,22 +570,13 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                         )
                     sys.sys_nodes_for_grad.add(dydx)
                     sys.sys_nodes_for_grad.add(calc_dydx)
-                    sub_graph_nodes.add(dydx)
-                    sub_graph_nodes.add(calc_dydx)
             if update_seq:
                 update_sys_dag_for_grad(sys)
-                sub_graph_fns = set(
-                    filter(
-                        lambda n: isinstance(n, Function),
-                        sub_graph_nodes
-                    )
-                )
-
-                sub_graph = sys.sys_dag_for_grad.subgraph(sub_graph_nodes)
-                update_seq = tuple(
-                    filter(
-                        lambda n: n in sub_graph_fns,
-                        nx.topological_sort(sub_graph)
-                    )
-                )
-                return update_seq
+                x_to_dydx_paths = [
+                    i for i in nx.all_simple_paths(
+                                        sys.sys_dag_for_grad,
+                                        x, 
+                                        getattr(sys,grad_name)
+                                        )
+                ]
+                return get_update_seq(x_to_dydx_paths)
