@@ -4,16 +4,16 @@ in cdcm
 Author:
     Sreehari Manikkan
 Date:
-    08/08/2023
+    08/22/2023
 """
 __all__ = ["set_derivative",
            "update_loss_grad",
+           "get_update_seq",
            ]
 
 from cdcm import *
 from jax import jacfwd
 import jax.numpy as jnp
-import numpy as np
 import networkx as nx
 import math
 
@@ -455,6 +455,28 @@ def update_loss_grad(update_seq):
         n.forward()
 
 
+def get_update_seq(sys, x, grad_name):
+    update_sys_dag_for_grad(sys)
+    x_to_dydx_paths = [
+        i for i in nx.all_simple_paths(
+                            sys.sys_dag_for_grad,
+                            x, 
+                            getattr(sys,grad_name)
+                            )
+    ]
+    paths = x_to_dydx_paths
+    update_seq = []
+    update_seq.append(paths[0][-2])
+    max_path_len = max([len(p) for p in paths])
+    for i in range(max_path_len-2,-1, -2):
+        for idx, p in enumerate(paths):
+            if i<=len(p)-4:
+                if p[i] not in update_seq:
+                    update_seq.append(p[i])
+    update_seq.reverse()
+    return update_seq
+
+
 def set_derivative(sys,y,x,grad_name,update_seq=False):
 
     """
@@ -571,12 +593,4 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                     sys.sys_nodes_for_grad.add(dydx)
                     sys.sys_nodes_for_grad.add(calc_dydx)
             if update_seq:
-                update_sys_dag_for_grad(sys)
-                x_to_dydx_paths = [
-                    i for i in nx.all_simple_paths(
-                                        sys.sys_dag_for_grad,
-                                        x, 
-                                        getattr(sys,grad_name)
-                                        )
-                ]
-                return get_update_seq(x_to_dydx_paths)
+                return get_update_seq(sys, x, grad_name)
