@@ -8,7 +8,7 @@ Date:
 """
 __all__ = ["set_derivative",
            "update_loss_grad",
-           "get_update_seq",
+           "get_derivative_update_seq",
            ]
 
 from cdcm import *
@@ -437,25 +437,12 @@ def print_dag_edges(dag):
             print(f"{i[0].name, i[1].name}")
 
 
-def get_update_seq(paths):
-    update_seq = []
-    update_seq.append(paths[0][-2])
-    max_path_len = max([len(p) for p in paths])
-    for i in range(max_path_len-2,-1, -2):
-        for idx, p in enumerate(paths):
-            if i<=len(p)-4:
-                if p[i] not in update_seq:
-                    update_seq.append(p[i])
-    update_seq.reverse()
-    return update_seq
-
-
 def update_loss_grad(update_seq):
     for n in update_seq:
         n.forward()
 
 
-def get_update_seq(sys, x, grad_name):
+def get_derivative_update_seq(sys, x, grad_name):
     update_sys_dag_for_grad(sys)
     x_to_dydx_paths = [
         i for i in nx.all_simple_paths(
@@ -477,7 +464,7 @@ def get_update_seq(sys, x, grad_name):
     return update_seq
 
 
-def set_derivative(sys,y,x,grad_name,update_seq=False):
+def set_derivative(sys,y,x,grad_name,derivative_update_seq=False):
 
     """
     sets the derivative of cdcm node y w.r.t cdcm node x as a<br>
@@ -491,11 +478,11 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                    from sys. Note the 'name' attribute of CDCM node
                    representing the total derivative need not be necessary
                    this one.
-        update_seq: If True, this will return a list of CDCM Functions
+        derivative_update_seq: If True, this will return a list of CDCM Functions
             to be evaluated in order to evaluate the value of derivative 
             of y w.r.t x for a given value of x. Useful for Calibration
             purposes.
-    Return: update_seq if update_seq==True else None.
+    Return: derivative_update_seq if update_seq==True else None.
 
     """
 
@@ -592,5 +579,5 @@ def set_derivative(sys,y,x,grad_name,update_seq=False):
                         )
                     sys.sys_nodes_for_grad.add(dydx)
                     sys.sys_nodes_for_grad.add(calc_dydx)
-            if update_seq:
-                return get_update_seq(sys, x, grad_name)
+            if derivative_update_seq:
+                return get_derivative_update_seq(sys, x, grad_name)
