@@ -2,10 +2,12 @@
 
 Author:
     Ilias Bilionis
+    R Murali Krishnan
     Sreehari Manikkan
 
 Date:
     4/21/2022
+    09/05/2023
     2/06/2022
 
 """
@@ -17,6 +19,7 @@ __all__ = ["SimulationSaver"]
 import h5py
 import os
 import numpy as np
+import jaxlib
 from typing import Union
 from . import System, Node, State, Parameter, Variable
 
@@ -48,11 +51,16 @@ class SimulationSaver(object):
         self,
         file_or_group : Union[str, h5py.Group],
         system : System,
-        max_steps : int = 10000
+        max_steps : int = 10000,
+        overwrite: bool=False,
     ):
         if isinstance(file_or_group, str):
             file = os.path.abspath(file_or_group)
-            assert not os.path.exists(file), f"File '{file}' already exists!"
+            if os.path.exists(file) and overwrite:
+                os.remove(file)
+            else:
+                assert not os.path.exists(file), f"File '{file}' already exists!"
+
             file_handler = h5py.File(file, "w")
             group = file_handler["/"]
         else:
@@ -94,6 +102,9 @@ class SimulationSaver(object):
                 dtype = node.value.dtype
                 shape = node.value.shape
             elif isinstance(node.value, (np.integer, np.inexact)):
+                dtype = node.value.dtype
+                shape = node.value.shape
+            elif node_type == jaxlib.xla_extension.DeviceArray:
                 dtype = node.value.dtype
                 shape = node.value.shape
             else:

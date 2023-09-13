@@ -13,6 +13,8 @@ Date:
 __all__ = ["make_pyvis_graph"]
 
 
+import sys
+import traceback
 import pyvis.network as nt
 
 from cdcm import *
@@ -30,7 +32,7 @@ def get_node_properties(node: Node):
     elif isinstance(node, Test):
         return {"type": 'Test', "color": "pink", 'shape': 'triangle'}
     elif isinstance(node, Functionality):
-        return {"type": 'Test', "color": "orange", 'shape': 'triangle'}
+        return {"type": 'Test', "color": "#99ccff", 'shape': 'dot'}
     elif isinstance(node, State):
         return {"type": "State", "color": "green", 'shape': 'dot'}
     elif isinstance(node, Parameter):
@@ -40,15 +42,15 @@ def get_node_properties(node: Node):
     elif isinstance(node, Transition):
         return {"type": 'Transition', "color": "green", "shape": 'triangle'}
     elif isinstance(node, Function):
-        return {"type": 'Function', "color": "black", 'shape': 'triangle'}
+        return {"type": 'Function', "color": "#ffffff", 'shape': 'triangle'}
     else:
         raise TypeError(f"Unknown node type: {node_type}")
 
-def make_pyvis_graph(sys: System, html_name: str, buttons: bool=True, **kwargs):
-    """Build a `pyvis` graph instance of the system"""
+def make_pyvis_graph(sys_model: System, html_name: str, buttons: bool=True, **kwargs):
+    """Build a `pyvis` graph instance of the sys_modeltem"""
 
     g = nt.Network('1500px', '75%', directed=True)
-    for n in sys.nodes:
+    for n in sys_model.nodes:
         node_absname = n.absname
         node_properties = get_node_properties(n)
         g.add_node(
@@ -69,6 +71,19 @@ def make_pyvis_graph(sys: System, html_name: str, buttons: bool=True, **kwargs):
     if buttons:
         g.show_buttons()
     g.set_edge_smooth('dynamic')
-    g.show(html_name)
-    return g
+    try:
+        exc_info = sys.exc_info()
+        g.show(html_name)
+        return g
+    except AttributeError as att_err:
+        try:
+            print("Attribute error raised in Pyvis graph")
+            g.write_html(html_name)
+            return g
+        except:
+            traceback.print_exception(*exc_info)
+            print("Exception handling of Pyvis based graph rendering is broken..")
+    # finally:
+        # print(traceback.print_exception(*exc_info))
+        # raise RuntimeError("Rendering of HTML files for pyvis is broken..")
 
