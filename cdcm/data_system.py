@@ -117,5 +117,4 @@ def make_data_system(data : DataFrame, **kwargs):
     # Calling `forward()` and `transition()` can help 
     # initialize the data system
     data_system.forward()
-    data_system.transition()
     return data_system
