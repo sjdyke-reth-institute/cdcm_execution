@@ -112,8 +112,6 @@ def clip(value: Union[int, float, npt.ArrayLike],
     """
     assert isinstance(value, (int, float, np.ndarray)), \
         f"[!] [{type(value)}] cannot be clipped."
-    assert (min_value is not None and max_value is None), \
-        "[!] Both upper and lower bounds cannot be `None`!"
 
     if isinstance(value, np.ndarray):
         return np.clip(value, min_value, max_value)
@@ -123,4 +121,6 @@ def clip(value: Union[int, float, npt.ArrayLike],
         elif max_value is None:
             return max(value, min_value)
         else:
+            assert min_value is not None and max_value is not None, \
+                "[!] Both upper and lower bounds cannot be `None`!"
             return min(max(value, min_value), max_value)
