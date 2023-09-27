@@ -4,6 +4,8 @@ pyyaml
 h5py
 networkx
 pint
-rich
+requests
+matplotlib
+seaborn
 sortedcontainers
-pyvis==0.2.0
+pyvis
