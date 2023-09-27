@@ -39,4 +39,4 @@ Once you activate the `<cdcm-venv-name>` virtual environment, you can install th
 pip install git+https://github.com/sjdyke-reth-institute/cdcm_execution
 ```
 
-If you need access to the repository, please let email [R Murali Krishnan](mailto:mrajase@purdue.edu).
+If you need access to the repository, please contact [R Murali Krishnan](mailto:mrajase@purdue.edu).
