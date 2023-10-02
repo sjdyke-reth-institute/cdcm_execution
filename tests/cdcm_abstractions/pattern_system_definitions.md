@@ -1,4 +1,4 @@
-# Notes about design patterns
+# Patterns for defining systems
 
 ## Component / System models 
 

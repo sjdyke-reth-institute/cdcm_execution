@@ -1,3 +1,5 @@
+## Patterns for defining a diagnostic test
+
 ```python
 from cdcm import *
 from cdcm_abstractions import *

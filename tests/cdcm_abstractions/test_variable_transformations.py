@@ -34,4 +34,4 @@ print(f"x.value: {x.value}, " + \
       f"x_transformed.value: {x_transformed.value}")
 
 g = make_pyvis_graph(mysys)
-g.show("test_variable_behaviors.html")
+g.show("test_variable_transformations.html")
