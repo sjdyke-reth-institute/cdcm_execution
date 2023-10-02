@@ -31,7 +31,9 @@ setup(
     url='',
     license=_license,
     # packages=find_packages(exclude=('tests', 'docs')),
-    packages=find_packages(include=('cdcm.*', 'cdcm_abstractions.*', 'cdcm_ai.*', 'cdcm_mcvt.*', "cdcm_utils.*")),
+    packages=find_packages(include=('cdcm','cdcm.*',
+                                    'cdcm_abstractions', 'cdcm_abstractions.*', 
+                                    "cdcm_utils.*")),
     python_requires=">=3.6",
     install_requires=requirements,
 )
