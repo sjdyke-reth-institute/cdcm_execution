@@ -21,7 +21,7 @@
 
 # VSCode
 .vscode/
-
+.env
 /**/.ipynb_checkpoints/
 /**/.doctrees/
 /**/lib/

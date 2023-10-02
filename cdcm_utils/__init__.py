@@ -1,14 +1,17 @@
 #~ovn!
-"""Utilities used for modules in CDCM
+"""Utility modules for the CDCM framework
 
 Author:
     R Murali Krishnan
+    Sreehari Manikkan
 
 Date:
-    03.30.2023
+    10.02.2023
+    08/27/2023
 
 """
 
 
-from ._pyvis import *
+from ._io import *
+from ._vis import *
 from .derivatives import *

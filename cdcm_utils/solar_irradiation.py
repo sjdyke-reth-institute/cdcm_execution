@@ -1,14 +1,15 @@
-#~ovn!
-"""Stochastic irradiation model
+"""Utility to query insolation data from NASA JPL's Horizons API
 
 Author:
     Sreehari Manikkan
-    R Murali Krishnan
+
 Date:
     02.20.2023
-    05.08.2023
     
 """
+
+
+__all__=["get_insolation_ephemeris"]
 
 
 import requests
@@ -18,7 +19,6 @@ import pandas as pd
 import numpy as np
 
 
-__all__=["get_insolation_ephemeris"]
 
 
 def get_data_from_jplh(

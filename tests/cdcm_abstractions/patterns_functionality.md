@@ -1,28 +1,13 @@
-#~ovn!
-"""Definition of a `Functionality` variable
 
-Author:
-    R Murali Krishnan
-    
-Date:
-    03.31.2023
-    
-"""
 
-from cdcm import *
-from typing import Any, Union, Callable
-
+## Functionality construction
+```python
 Scalar = Union[int, float]
 
 class Functionality(Variable):
     """Functionality variable"""
-    def __init__(self, name: str, value: Any = None, units: str = "", track: bool = True, **kwargs) -> None:
-        super().__init__(name=name, value=value, units=units, track=track, **kwargs)
-
-class BinaryFunctionality(Functionality):
-    """Binary functionality variable"""
-    def __init__(self, name: str, value: Any = None, units: str = "", track: bool = True, **kwargs) -> None:
-        super().__init__(name=name, value=value, units=units, track=track, **kwargs)
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(name=name, **kwargs)
 
 
 def make_functionality(functionality_name: str, **kwargs):
@@ -58,3 +43,45 @@ def make_functionality(functionality_name: str, **kwargs):
         return fn_func_var 
     
     return make_functionality_wrapper
+```
+
+## Functionality Usage
+```python
+from cdcm import *
+from cdcm_abstractions import *
+from cdcm_utils import *
+
+with System(name="system") as sys:
+
+    clock = make_clock(dt=1.0, units="hr")
+
+    hvar1 = make_health_variable(
+        name="health_variable",
+        value=0.,
+        description="A health variable of the system"
+    )
+    rate = Parameter(
+        name="rate",
+        value=0.1,
+        description="Rate of a flow"
+    )
+
+    @make_functionality("func_flow")
+    def fn_func_hvar1(hvar=hvar1, rate=rate, dt=clock.dt):
+        """Calculate functionality from variables"""
+        if hvar == 0:
+            return 2. * rate * dt
+        else:
+            return rate * dt
+
+print("~ovn!")        
+print(sys)
+
+sys.forward()
+
+print("~~ovn!")
+
+sys_graph = make_pyvis_graph(sys, "test_functionality.html")
+
+```
+

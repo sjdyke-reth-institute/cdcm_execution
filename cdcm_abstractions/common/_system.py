@@ -7,7 +7,7 @@ Author:
 
 Date:
     09.18.2022
-    03.25.2023
+    10.02.2023
 
 """
 
@@ -15,16 +15,16 @@ Date:
 __all__ = ["maybe_make_system"]
 
 
-from cdcm import *
+from cdcm import System
 from typing import Union
 
 
-def maybe_make_system(name_or_system: Union[str, System], _Constructor=System, **kwargs) -> System:
+def maybe_make_system(name_or_system: Union[str, System], clstype=System, **kwargs) -> System:
     """Returns either a new system with a given name or the system that is provided."""
     
     if isinstance(name_or_system, str):
         # I am making a new system
-        sys = _Constructor(name=name_or_system, **kwargs)
+        sys = clstype(name=name_or_system, **kwargs)
     elif isinstance(name_or_system, System):
         # I am just adding variables to an existing system
         sys = name_or_system
