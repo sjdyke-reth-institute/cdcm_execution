@@ -9,12 +9,12 @@ Date:
 """
 
 
-__all__ = ["polynominal", "linear_function", "product"]
+__all__ = ["polynominal", "linear_function"]
+
 
 from cdcm import clip
-import operator as op
 from numbers import Number
-from functools import partial, reduce
+from functools import partial
 
 
 def polynominal(order: int, _clip: bool=True, lval: Number=0.0, uval: Number=1.0):
@@ -27,7 +27,3 @@ def polynominal(order: int, _clip: bool=True, lval: Number=0.0, uval: Number=1.0
 
 
 linear_function = partial(polynominal, order=1)
-
-def product(*args):
-    """Product of all arguments"""
-    return reduce(op.mul, args, 1)

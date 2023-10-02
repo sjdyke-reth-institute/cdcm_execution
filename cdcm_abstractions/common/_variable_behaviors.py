@@ -9,12 +9,14 @@ Date:
 """
 
 
-__all__ = ["transform", "scale"]
+__all__ = ["transform", "scale", "product"]
 
-from cdcm import Variable, Function, System
+
+import operator as op
 from numbers import Number
 from typing import Callable
-from functools import partial
+from functools import partial, reduce
+from cdcm import Variable, Function, System
 
 
 def transform(variable: Variable, func: Callable, name: str=None) -> Variable:
@@ -63,3 +65,9 @@ def scale(variable: Variable, scaling_factor: Number, name: str=None):
     scaling_func = lambda val, scale: val * scale
     new_name = name if name is not None else variable.name + "_scaled"
     return transform(name=new_name, variable=variable, func=partial(scaling_func, scale=scaling_factor))
+
+
+
+def product(*args):
+    """Product of all arguments"""
+    return reduce(op.mul, args, 1)
