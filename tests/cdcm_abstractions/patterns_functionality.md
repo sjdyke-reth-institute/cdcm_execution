@@ -1,14 +1,4 @@
-#~ovn!
-"""Test functionality variables
-
-Author:
-    R Murali krishnan
-    
-Date:
-    04.15.2023
-    
-"""
-
+```python
 from cdcm import *
 from cdcm_abstractions import *
 from cdcm_utils import *
@@ -44,3 +34,6 @@ sys.forward()
 print("~~ovn!")
 
 sys_graph = make_pyvis_graph(sys, "test_functionality.html")
+
+```
+
