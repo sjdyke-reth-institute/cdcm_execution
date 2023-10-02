@@ -33,7 +33,7 @@ setup(
     # packages=find_packages(exclude=('tests', 'docs')),
     packages=find_packages(include=('cdcm','cdcm.*',
                                     'cdcm_abstractions', 'cdcm_abstractions.*', 
-                                    "cdcm_utils.*")),
+                                    "cdcm_utils")),
     python_requires=">=3.6",
     install_requires=requirements,
 )
