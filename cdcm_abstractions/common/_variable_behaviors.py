@@ -9,7 +9,7 @@ Date:
 """
 
 
-__all__ = ["apply", "scale"]
+__all__ = ["transform", "scale"]
 
 from cdcm import Variable, Function, System
 from numbers import Number
@@ -17,7 +17,7 @@ from typing import Callable
 from functools import partial
 
 
-def apply(variable: Variable, func: Callable, name: str=None) -> Variable:
+def transform(variable: Variable, func: Callable, name: str=None) -> Variable:
     """Return a new Variable which applies a generic function to a Variable node
     
     Arguments:
@@ -34,13 +34,12 @@ def apply(variable: Variable, func: Callable, name: str=None) -> Variable:
 
         transformed_variable_name = name if name is not None else variable.name + "_transformed"
         transformed_variable = Variable(name=transformed_variable_name, value=0.0)
-
         fn = Function(
-            name=f"function_scale_{variable.name}",
+            name=f"transform_to_{transformed_variable_name}",
             parents=(variable,),
             children=transformed_variable,
             func=func,
-            description=f"Transformed variable {variable.name}"
+            description=f"Function for transforming {variable.name} to {transformed_variable_name}"
         )
     return transformed_variable
 
@@ -63,4 +62,4 @@ def scale(variable: Variable, scaling_factor: Number, name: str=None):
     """
     scaling_func = lambda val, scale: val * scale
     new_name = name if name is not None else variable.name + "_scaled"
-    return apply(name=new_name, variable=variable, func=partial(scaling_func, scale=scaling_factor))
+    return transform(name=new_name, variable=variable, func=partial(scaling_func, scale=scaling_factor))
