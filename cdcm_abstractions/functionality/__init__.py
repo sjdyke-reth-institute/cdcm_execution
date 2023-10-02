@@ -8,4 +8,5 @@ Date:
     
 """
 
-from ._variables import *
+
+from ._component import *

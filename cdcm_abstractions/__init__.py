@@ -11,7 +11,5 @@ Date:
 
 from .common import *
 from .events import *
-# from .health_variable import *
-# from .health_state import *
-# from ._functionality import *
+from .functionality import *
 # from .tests import *

@@ -11,14 +11,7 @@ Date:
 
 
 from cdcm import *
-from .health_variable import *
-
-from typing import Set, Union, NewType, Callable
-
-
-# We need to support Sequence/Set types. Needs reference.
-SetofHealthVariables = NewType("SetofStatusVariables", Set['HealthVariable'])
-
+from typing import Callable
 
 class Test(Variable):
     """Result of a diagnostic test"""
