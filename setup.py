@@ -30,7 +30,6 @@ setup(
     author_email='ibilion@purdue.edu, mrajase@purdue.edu, smanikka@purdue.edu',
     url='',
     license=_license,
-    # packages=find_packages(exclude=('tests', 'docs')),
     packages=find_packages(exclude=('docs','examples','tests', 'cdcm_rcbuilding')),
     python_requires=">=3.6",
     install_requires=requirements,
