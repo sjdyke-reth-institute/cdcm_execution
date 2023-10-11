@@ -1,24 +1,26 @@
-"""Abstraction of a component level system element
+"""Model definition of a system element
 
 Author:
     R Murali Krishnan
     
 Date:
-    10.02.2023
+    09.18.2023
     
 """
 
 
-from cdcm import System, Function
-from numbers import Number
-from typing import Callable, Union
-from functools import partial
+__all__ = ["make_component", "make_maintainable_component"]
 
-from .._types import (ToolSequence, 
-                      ConsumableSequence, 
-                      NumOrVar,
-                      HealthVars)
-from ..common import *
+
+from cdcm import *
+from numbers import Number
+import operator as op
+from functools import partial, reduce
+from typing import Union, Callable, Tuple, Sequence
+
+from ._types import *
+from ._variables import *
+from ._mechanism_patterns import *
 
 
 
@@ -56,8 +58,18 @@ class Component(System):
         self.consumables_to_repair = consumables_to_repair
         self.tools_to_replace = tools_to_replace
         self.consumables_to_replace = consumables_to_replace
+        self.Ed = kwargs.get("Ed", None)
         super().__init__(name=name, **kwargs)
 
+    @property
+    def Ed_star(self):
+        assert self.Ed is not None, f"{self.absname} doesn't have `Edamage` parameter defined"
+        return self.health.value * self.Ed
+
+    def impact_based_damage(self, impact_energy):
+        hv = self.health.value
+        hv_new = max(hv - impact_energy/self.Ed_star, 0.0)
+        return hv_new
 
 def make_component(name: str,
                    *,
@@ -138,7 +150,7 @@ def make_component(name: str,
                         )
     with component:
         health = make_health_mechanism(clock, health_damage_rate, health_state_func, nominal_health)
-        if aging_func and aging_rate:
+        if aging_func and aging_rate is not None:
             age = make_aging_mechanism(clock, aging_rate, aging_func, nominal_age)
         else:
             age = None
@@ -168,59 +180,3 @@ def make_maintainable_component(name: str,
                                             consumables_to_replace=consumables_to_replace,
                                             **kwargs)
     return maintainable_component
-
-
-def make_health_mechanism(clock, health_damage_rate, transition_func, nominal, name: str="health") -> HealthVars:
-    """Make a health transition mechanism""" 
-
-    assert isinstance(nominal, Number)
-    if health_damage_rate is None:
-        # This is a pure Variable, depending on type(nominal)
-        cls = ContinuousHealthVariable if isinstance(nominal, float) else BinaryHealthVariable
-        return cls(name=name, value=nominal, descriptipn="Health variable")
-    else:
-        return make_continuous_state_mechanism(clock, health_damage_rate, transition_func, nominal, name)
-    # need a constructor for `BinaryHealthState` with a transition_function
-
-
-make_aging_mechanism = partial(make_continuous_state_mechanism, name="age")
-
-
-def make_functionality(
-        *args,
-        name: str="functionality",
-        functionality_func: Callable=product,
-        nominal_functionality: Number=1.0,
-        **kwargs) -> Functionality:
-    """A constructor for a `Functionality` variable"""
-
-    functionality = Functionality(
-        name=name,
-        nominal_value=nominal_functionality,
-        description="Functionality of the component"
-    )
-
-    if args:
-        # Need to construct a functionality model
-        assert callable(functionality_func)
-        variables = []
-
-        for arg in args:
-            if isinstance(arg, System):
-                assert hasattr(arg, "functionality"), \
-                "[!] `System` instance does not have a functionality"
-                variables.append(arg.functionality)
-            elif isinstance(arg, Variable):
-                variables.append(arg)
-            else:
-                raise TypeError("I need Variables to create a functionality")
-
-
-        functionality_func = Function(
-            name=name + "_function",
-            parents=tuple(variables),
-            children=functionality,
-            func=functionality_func,
-            description="A function that describes the functionality of the system"
-    )
-    return functionality

@@ -1,14 +1,15 @@
-"""Common patterns to facilitate event description in the CDCM Language
+"""Events that can manipulate base abstractions
 
 Author:
     R Murali Krishnan
     
 Date:
-    10.02.2023
+    09.21.2023
     
 """
 
-from cdcm import Variable
+
+from cdcm import *
 from numbers import Number
 from functools import partial, wraps
 
@@ -23,7 +24,7 @@ def event(func):
         a Simulator agenda.
 
     Return:
-        \lambda() :   Callable
+        event -> () :   Callable
             An event which executes as per the Simulator's agenda
     """
     @wraps(func)

@@ -1,15 +1,16 @@
-#~ovn!
-"""Hierarchies of abstractions developed in the CDCM Language
+# ~ovn!
+"""Abstractions required for defining functionality models
 
 Author:
     R Murali Krishnan
     
 Date:
-    10.02.2023
+    09/24/2023
     
 """
 
-from .common import *
-from .events import *
-from .functionality import *
-# from .tests import *
+
+from ._variables import *
+from ._components import *
+from ._variable_patterns import *
+from ._events import *

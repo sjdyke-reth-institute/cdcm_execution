@@ -1,4 +1,4 @@
-"""Patterns describing common transformations to `Variable` nodes
+"""Standard behavior of Variable nodes
 
 Author:
     R Murali Krishnan
@@ -9,17 +9,14 @@ Date:
 """
 
 
-__all__ = ["transform", "scale", "product"]
-
-
-import operator as op
+from cdcm import *
 from numbers import Number
 from typing import Callable
+import operator as op
 from functools import partial, reduce
-from cdcm import Variable, Function, System
 
 
-def transform(variable: Variable, func: Callable, name: str=None) -> Variable:
+def apply(variable: Variable, func: Callable, name: str=None) -> Variable:
     """Return a new Variable which applies a generic function to a Variable node
     
     Arguments:
@@ -36,12 +33,13 @@ def transform(variable: Variable, func: Callable, name: str=None) -> Variable:
 
         transformed_variable_name = name if name is not None else variable.name + "_transformed"
         transformed_variable = Variable(name=transformed_variable_name, value=0.0)
+
         fn = Function(
-            name=f"transform_to_{transformed_variable_name}",
+            name=f"function_scale_{variable.name}",
             parents=(variable,),
             children=transformed_variable,
             func=func,
-            description=f"Function for transforming {variable.name} to {transformed_variable_name}"
+            description=f"Transformed variable {variable.name}"
         )
     return transformed_variable
 
@@ -64,8 +62,7 @@ def scale(variable: Variable, scaling_factor: Number, name: str=None):
     """
     scaling_func = lambda val, scale: val * scale
     new_name = name if name is not None else variable.name + "_scaled"
-    return transform(name=new_name, variable=variable, func=partial(scaling_func, scale=scaling_factor))
-
+    return apply(name=new_name, variable=variable, func=partial(scaling_func, scale=scaling_factor))
 
 
 def product(*args):
