@@ -24,7 +24,7 @@ with open('requirements.txt') as f:
 setup(
     name='cdcm',
     version='0.9.7',
-    description='Control-oriented Dynamic Computational Modeling Platform (CDCM)',
+    description='Control-oriented Dynamic Computational Modeling (CDCM) Framework',
     long_description=readme,
     author='Ilias Bilionis, R Murali Krishnan, Sreehari Manikkan',
     author_email='ibilion@purdue.edu, mrajase@purdue.edu, smanikka@purdue.edu',
