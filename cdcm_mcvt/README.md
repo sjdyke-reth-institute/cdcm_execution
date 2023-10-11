@@ -1,1 +1,1 @@
-# Digital-twin of MCVT in CxLang
+# Functionality models of MCVT NRH using `cdcm_abstractions`
