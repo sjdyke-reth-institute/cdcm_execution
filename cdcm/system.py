@@ -2,10 +2,12 @@
 
 Author:
     Ilias Bilionis
+    R Murali Krishnan
 
 Date:
     3/14/2022
     4/15/2022
+    11/1/2023
 
 """
 
@@ -27,7 +29,7 @@ from . import (
 )
 from typing import Any, Dict, Callable, Sequence, Tuple, List
 from functools import partial, partialmethod, cached_property
-from contextlib import AbstractContextManager
+from contextlib import AbstractContextManager, nullcontext
 import networkx as nx
 
 
@@ -88,8 +90,9 @@ class System(Node, AbstractContextManager):
 
         self.add_nodes(nodes)
 
-        with self:
-            self.define_internal_nodes(**kwargs)
+        with self if kwargs.get("add_internal_nodes", True) else nullcontext() as ctx:
+            if ctx is not None:
+                ctx.define_internal_nodes(**kwargs)
 
     def __enter__(self) -> "System":
         """Enter the context of the system to begin variable definitions."""
