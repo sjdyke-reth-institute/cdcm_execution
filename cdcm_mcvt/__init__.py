@@ -1,14 +1,10 @@
-#ovn!
-"""Digital-twin of MCVT-NRH in CDCM
+#~ovn!
+"""Functionality models of the components in MCVT NRH
 
 Author:
     R Murali Krishnan
     
 Date:
-    03.30.2023
+    10.11.2023
     
 """
-
-from .abstractions import *
-from .components import *
-from .systems import *

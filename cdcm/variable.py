@@ -1,12 +1,12 @@
-"""Defines a Quantify class.
+"""A class representing a Variable node
 
 Author:
     Ilias Bilionis
-    Roman Ibrahimov
+    R Murali Krishnan
 
 Date:
     3/10/2022
-	4/7/2022
+	11/07/2022
 """
 
 
