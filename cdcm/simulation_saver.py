@@ -19,6 +19,7 @@ __all__ = ["SimulationSaver"]
 import h5py
 import os
 import numpy as np
+import jax
 import jaxlib
 from typing import Union
 from . import System, Node, State, Parameter, Variable
@@ -92,25 +93,30 @@ class SimulationSaver(object):
             if (not isinstance(node, Variable)) or (not node.track):
                 return
             node_type = type(node.value)
-            if node_type == int:
-                dtype = "i"
-                shape = ()
-            elif node_type == float:
-                dtype = "f"
-                shape = ()
-            elif node_type == np.ndarray:
-                dtype = node.value.dtype
-                shape = node.value.shape
-            elif isinstance(node.value, (np.integer, np.inexact)):
-                dtype = node.value.dtype
-                shape = node.value.shape
-            elif node_type == jaxlib.xla_extension.DeviceArray:
-                dtype = node.value.dtype
-                shape = node.value.shape
-            else:
-                raise ValueError(f"Node {node.name} has an uninitialized value."
-                    + " Please specify a value so that I can figure out"
-                    + " the type of the variable I need to store.")
+            try:
+                if node_type == int:
+                    dtype = "i"
+                    shape = ()
+                elif node_type == float:
+                    dtype = "f"
+                    shape = ()
+                elif node_type == np.ndarray:
+                    dtype = node.value.dtype
+                    shape = node.value.shape
+                elif isinstance(node.value, (np.integer, np.inexact)):
+                    dtype = node.value.dtype
+                    shape = node.value.shape
+                elif isinstance(node.value, jax.numpy.ndarray) or \
+                    isinstance(node.value, jaxlib.xla_extension.ArrayImpl):
+                    dtype = node.value.dtype
+                    shape = node.value.shape
+                else:
+                    raise ValueError(f"Node {node.name} has an uninitialized value."
+                            + " Please specify a value so that I can figure out"
+                            + " the type of the variable I need to store.")
+            except (ValueError, AttributeError) as error:
+                raise ValueError(f"Node {node.name} has an unsupported type {node_type}")
+
             maxshape = (self.max_steps,) + shape
             # Create the dataset
             dst = group.create_dataset(
