@@ -12,3 +12,4 @@ Date:
 
 from ._pyvis import *
 from .derivatives import *
+from .cdcm_jax import *

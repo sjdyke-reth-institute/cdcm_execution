@@ -10,15 +10,21 @@ Date:
 """
 
 import networkx as nx
+import jax
 from jax import jit, lax
 import jax.numpy as jnp
 import diffrax as dfx
-from typing import Set, List
+from typing import Set, List, Dict
 
 from cdcm import *
 
 __all__ = ["get_sys_nodes_for_diffrax",
            "get_sys_dag_for_diffrax",
+           "get_params_vars_input_states_set",
+           "get_ordered_fn_list",
+           "get_fn_args_res_info",
+           "interpolate_Texts",
+           "get_vector_field",
 
            ]
 
@@ -297,15 +303,49 @@ def interpolate_Texts(
     return dfx.LinearInterpolation(ts=t_data,ys=input_data)
 
 
-def get_dynamical_sys(
-        cdcm_sys,
-        t_data,
-        input_dict,
-        dt, 
-        states=None
+def get_vector_field(
+        cdcm_sys: System,
+        t_data: jax.Array,
+        input_dict: Dict,
+        dt: float,
+        states=None,
     ):
-    # state set may have more states than those in arg: states
-    # in a different order
+    """
+    This function constructes the vector_field (python function return
+    ing temporal derivatives of states) corresponding to an
+    arbitrary `cdcm_sys`.
+
+    Arguments:
+        cdcm_sys: CDCM System object of which vector field is required
+        t_data: time instants at which input signals are available
+        input_dict: Dictionary containing Input signals.it is of the form:
+            {
+                cdcm_data_node.name : data as array
+                ....
+            }
+        dt: time step value for diffrax system
+        states: (optional) A list of State nodes of `cdcm_sys` representing
+            subgraph of the `cdcm_sys`. vector_field corresponding to this 
+            function will be created. By default all state of `cdcm_sys` is
+            considered.
+    
+    Return:
+        vector_field: Callable Python function which returns temporal
+            derivatives for diffrax.
+        param_set: Set of Parameter nodes of the vector field
+        vars_set: Set of Variable nodes with Forward functions of
+            the vector field
+        states_set: Set of State nodes with Transition functions
+            of the vector field
+        ordered_fn_list: A List consisting of the Forward and 
+            Transition python functions sorted in topological order.
+
+    Note
+    state set may have more states than those in arg: states
+    in a different order
+
+    """
+    
 
     #{"cdcm_data_node_name":interpolate_Texts(t_input,input_attr}
     input_signal = {}
@@ -327,7 +367,7 @@ def get_dynamical_sys(
     ) = get_params_vars_input_states_set(cdcm_sys,states)
     data_node = [i for i in params_set if i.name == "data_node"][0]
     params_set.remove(data_node)
-    ordered_fn_list = get_evaluation_order(cdcm_sys,vars_set,states_set)
+    ordered_fn_list = get_ordered_fn_list(cdcm_sys,vars_set,states_set)
     (dict_of_fn_args_info_dict,
      dict_of_fn_res_info_dict) = get_fn_args_res_info(
                                     params_set,
@@ -338,7 +378,7 @@ def get_dynamical_sys(
                                 )
 
     @jit 
-    def dynamical_system(t,states,args):
+    def vector_field(t,states,args):
         """
         states are as per states_set not the states
         given to get_dynamical_syst()
@@ -389,6 +429,6 @@ def get_dynamical_sys(
         time_derivs = lax.scan(get_time_derivs_lax,None,xs=jnp.arange(len(states)))[1]
         return time_derivs
                     
-    return dynamical_system, params_set, vars_set, states_set, ordered_fn_list
+    return vector_field, params_set, vars_set, states_set, ordered_fn_list
 
 
