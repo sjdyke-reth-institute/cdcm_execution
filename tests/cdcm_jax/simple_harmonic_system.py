@@ -17,10 +17,12 @@ class DampedHarmonicOscillator(System):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
 
-    def define_internal_nodes(self, dt, zeta_val, **kwargs):
+    def define_internal_nodes(self, dt, **kwargs):
+
+        input_sys = make_data_system(**kwargs["input_dict"])
                        
         zeta = Parameter(
-            value=zeta_val,
+            value=kwargs["zeta_val"],
             name='zeta',
             units=None,
         )
