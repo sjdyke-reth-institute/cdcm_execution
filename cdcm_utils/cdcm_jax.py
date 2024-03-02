@@ -146,8 +146,14 @@ def get_params_vars_input_states_set(
                 vars = [i for i in all_vars if i.parents[0].name not in ["read"]]
                 vars_set.update(vars)
                 input_set.update(input_vars)
-                states = [i for i in path if type(i) is State]
-                states_set.update(states)
+                states_set.update([i for i in path if type(i) is State])
+    
+    data_node = [i for i in params_set if i.name == "data_node"][0]
+    params_set.remove(data_node)
+    row_node = [i for i in states_set if i.name == "row"]
+    t_node = [i for i in states_set if i.name == "t"]
+    if row_node: states_set.remove(row_node[0])
+    if t_node: states_set.remove(t_node[0])
     return params_set, vars_set, input_set, states_set
 
 
