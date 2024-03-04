@@ -359,11 +359,7 @@ def get_vector_field(
     for input, data in input_dict.items():
         input_signal[input]= interpolate_Texts(t_data,data)
     if states is None:
-        states = cdcm_sys.states
-        row_state, t_state = [i for i in states if i.name in ["row", "t"]]
-        states.remove(row_state)
-        states.remove(t_state)
-    print('names of the states',[i.name for i in states])
+        states = cdcm_sys.states.copy()
     
     (
         params_set, 
@@ -371,8 +367,6 @@ def get_vector_field(
          input_set,
          states_set,
     ) = get_params_vars_input_states_set(cdcm_sys,states)
-    data_node = [i for i in params_set if i.name == "data_node"][0]
-    params_set.remove(data_node)
     ordered_fn_list = get_ordered_fn_list(cdcm_sys,vars_set,states_set)
     (dict_of_fn_args_info_dict,
      dict_of_fn_res_info_dict) = get_fn_args_res_info(
@@ -393,10 +387,10 @@ def get_vector_field(
         param_input_var_state_value_dict = {
             "params":[*args],
             "input":[
-            input_signal[i.name].evaluate(t)
-            for i in input_set],
+                input_signal[i.name].evaluate(t)
+                for i in input_set],
             "vars":[None]*len(vars_set),
-            "states":jnp.array(states), #[*states], #given
+            "states":jnp.array(states),
             "next_state":[None]*len(states_set)
         }
         for fn in ordered_fn_list:
@@ -408,21 +402,14 @@ def get_vector_field(
                 fn_arg = param_input_var_state_value_dict\
                 [parent_type][local_idx]
                 fn_args.append(fn_arg)
-            fn_res = fn.func(*fn_args)
+            fn_res = jnp.array([fn.func(*fn_args)])
             fn_res_info = dict_of_fn_res_info_dict[fn.name]
             
-            if len(fn_res_info.items())==1:
-                v=fn_res_info[0]
+            for k,v in fn_res_info.items():
                 child_type = v["child_type"]
                 local_idx = v["local_idx"]
                 param_input_var_state_value_dict\
-                [child_type][local_idx] = fn_res
-            else:
-                for k,v in fn_res_info.items():
-                    child_type = v["child_type"]
-                    local_idx = v["local_idx"]
-                    param_input_var_state_value_dict\
-                    [child_type][local_idx] = fn_res[k]
+                [child_type][local_idx] = fn_res[k]
 
         next_states = jnp.array(param_input_var_state_value_dict['next_state'])
         
@@ -432,7 +419,8 @@ def get_vector_field(
             time_deriv = (new_state-state)/dt
             return carry,time_deriv
 
-        time_derivs = lax.scan(get_time_derivs_lax,None,xs=jnp.arange(len(states)))[1]
+        time_derivs = lax.scan(
+            get_time_derivs_lax,None,xs=jnp.arange(len(states)))[1]
         return time_derivs
                     
     return vector_field, params_set, vars_set, states_set, ordered_fn_list
