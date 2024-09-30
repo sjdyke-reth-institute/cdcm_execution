@@ -9,8 +9,7 @@ Date:
 import numpy as np
 import pandas as pd
 from duffing_oscillator import make_duff_osc_sys
-from cdcm_utils.cdcm_jax import get_sys_nodes_for_diffrax
-from cdcm_utils.cdcm_jax import  get_sys_dag_for_diffrax
+from cdcm_utils.cdcm_jax import set_sys_nodes_for_diffrax
 from cdcm_utils.cdcm_jax import get_params_vars_input_states_set
 from cdcm import *
 
@@ -33,13 +32,9 @@ duff_osc_sys = make_duff_osc_sys(
     **kwargs,
 )
 
-duff_osc_sys.sys_nodes_for_diffrax = set()
-duff_osc_sys.sys_nodes_for_diffrax = get_sys_nodes_for_diffrax(
-    duff_osc_sys, duff_osc_sys.sys_nodes_for_diffrax
-)
-get_sys_dag_for_diffrax(duff_osc_sys)
+set_sys_nodes_for_diffrax(duff_osc_sys)
 param_set, vars_set, input_set, states_set = get_params_vars_input_states_set(
-     cdcm_sys=duff_osc_sys,states=duff_osc_sys.states,
+     cdcm_sys=duff_osc_sys,
 )
 print("#####################################")
 print("param_set obtained",[i.name for i in param_set])
@@ -48,7 +43,5 @@ print("states_set obtained",[i.name for i in states_set])
 print("cdcm_sys States",[i.name for i in duff_osc_sys.states])
 print("vars_set obtained",[i.name for i in vars_set])
 print("cdcm_sys Variables",[i.name for i in duff_osc_sys.nodes if type(i) is Variable])
-print("""Variable y1 and y2 are children of the states
-      and they do not come in the subgraph""")
 print("input_set obtained",[i.name for i in input_set])
 print("#####################################")

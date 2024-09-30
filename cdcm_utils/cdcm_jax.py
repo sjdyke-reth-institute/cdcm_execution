@@ -6,7 +6,7 @@ Author:
     Sreehari Manikkan
 
 Date:
-    02/25/2024
+    09/24/2024
 """
 
 import networkx as nx
@@ -15,18 +15,33 @@ from jax import jit, lax
 import jax.numpy as jnp
 import diffrax as dfx
 from typing import Set, List, Dict
+import copy
 
 from cdcm import *
 
-__all__ = ["get_sys_nodes_for_diffrax",
-           "get_sys_dag_for_diffrax",
+__all__ = ["set_sys_nodes_for_diffrax",
+           "get_sys_nodes_for_diffrax",
            "get_params_vars_input_states_set",
            "get_ordered_fn_list",
            "get_fn_args_res_info",
            "interpolate_Texts",
            "get_vector_field",
-
+           "get_names",
            ]
+
+get_names = lambda x: [i.name for i in x]
+
+
+def is_var_with_empty_parents(node):
+    is_var = type(node) is Variable
+    is_par = len(node.parents) == 0
+    return is_var and is_par
+
+
+def is_var_with_non_empty_parents(node):
+    is_var = type(node) is Variable
+    is_not_par = len(node.parents) != 0
+    return is_var and is_not_par
 
 
 def get_sys_nodes_for_diffrax(
@@ -61,100 +76,97 @@ def get_sys_nodes_for_diffrax(
     return  sys_nodes_for_diffrax
 
 
-def get_sys_dag_for_diffrax(sys: System):
-    """
-    A python function which creates an attribute `sys_dag_for_diffrax` for 
-    a given CDCM System object. This DAG doesnot contain string nodes
-    representing next time step State node. This is the difference between
-    this DAG and `sys.dag`.
-    Part of code is adapted from
-    cdcm_execution repo System class
-    defnition.
+def is_input_var(n):
+    if len(n.parents) == 0:
+        return False
+    is_var = type(node) is Variable
+    is_input = n.parents[0].name in ["read"]
+    return is_var and is_input
 
-    Arguments:
-        sys: A CDCM System object
+
+def is_type(n,typ):
+    return type(n) is typ
+
+
+def set_sys_nodes_for_diffrax(cdcm_sys: System):
+    """
+    sets an attribute `sys_nodes_for_diffrax` to the 
+    cdcm_sys passed by calling get_sys_nodes_for_diffrax()
+    function
     
-    Return:
-        None
     """
-
-    sys.sys_dag_for_diffrax = nx.DiGraph()
-    g = sys.sys_dag_for_diffrax
-    for n in sys.sys_nodes_for_diffrax:
-        g.add_node(n)
-        if isinstance(n, State):
-            for c in n.children:
-                if n in c.children:
-                    continue
-                g.add_edge(n, c)
-        else:
-            for c in n.children:
-                g.add_edge(n, c)
-
-
-def get_params_vars_input_states_set(
-        cdcm_sys: System,
-        states: List,
-    ):
-    """This function fetches the information of the subgraph represented
-    by 'states' from the CDCM System DAG. The function gets the set of
-    Parameter, Variable with Forward functions, Varibale part of
-    DataSystem and State (states passed and additional states required if any).
-    These sets represent the subgraph of
-    CDCM System corresponding to the `states` passed.
-    Subgraph is fetched by collecting all the simple paths from all parameters
-    to the 'states' of CDCM System.
-
-    Note: The `states_set` may contain additional states which are part
-    of the subgraph.
-
-    Arguments:
-        cdcm_sys: CDCM System Object
-        states: List of State nodes of cdcm_sys
-    
-    Return:
-        param_set: Set of Parameter nodes
-        vars_set: Set of Variable nodes with Forward functions
-        input_set: Set of Varibale nodes part of DataSystem
-        states_set: Set of State nodes
-    """
-    params_set = set()
-    vars_set = set()
-    input_set = set()
-    states_set = set()
-
     if not hasattr(cdcm_sys, 'sys_nodes_for_diffrax'):
         cdcm_sys.sys_nodes_for_diffrax = set()
     cdcm_sys.sys_nodes_for_diffrax =  get_sys_nodes_for_diffrax(
         cdcm_sys, cdcm_sys.sys_nodes_for_diffrax
     )
-    get_sys_dag_for_diffrax(cdcm_sys)
 
-    for s in states:
-        for p in cdcm_sys.parameters:
-            simple_paths = [i for i in
-                   nx.all_simple_paths(
-                    cdcm_sys.sys_dag_for_diffrax,
-                    p,
-                    s,
-                    )]
-            if len(simple_paths)>0:
-                params_set.add(p)
-            for path in simple_paths:
-                all_vars = [i for i in path if type(i) is Variable]
-                input_vars = [i for i in all_vars if i.parents[0].name in ["read"]]
-                vars = [i for i in all_vars if i.parents[0].name not in ["read"]]
-                vars_set.update(vars)
-                input_set.update(input_vars)
-                states_set.update([i for i in path if type(i) is State])
+
+def get_params_vars_input_states_set(
+        cdcm_sys: System,
+        states_to_remove: List = ["row","t"],
+        params_to_remove: List = ["data_node",],
+        vars_to_remove: List = ["read"],
+    ):
+    """This The function gets the set of
+    Parameter, Variable with Forward functions, Varibale part of
+    DataSystem and all State of cdcm_sys.
+    These sets represent the graph of
+    CDCM System.
+
+    Arguments:
+        cdcm_sys: CDCM System Object
+        states_to_remove: 
+            List of absnames of state nodes to be excluded in states_set
+        params_to_remove: 
+            List of absnames of parameter nodes to be excluded in params_set
+        vars_to_remove: 
+            List of absnames of variable nodes to be excluded in vars_set or input_set
     
-    data_node = [i for i in params_set if i.name == "data_node"][0]
-    params_set.remove(data_node)
-    row_node = [i for i in states_set if i.name == "row"]
-    t_node = [i for i in states_set if i.name == "t"]
-    if row_node: states_set.remove(row_node[0])
-    if t_node: states_set.remove(t_node[0])
+    Return:
+        param_set: 
+            Set of Parameter nodes and Variable nodes with no parent (Forward function)
+        vars_set: Set of Variable nodes with Forward functions
+        input_set: Set of Varibale nodes part of DataSystem
+        states_set: Set of all State nodes
+    """
+    set_sys_nodes_for_diffrax(cdcm_sys)
+    cdcm_sys.sys_starting_nodes = set()
+    for n in cdcm_sys.sys_nodes_for_diffrax:
+        if is_var_with_empty_parents(n) or is_input_var(n) or is_type(n,Parameter):
+            cdcm_sys.sys_starting_nodes.add(n)
+
+    params_set = set()
+    vars_set = set()
+    input_set = set()
+    states_set = set()
+
+    all_vars = [
+        i for i in cdcm_sys.sys_nodes_for_diffrax 
+        if is_type(i,Variable) and i not in cdcm_sys.sys_starting_nodes
+        ]
+    input_vars = [i for i in all_vars if i.parents[0].name in ["read"]]
+    vars = [i for i in all_vars if i not in input_vars]
+    
+    params_set.update(cdcm_sys.sys_starting_nodes)
+    states_set.update(
+        [i for i in cdcm_sys.sys_nodes_for_diffrax if is_type(i,State)])
+    vars_set.update(vars)
+    input_set.update(input_vars)
+
+    for p in params_to_remove:
+        for p_node in list(params_set):
+            if p_node.name == p: params_set.remove(p_node)
+    for v in vars_to_remove:
+        for v_node in list(vars_set):
+            if v_node.name == v: vars_set.remove(v_node)
+        for v_node in list(input_set):
+            if v_node.name == v: input_set.remove(v_node)
+    for s in states_to_remove:
+        for s_node in list(states_set):
+            if s_node.name == s: states_set.remove(s_node)
     return params_set, vars_set, input_set, states_set
+
 
 
 def get_ordered_fn_list(
@@ -176,6 +188,7 @@ def get_ordered_fn_list(
         ordered_fn_list: A List consisting of the Forward and 
             Transition python functions sorted in topological order.
     """
+
     eval_order = cdcm_sys.evaluation_order
     ordered_fn_list = [
         i.parents[0] for i in list(vars_set)+list(states_set)
@@ -192,10 +205,11 @@ def get_ordered_fn_list(
 
 
 def get_fn_args_res_info(
-    params_set: Set,
-    input_set: Set,
-    vars_set: Set,
-    states_set: Set,
+    params_set:set, 
+    vars_set:set,
+    input_set:set,
+    states_set:set,
+    param_input_var_state_set_dict: Dict,
     ordered_fn_list: List,
 ):
     """
@@ -207,13 +221,20 @@ def get_fn_args_res_info(
         input_set: Set of Varibale nodes part of DataSystem
         vars_set: Set of Variable nodes with Forward functions
         states_set: Set of State nodes with Transition functions.
+        param_input_var_state_set_dict: Dict with content as follow
+            param_input_var_state_set_dict = {
+                "params":list(params_set),
+                "input":list(input_set),
+                "vars":list(vars_set), 
+                "states":list(states_set),
+            }
         ordered_fn_list: A List consisting of the Forward and 
             Transition python functions sorted in topological order.
     Return:
         dict_of_fn_args_info_dict: 
             A Python dictionary consisting of 
             seperate python dictionary for each function in `ordered_fn_list`.
-            key of this dictionary is the name of the function in the
+            key of this dictionary is the absname of the function in the
             ordered list and 
             value is a seperate python dictionary of the function.
             The syntax of the i^th separate dictionary corresponding to 
@@ -235,7 +256,7 @@ def get_fn_args_res_info(
         dict_of_fn_res_info_dict:
             A Python dictionary consisting of 
             seperate python dictionary for each function in `ordered_fn_list`.
-            key of this dictionary is the name of the function in the
+            key of this dictionary is the absname of the function in the
             ordered list and 
             value is a seperate python dictionary of the function.
             The syntax of the separate i^th dictionary corresponding to 
@@ -253,13 +274,6 @@ def get_fn_args_res_info(
             (depending on "parent_type") where the child of the function
             is located.
     """
-    
-    param_input_var_state_set_dict = {
-        "params":list(params_set),
-        "input":list(input_set),
-        "vars":list(vars_set), 
-        "states":list(states_set),
-    }
 
     dict_of_fn_args_info_dict = {}
     dict_of_fn_res_info_dict = {}
@@ -268,6 +282,7 @@ def get_fn_args_res_info(
         fn_res_info_dict = {}
         
         for idx, parent in enumerate(fn.parents):
+            parent_type = None
             if parent in params_set:
                 parent_type = "params" 
             elif parent in input_set:
@@ -276,22 +291,27 @@ def get_fn_args_res_info(
                 parent_type = "vars"
             elif parent in states_set:
                 parent_type = "states"
+            if parent_type is None:
+                raise Exception("cannot determine the parent type of",parent.absname)
             local_idx = param_input_var_state_set_dict[parent_type].index(parent)
             fn_args_info_dict[idx] = {
                 "parent_type":parent_type,"local_idx":local_idx}
         
         for idx, child in enumerate(fn.children):
+            child_type = None
             if child in vars_set:
                 child_type = "vars"
                 local_idx = param_input_var_state_set_dict[child_type].index(child)
             elif child in states_set:
                 child_type = "next_state"
                 local_idx = param_input_var_state_set_dict["states"].index(child)
+            elif child_type is None:
+                raise Exception("cannot determine the child type of",child.absname)
             fn_res_info_dict[idx] = {
                 "child_type":child_type,"local_idx":local_idx}
             
-        dict_of_fn_args_info_dict[fn.name] = fn_args_info_dict
-        dict_of_fn_res_info_dict[fn.name] = fn_res_info_dict
+        dict_of_fn_args_info_dict[fn.absname] = fn_args_info_dict
+        dict_of_fn_res_info_dict[fn.absname] = fn_res_info_dict
 
     return dict_of_fn_args_info_dict, dict_of_fn_res_info_dict
 
@@ -311,13 +331,15 @@ def interpolate_Texts(
 
 def get_vector_field(
         cdcm_sys: System,
-        t_data: jax.Array,
-        input_dict: Dict,
-        dt: float,
-        states=None,
+        t_data: jax.Array = None,
+        input_dict: Dict = None,
+        dt: float = None,
+        states_to_remove: List = ["row","t"],
+        params_to_remove: List = ["data_node"],
+        vars_to_remove: List = ["read"],
     ):
     """
-    This function constructes the vector_field (python function return
+    This function constructes the vector_field of all states (python function return
     ing temporal derivatives of states) corresponding to an
     arbitrary `cdcm_sys`.
 
@@ -329,11 +351,15 @@ def get_vector_field(
                 cdcm_data_node.name : data as array
                 ....
             }
-        dt: time step value for diffrax system
-        states: (optional) A list of State nodes of `cdcm_sys` representing
-            subgraph of the `cdcm_sys`. vector_field corresponding to this 
-            function will be created. By default all state of `cdcm_sys` is
-            considered.
+        dt: time step value of the cdcm_sys clock. Note THIS IS NOT THE
+            TIME STEP VALUE TO BE USED FOR DIFFERENTIABLE SOLVER.
+        states_to_remove: 
+            List of absnames of state nodes to be excluded in states_set.
+        params_to_remove: 
+            List of absnames of parameter nodes to be excluded in params_set.
+        vars_to_remove: 
+            List of absnames of variable nodes to be excluded in vars_set or 
+            input_set.
     
     Return:
         vector_field: Callable Python function which returns temporal
@@ -346,42 +372,49 @@ def get_vector_field(
         ordered_fn_list: A List consisting of the Forward and 
             Transition python functions sorted in topological order.
 
-    Note
-    state set may have more states than those in arg: states
-    in a different order
-
     """
     
-
-    #{"cdcm_data_node_name":interpolate_Texts(t_input,input_attr}
     input_signal = {}
 
-    for input, data in input_dict.items():
-        input_signal[input]= interpolate_Texts(t_data,data)
-    if states is None:
-        states = cdcm_sys.states.copy()
+    if input_dict is not None:
+        for input, data in input_dict.items():
+            input_signal[input]= interpolate_Texts(t_data,data)
     
     (
         params_set, 
          vars_set,
          input_set,
          states_set,
-    ) = get_params_vars_input_states_set(cdcm_sys,states)
+    ) = get_params_vars_input_states_set(
+        cdcm_sys,
+        states_to_remove=states_to_remove,
+        params_to_remove=params_to_remove,
+        vars_to_remove=vars_to_remove,
+        )
+
     ordered_fn_list = get_ordered_fn_list(cdcm_sys,vars_set,states_set)
+    param_input_var_state_set_dict = {
+        "params":list(params_set),
+        "input":list(input_set),
+        "vars":list(vars_set), 
+        "states":list(states_set),
+    }
     (dict_of_fn_args_info_dict,
      dict_of_fn_res_info_dict) = get_fn_args_res_info(
-                                    params_set,
-                                    input_set,
+                                    params_set, 
                                     vars_set,
+                                    input_set,
                                     states_set,
+                                    param_input_var_state_set_dict,
                                     ordered_fn_list,
                                 )
 
     @jit 
     def vector_field(t,states,args):
         """
-        states are as per states_set not the states
-        given to get_dynamical_syst()
+        states are as per states_set
+        given to get_dynamical_syst(). This function returns temporal
+        derivatives of the states present in the states_set.
         """
         
         param_input_var_state_value_dict = {
@@ -390,11 +423,11 @@ def get_vector_field(
                 input_signal[i.name].evaluate(t)
                 for i in input_set],
             "vars":[None]*len(vars_set),
-            "states":jnp.array(states),
+            "states":states,
             "next_state":[None]*len(states_set)
         }
         for fn in ordered_fn_list:
-            fn_args_info = dict_of_fn_args_info_dict[fn.name]
+            fn_args_info = dict_of_fn_args_info_dict[fn.absname]
             fn_args = []
             for _,v in fn_args_info.items():
                 parent_type = v["parent_type"]
@@ -402,8 +435,8 @@ def get_vector_field(
                 fn_arg = param_input_var_state_value_dict\
                 [parent_type][local_idx]
                 fn_args.append(fn_arg)
-            fn_res = jnp.array([fn.func(*fn_args)])
-            fn_res_info = dict_of_fn_res_info_dict[fn.name]
+            fn_res = jnp.array([fn.func(*fn_args)]).reshape(-1,)
+            fn_res_info = dict_of_fn_res_info_dict[fn.absname]
             
             for k,v in fn_res_info.items():
                 child_type = v["child_type"]

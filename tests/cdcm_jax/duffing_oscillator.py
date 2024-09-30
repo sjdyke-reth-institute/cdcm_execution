@@ -89,7 +89,7 @@ class DuffingOscillator(System):
         )
 
         @make_function(y1,y2)
-        def calc_y1_y2(x1,x2,n1,n2):
+        def calc_y1_y2(x1=x1,x2=x2,n1=n1,n2=n2):
             return x1 + n1*np.random.randn(), x2 + n2*np.random.randn()
         
         

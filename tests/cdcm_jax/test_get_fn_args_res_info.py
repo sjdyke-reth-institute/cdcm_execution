@@ -9,8 +9,7 @@ Date:
 import numpy as np
 import pandas as pd
 from duffing_oscillator import make_duff_osc_sys
-from cdcm_utils.cdcm_jax import get_sys_nodes_for_diffrax
-from cdcm_utils.cdcm_jax import  get_sys_dag_for_diffrax
+from cdcm_utils.cdcm_jax import set_sys_nodes_for_diffrax
 from cdcm_utils.cdcm_jax import get_params_vars_input_states_set
 from cdcm_utils.cdcm_jax import get_ordered_fn_list
 from cdcm_utils.cdcm_jax import get_fn_args_res_info
@@ -36,21 +35,23 @@ duff_osc_sys = make_duff_osc_sys(
     **kwargs,
 )
 
-duff_osc_sys.sys_nodes_for_diffrax = set()
-duff_osc_sys.sys_nodes_for_diffrax = get_sys_nodes_for_diffrax(
-    duff_osc_sys, duff_osc_sys.sys_nodes_for_diffrax
-)
-get_sys_dag_for_diffrax(duff_osc_sys)
+set_sys_nodes_for_diffrax(duff_osc_sys)
 params_set, vars_set, input_set, states_set = get_params_vars_input_states_set(
-     cdcm_sys=duff_osc_sys,states=duff_osc_sys.states,
+     cdcm_sys=duff_osc_sys,
 )
 ordered_fn_list = get_ordered_fn_list(duff_osc_sys,vars_set,states_set)
-
+param_input_var_state_set_dict = {
+        "params":list(params_set),
+        "input":list(input_set),
+        "vars":list(vars_set), 
+        "states":list(states_set),
+    }
 (dict_of_fn_args_info_dict, dict_of_fn_res_info_dict) = get_fn_args_res_info(
                                     params_set,
-                                    input_set,
                                     vars_set,
+                                    input_set,
                                     states_set,
+                                    param_input_var_state_set_dict,
                                     ordered_fn_list,
                                 )
 print("#####################################")
