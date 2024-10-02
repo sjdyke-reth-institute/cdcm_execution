@@ -331,10 +331,9 @@ def interpolate_Texts(
 
 def get_vector_field(
         cdcm_sys: System,
-        t_data: jax.Array = None,
         input_dict: Dict = None,
         dt: float = None,
-        states_to_remove: List = ["row","t"],
+        states_to_remove: List = ["row"],
         params_to_remove: List = ["data_node"],
         vars_to_remove: List = ["read"],
     ):
@@ -378,7 +377,10 @@ def get_vector_field(
 
     if input_dict is not None:
         for input, data in input_dict.items():
-            input_signal[input]= interpolate_Texts(t_data,data)
+            input_signal[input]= interpolate_Texts(
+                data["t_data"],
+                data["data"],
+                )
     
     (
         params_set, 
@@ -420,7 +422,7 @@ def get_vector_field(
         param_input_var_state_value_dict = {
             "params":[*args],
             "input":[
-                input_signal[i.name].evaluate(t)
+                input_signal[i.absname].evaluate(t)
                 for i in input_set],
             "vars":[None]*len(vars_set),
             "states":states,
