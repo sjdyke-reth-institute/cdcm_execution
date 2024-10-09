@@ -428,7 +428,6 @@ class CDCMtoJAXVF():
                                         self.ordered_fn_list,
                                     )
         
-        self.saved_vars = []
 
         # @jit 
         def vector_field(t,states,args):
@@ -438,34 +437,6 @@ class CDCMtoJAXVF():
             derivatives of the states present in the states_set.
             """
             
-            '''param_input_var_state_value_dict = {
-                "params":[*args],
-                "input":[
-                    input_signal[i.absname].evaluate(t)
-                    for i in input_set],
-                "vars":[None]*len(vars_set),
-                "states":states,
-                "next_state":[None]*len(states_set)
-            }
-            for fn in ordered_fn_list:
-                fn_args_info = dict_of_fn_args_info_dict[fn.absname]
-                fn_args = []
-                for _,v in fn_args_info.items():
-                    parent_type = v["parent_type"]
-                    local_idx = v["local_idx"]
-                    fn_arg = param_input_var_state_value_dict\
-                    [parent_type][local_idx]
-                    fn_args.append(fn_arg)
-                fn_res = jnp.array([fn.func(*fn_args)]).reshape(-1,)
-                fn_res_info = dict_of_fn_res_info_dict[fn.absname]
-                
-                for k,v in fn_res_info.items():
-                    child_type = v["child_type"]
-                    local_idx = v["local_idx"]
-                    param_input_var_state_value_dict\
-                    [child_type][local_idx] = fn_res[k]
-
-            self.saved_vars.append(param_input_var_state_value_dict["vars"])'''
             self.get_param_input_var_state_value_dict(t,states,args)
             next_states = jnp.array(
                 self.param_input_var_state_value_dict['next_state']
