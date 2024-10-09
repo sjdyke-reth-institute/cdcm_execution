@@ -335,6 +335,15 @@ class CDCMtoJAXVF():
         https://docs.kidger.site/diffrax/api/interpolation/
         """
         return dfx.LinearInterpolation(ts=t_data,ys=input_data)
+    
+    def set_input_signal(self):
+        if self.input_dict is not None:
+            for input, data in self.input_dict.items():
+                self.input_signal[input]= self.interpolate_Texts(
+                    data["t_data"],
+                    data["data"],
+                    )
+
 
 
     def get_vector_field(
@@ -383,13 +392,8 @@ class CDCMtoJAXVF():
         """
         
         self.input_signal = {}
-
-        if input_dict is not None:
-            for input, data in input_dict.items():
-                self.input_signal[input]= self.interpolate_Texts(
-                    data["t_data"],
-                    data["data"],
-                    )
+        self.input_dict = input_dict
+        self.set_input_signal()
         
         (
             self.params_set, 
