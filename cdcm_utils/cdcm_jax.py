@@ -25,10 +25,50 @@ __all__ = ["make_cdcm_to_jaxvf"
 
 class CDCMtoJAXVF():
 
-    def __init__(self) -> None:
+    def __init__(
+            self,
+            cdcm_sys:System,
+            cdcm_sys_dt:float,
+            states_to_remove: List,
+            params_to_remove: List,
+            vars_to_remove: List,
+
+        ) -> None:
         self.get_names = lambda x: [i.name for i in x]
         self.get_absnames = lambda x:[i.absname for i in x]
-
+        self.cdcm_sys_dt = cdcm_sys_dt
+        if cdcm_sys:
+            (
+                self.params_set, 
+                self.vars_set,
+                self.input_set,
+                self.states_set,
+            ) = self.get_params_vars_input_states_set(
+                cdcm_sys,
+                states_to_remove=states_to_remove,
+                params_to_remove=params_to_remove,
+                vars_to_remove=vars_to_remove,
+                )
+            self.ordered_fn_list = self.get_ordered_fn_list(
+            cdcm_sys,
+            self.vars_set,
+            self.states_set
+            )
+            self.param_input_var_state_set_dict = {
+                "params":list(self.params_set),
+                "input":list(self.input_set),
+                "vars":list(self.vars_set), 
+                "states":list(self.states_set),
+            }
+            (self.dict_of_fn_args_info_dict,
+            self.dict_of_fn_res_info_dict) = self.get_fn_args_res_info(
+                                            self.params_set, 
+                                            self.vars_set,
+                                            self.input_set,
+                                            self.states_set,
+                                            self.param_input_var_state_set_dict,
+                                            self.ordered_fn_list,
+                                        )
 
     def is_var_with_empty_parents(self,node):
         is_var = type(node) is Variable
@@ -171,7 +211,6 @@ class CDCMtoJAXVF():
             for s_node in list(states_set):
                 if s_node.name == s: states_set.remove(s_node)
         return params_set, vars_set, input_set, states_set
-
 
 
     def get_ordered_fn_list(
@@ -336,6 +375,7 @@ class CDCMtoJAXVF():
         """
         return dfx.LinearInterpolation(ts=t_data,ys=input_data)
     
+
     def set_input_signal(self):
         if self.input_dict is not None:
             for input, data in self.input_dict.items():
@@ -345,8 +385,7 @@ class CDCMtoJAXVF():
                     )
 
 
-
-    def get_vector_field(
+    def get_vector_field_old(
             self,
             cdcm_sys: System,
             input_dict: Dict = None,
@@ -455,6 +494,39 @@ class CDCMtoJAXVF():
         return vector_field
     
 
+    def get_vector_field(self,
+        input_dict: Dict = None,
+    ):
+        self.input_signal = {}
+        self.input_dict = input_dict
+        self.set_input_signal()
+        dt = self.cdcm_sys_dt
+        
+        def vector_field(t,states,args):
+            """
+            states are as per states_set
+            given to get_dynamical_syst(). This function returns temporal
+            derivatives of the states present in the states_set.
+            """
+            
+            self.get_param_input_var_state_value_dict(t,states,args)
+            next_states = jnp.array(
+                self.param_input_var_state_value_dict['next_state']
+                )
+            
+            def get_time_derivs_lax(carry,x):
+                new_state = next_states[x]
+                state = self.param_input_var_state_value_dict['states'][x]
+                time_deriv = (new_state-state)/dt
+                return carry,time_deriv
+
+            time_derivs = lax.scan(
+                get_time_derivs_lax,None,xs=jnp.arange(len(states)))[1]
+            return time_derivs
+    
+        return vector_field
+        
+
     def get_param_input_var_state_value_dict(self,t,states,args):
         self.param_input_var_state_value_dict = {
             "params":[*args],
@@ -488,11 +560,24 @@ class CDCMtoJAXVF():
         self.get_param_input_var_state_value_dict(t,states,args)
         vars_array = jnp.array(self.param_input_var_state_value_dict["vars"])
         return states,vars_array
-    
+
+
     def get_idx_of_qty_at_path(self,qty_set,path):
         return self.get_absnames(qty_set).index(path)
 
 
 
-def make_cdcm_to_jaxvf():
-    return CDCMtoJAXVF()
+def make_cdcm_to_jaxvf(
+            cdcm_sys: System = None,
+            cdcm_sys_dt: float = None,
+            states_to_remove: List = ["row"],
+            params_to_remove: List = ["data_node"],
+            vars_to_remove: List = ["read"],
+        ):
+    return CDCMtoJAXVF(
+            cdcm_sys=cdcm_sys,
+            cdcm_sys_dt=cdcm_sys_dt,
+            states_to_remove=states_to_remove,
+            params_to_remove=params_to_remove,
+            vars_to_remove=vars_to_remove,
+    )
