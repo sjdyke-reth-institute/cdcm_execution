@@ -33,8 +33,6 @@ Once inside the activated environment, install the `cdcm_execution` package usin
 pip install git+https://github.com/sjdyke-reth-institute/cdcm_execution
 ```
 
-If you need access to the repository, please contact [R. Murali Krishnan](mailto:mrajase@purdue.edu).
-
 ---
 
 ## Citation
