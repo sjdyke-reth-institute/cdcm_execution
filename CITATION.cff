@@ -1,0 +1,14 @@
+# ~ovn!
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Bilionis
+    given-names: Ilias
+    orcid: https://orcid.org/0000-0002-5266-105X
+  - family-names: Rajasekharan Pillai
+    given-names: Murali Krishnan
+    orcid: https://orcid.org/0009-0000-3858-7095
+title: sjdyke-reth-institute/cdcm_execution: Control-oriented Dynamic Computational Modeling (CDCM) Execution Language
+version: v0.9.7
+date-released: 2025-07-27
+doi: 10.5281/zenodo.16497968 

@@ -1,42 +1,61 @@
-# Control-oriented Dynamic Computational and Modeling (CDCM) Framework
+# Control-oriented Dynamic Computational Modeling (CDCM) Framework
 
-This repository contains packages that are part of the Control-oriented Dynamical Computational and Modeling (CDCM) framework developed at the Resilient Extra-Terrestrial Habitats Institute (RETHi), a NASA funded STRI (Grant #80NSSC19K1076)
+This repository contains packages that are part of the **Control-oriented Dynamic Computational Modeling (CDCM)** framework developed at the [Resilient Extra-Terrestrial Habitats Institute (RETHi)](https://rethi.nd.edu), a NASA-funded Space Technology Research Institute (STRI) under Grant #80NSSC19K1076.
 
-# Installation
+---
 
-Installing the `cdcm` package is best done through [conda](https://docs.conda.io/en/latest/). All contents of this package has been tested for Python 3.9. Some utilities of the CDCM framework (particularly _model calibration_) depends on [JAX](https://github.com/google/jax), so it is recommended to create a `conda` virtual environment with JAX to use the code.
+## Installation
 
-## 1- Install Conda
-To install `conda` in your workstation, please follow the [installation instructions for `conda`](https://conda.io/docs/user-guide/install/).
+Installing the `cdcm` package is best done through [conda](https://docs.conda.io/en/latest/). All contents of this package have been tested with **Python 3.9**. Some utilities of the CDCM framework (particularly *model calibration*) depend on [JAX](https://github.com/google/jax), so it is recommended to create a `conda` virtual environment with JAX support.
 
-Ignore this step if you already have `conda` installed in your system, and is discoverable in your system path.
+### 1. Install Conda
 
-## 2- Install `cdcm` package
+To install `conda`, follow the [official instructions](https://conda.io/docs/user-guide/install/).
 
+> _Skip this step if you already have conda installed._
 
-Create a `cdcm` virtual environment for installling the package, with `jax` and `jaxlib`. Currently, we need to install [JAX](https://github.com/google/jax) to utilize all functionalities of the package.
+### 2. Install the `cdcm_execution` Package
 
-### 2.1- Create a `cdcm` virtual environment
+#### 2.1 Create a CDCM virtual environment
 
-You may execute the following command to create a `cdcm` virtual-environment with Python 3.9 and the `jax`, and `jaxlib` libraries
+Use the following command to create a `cdcm` virtual environment with Python 3.9 and JAX dependencies:
 
-```
-$ conda create -n <cdcm-venv-name> python=3.9 jax jaxlib
-```
-
-Activate the virtual environment for the completing the setup procedures
-
-```
-$ conda activate <cdcm-venv-name>
+```bash
+conda create -n <cdcm-venv-name> python=3.9 jax jaxlib
+conda activate <cdcm-venv-name>
 ```
 
+#### 2.2 Install from GitHub
 
-### 2.2- Install the `cdcm_execution` Python package
+Once inside the activated environment, install the `cdcm_execution` package using:
 
-Once you activate the `<cdcm-venv-name>` virtual environment, you can install the `cdcm_execution` package into your virtual environment by executing the following command
-
-```
+```bash
 pip install git+https://github.com/sjdyke-reth-institute/cdcm_execution
 ```
 
-If you need access to the repository, please contact [R Murali Krishnan](mailto:mrajase@purdue.edu).
+If you need access to the repository, please contact [R. Murali Krishnan](mailto:mrajase@purdue.edu).
+
+---
+
+## Citation
+
+If you use this software, please cite it as below:
+
+```bibtex
+@software{cdcm_execution_2025,
+  author       = {Ilias Bilionis and Murali Krishnan Rajasekharan Pillai},
+  title        = {{sjdyke-reth-institute/cdcm_execution: Control-oriented Dynamic Computational Modeling (CDCM) Execution Language}},
+  version      = {v0.9.7},
+  date         = {2025-07-27},
+  doi          = {10.5281/zenodo.16497968},
+  url          = {https://doi.org/10.5281/zenodo.16497968}
+}
+```
+
+You may also cite the associated SSRN publication:
+
+> **Rajasekharan Pillai, Murali Krishnan; Bilionis, Ilias**, *"Control-oriented Dynamic Computational Modeling"*, SSRN, 2025. [https://ssrn.com/abstract/5223568](https://dx.doi.org/10.2139/ssrn.5223568)
+
+Citation metadata is also included in the [CITATION.cff](./CITATION.cff) file in this repository.
+
+---
